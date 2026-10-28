@@ -1,3 +1,9 @@
+import {
+  readQuoteProperty,
+  readQuoteRoom,
+  readQuoteRates,
+  readQuoteStock,
+} from "./quote-queries";
 import { DomainError } from "./errors";
 import { digest, verified, type Actor } from "./operations";
 export type Selection = {
@@ -12,27 +18,6 @@ export type QuoteInput = {
   checkout: string;
   lines: Selection[];
   termsVersion: string;
-};
-type Property = {
-  id: string;
-  owner_id: string;
-  name: string;
-  publication: string;
-  checkin_time: string;
-  checkout_time: string;
-  policy_version: string;
-  policy_text: string;
-  terms_version: string;
-  charges_json: string;
-  revision: number;
-};
-type Room = {
-  id: string;
-  name: string;
-  adult_capacity: number;
-  child_capacity: number;
-  total_capacity: number;
-  revision: number;
 };
 export type Charge = { code: string; label: string; amountCents: number };
 // Engineering bounds, not cancellation or maximum-stay product policies. Revisit before pilot.
@@ -116,19 +101,7 @@ export async function quote(
   const user = await verified(db, actor);
   const input = normalize(raw),
     nights = dates(input.checkin, input.checkout);
-  const property = await db
-    .prepare(
-      "SELECT p.*,pl.name_km AS name,pl.publication FROM property p JOIN place pl ON pl.id=p.id WHERE p.id=?",
-    )
-    .bind(input.propertyId)
-    .first<Property>();
-  if (
-    !property ||
-    (source === "online"
-      ? property.publication !== "published"
-      : property.owner_id !== actor.id)
-  )
-    throw new DomainError("not_found", 404);
+  const property = await readQuoteProperty(db, actor, input.propertyId, source);
   if (property.terms_version !== input.termsVersion)
     throw new DomainError("terms_changed");
   const checkinAt = localInstant(input.checkin, property.checkin_time),
@@ -155,13 +128,7 @@ export async function quote(
     throw new DomainError("invalid_property_charges");
   const lines = [];
   for (const selection of input.lines) {
-    const room = await db
-      .prepare(
-        "SELECT * FROM room_type WHERE id=? AND property_id=? AND active=1",
-      )
-      .bind(selection.roomId, input.propertyId)
-      .first<Room>();
-    if (!room) throw new DomainError("room_unavailable");
+    const room = await readQuoteRoom(db, input.propertyId, selection.roomId);
     if (
       selection.adults > room.adult_capacity * selection.quantity ||
       selection.children > room.child_capacity * selection.quantity ||
@@ -169,32 +136,32 @@ export async function quote(
         room.total_capacity * selection.quantity
     )
       throw new DomainError("occupancy_exceeded", 422);
-    const rates = await db
-      .prepare(
-        "SELECT night,unit_cents,revision FROM nightly_rate WHERE room_type_id=? AND night>=? AND night<? ORDER BY night",
-      )
-      .bind(room.id, input.checkin, input.checkout)
-      .all<{ night: string; unit_cents: number; revision: number }>();
+    const rates = await readQuoteRates(
+      db,
+      room.id,
+      input.checkin,
+      input.checkout,
+    );
     if (
-      rates.results.length !== nights.length ||
-      rates.results.some((r, i) => r.night !== nights[i])
+      rates.length !== nights.length ||
+      rates.some((r, i) => r.night !== nights[i])
     )
       throw new DomainError("incomplete_rates");
     // Missing calendar nights are unavailable, including on request submission.
-    const stock = await db
-      .prepare(
-        "SELECT night,capacity-blocked-reserved AS available FROM inventory_night WHERE room_type_id=? AND night>=? AND night<? ORDER BY night",
-      )
-      .bind(room.id, input.checkin, input.checkout)
-      .all<{ night: string; available: number }>();
+    const stock = await readQuoteStock(
+      db,
+      room.id,
+      input.checkin,
+      input.checkout,
+    );
     if (
-      stock.results.length !== nights.length ||
-      stock.results.some(
+      stock.length !== nights.length ||
+      stock.some(
         (r, i) => r.night !== nights[i] || r.available < selection.quantity,
       )
     )
       throw new DomainError("inventory_unavailable");
-    lines.push({ selection, room, rates: rates.results });
+    lines.push({ selection, room, rates });
   }
   const totalCents =
     charges.reduce((s, c) => s + c.amountCents, 0) +

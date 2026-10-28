@@ -17,9 +17,15 @@ npm run test:worker
 npm test
 ~~~
 
-init:local creates a random ignored secret, applies versioned migrations through Wrangler locally, and creates a local-only email capture table. It does not seed business properties. Re-running it preserves existing data and skips applied migrations. Tests create disposable synthetic catalogs/accounts. The HTTP harness applies the same migrations to its isolated database. Vitest now runs both projects: 52 backend scenarios in the Workers runtime and one built-Worker journey preserving all 12 HTTP checks. npm test runs both and requires the current bundle from build:worker; test:backend can run the shared-service scenarios separately. See the [Vitest alignment report](../docs/Root-of-Cambodia-Vitest-Alignment.md) for versions, verification and the existing dependency audit finding.
+init:local creates a random ignored secret, applies versioned migrations through Wrangler locally, and creates a local-only email capture table. It does not seed business properties. Re-running it preserves existing data and skips applied migrations. Tests create disposable synthetic catalogs/accounts. The HTTP harness applies the same migrations to its isolated database. Vitest now runs both projects: 60 backend scenarios in the Workers runtime and one built-Worker journey preserving all 12 HTTP checks. npm test runs both and requires the current bundle from build:worker; test:backend can run the shared-service scenarios separately. See the [Vitest alignment report](../docs/Root-of-Cambodia-Vitest-Alignment.md) for versions, verification and the existing dependency audit finding.
 
 The checked-in configuration is local-only. runtime.ts fails closed outside local capture mode. There is no deployment script, live sending provider or public infrastructure in this change. Do not deploy this configuration as production.
+
+## Service and persistence boundaries
+
+bookings.ts, quotes.ts and inventory.ts coordinate validation and permissions. access.ts keeps the authorized Drizzle booking read and scoped resource checks; quote-queries.ts holds internal catalog reads. booking-persistence.ts exposes commitRequest, commitBookingTransition and expireRequest. inventory-persistence.ts exposes editInventoryNight. Each save owns the complete atomic batch through the existing operations.ts primitive; never commit its individual table writes separately.
+
+Services authorize before receipt replay. Submission prepares a fresh quote lazily, only when no matching receipt exists, preserving retries after catalog changes. Routes and jobs.ts call the same services. See the [service-boundary review](../docs/Root-of-Cambodia-Service-Boundaries.md) for contracts and local verification. The eight added boundary tests preserve all 52 previous D1 scenarios; combined npm test now reports 61 tests including the rebuilt-Worker journey.
 
 ## Persistence and operation contracts
 

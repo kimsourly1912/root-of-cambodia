@@ -1,5 +1,7 @@
 import { DomainError } from "./errors";
-import { verified, verifiedSQL, operate, type Actor } from "./operations";
+import { verified, type Actor } from "./operations";
+import { requireOwnedRoom } from "./access";
+import { editInventoryNight } from "./inventory-persistence";
 export async function editInventory(
   db: D1Database,
   actor: Actor,
@@ -39,53 +41,6 @@ export async function editInventory(
     !Number.isSafeInteger(input.revision)
   )
     throw new DomainError("invalid_inventory", 422);
-  const room = await db
-    .prepare(
-      "SELECT r.id FROM room_type r JOIN property p ON p.id=r.property_id WHERE r.id=? AND p.owner_id=?",
-    )
-    .bind(input.roomId, actor.id)
-    .first();
-  if (!room) throw new DomainError("not_found", 404);
-  return operate(
-    db,
-    actor,
-    key,
-    { kind: "inventory", input },
-    (op) => [
-      db
-        .prepare(
-          "UPDATE inventory_night SET capacity=?,blocked=? WHERE room_type_id=? AND night=? AND revision=? AND " +
-            verifiedSQL +
-            " AND EXISTS(SELECT 1 FROM room_type r JOIN property p ON p.id=r.property_id WHERE r.id=inventory_night.room_type_id AND p.owner_id=?)",
-        )
-        .bind(
-          input.capacity,
-          input.blocked,
-          input.roomId,
-          input.night,
-          input.revision,
-          actor.id,
-          actor.id,
-        ),
-      // changes() here is the direct UPDATE count, excluding revision-trigger side effects.
-      db
-        .prepare(
-          "INSERT INTO inventory_event(operation_id,room_type_id,night,capacity,blocked,actor_id) SELECT ?,?,?,?,?,? WHERE changes()=1",
-        )
-        .bind(
-          op,
-          input.roomId,
-          input.night,
-          input.capacity,
-          input.blocked,
-          actor.id,
-        ),
-      db
-        .prepare(
-          "UPDATE operation SET result_json=(SELECT json_object('id',operation_id,'status','updated') FROM inventory_event WHERE operation_id=?) WHERE id=?",
-        )
-        .bind(op, op),
-    ],
-    "owner",
-  );
+  await requireOwnedRoom(db, actor, input.roomId);
+  return editInventoryNight(db, actor, key, input);
 }
