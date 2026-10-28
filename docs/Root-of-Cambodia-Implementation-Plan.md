@@ -32,6 +32,8 @@ Implementation changes should be reviewable PRs with a concrete purpose, relevan
 
 ## 3. Recommended code layout for the later organization change
 
+PR #7 is merged. A [concrete step 4 workspace proposal](Root-of-Cambodia-Workspace-Plan.md) is prepared for owner agreement: apps/web, apps/jobs and packages/backend with native npm workspaces and one root application lockfile. This remains a proposal; the source migration has not started.
+
 | Proposed location | Responsibility |
 | --- | --- |
 | apps/web/ | Next.js routes, pages, shadcn/ui components and web runtime adapters |
@@ -70,7 +72,7 @@ Open product decisions remain open: arrival/no-show/late cancellation, infants/a
 
 Step 3 extracts named booking/inventory persistence operations and scoped query functions within application/. Services retain validation and authorization; routes and jobs continue to call them. All 52 existing D1 tests are preserved; eight added boundary regressions bring the D1 suite to 60. Combined npm test passes 61 tests, including the rebuilt Worker's existing 12 HTTP checks. Fresh local migration installation, populated upgrades, TypeScript and Next.js/OpenNext builds pass. Migrations, dependency pins, npm lockfile and public responses are retained. See the [service-boundary review](Root-of-Cambodia-Service-Boundaries.md). Step 4's workspace/jobs organization remains pending an explicit layout/tooling decision. This is local evidence; no deployment or merge is authorized by these results.
 
-Step 2 adds migration 0004 and regression-backed guards. Fresh installation, populated upgrades, rollback on incompatible legacy records and existing retry/history continuity pass locally. The combined suite passes 53 Vitest tests: 52 D1 scenarios plus the 12-check built-Worker journey. TypeScript and Next.js/OpenNext builds pass. See the [safeguards review](Root-of-Cambodia-Database-Safeguards.md). Step 3 is now completed locally as recorded below. No remote infrastructure was deployed or verified.
+Step 2 adds migration 0004 and regression-backed guards. Fresh installation, populated upgrades, rollback on incompatible legacy records and existing retry/history continuity pass locally. The combined suite passes 53 Vitest tests: 52 D1 scenarios plus the 12-check built-Worker journey. TypeScript and Next.js/OpenNext builds pass. See the [safeguards review](Root-of-Cambodia-Database-Safeguards.md). Step 3 is now completed locally as recorded above. No remote infrastructure was deployed or verified.
 
 Step 1 recorded local verification: 24 D1 scenarios and the 12-check built-Worker journey pass under Vitest (25 reported tests), as do TypeScript and Next.js/OpenNext builds. The [alignment report](Root-of-Cambodia-Vitest-Alignment.md) records the versions, evidence and existing audit finding. The later refactoring/product/staging steps are not completed by those results.
 

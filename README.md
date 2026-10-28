@@ -8,7 +8,7 @@ Guests request stays and pay at the property. Owners manage their own property i
 
 The application backend foundation is now in [application/](application/README.md), with reviewed migrations, verified sessions, atomic booking/inventory operations and notification recovery contracts. The product interface and live infrastructure are not built or deployed. See the [backend review report](docs/Root-of-Cambodia-Backend-Foundation-Review.md) for tests, scope and remaining decisions.
 
-Current application validation: **52 D1 tests** and a **12-check built-Worker HTTP journey** pass under Vitest, along with TypeScript and Next.js/OpenNext builds. Vitest reports 53 tests: 52 database tests plus one HTTP journey. The [database safeguards review](docs/Root-of-Cambodia-Database-Safeguards.md) records the new guards, fresh/populated upgrade evidence and remaining limits. These are local results, not production verification.
+Latest recorded application validation: **60 D1 tests** and a **12-check built-Worker HTTP journey** passed under Vitest, along with TypeScript and Next.js/OpenNext builds. Vitest reported 61 tests: 60 database tests plus one HTTP journey. The [service-boundary review](docs/Root-of-Cambodia-Service-Boundaries.md) records step 3; the [database safeguards review](docs/Root-of-Cambodia-Database-Safeguards.md) records the existing guards and upgrade checks. These are historical local results, not production verification or tests rerun for the workspace proposal.
 
 The following table records the earlier isolated proof; it remains historical evidence:
 
@@ -30,6 +30,8 @@ Overall architecture is approved: one modular Next.js application, one backgroun
 - [Approved architecture and next decisions](docs/Root-of-Cambodia-Architecture.md)
 - [Approved booking/database design](docs/Root-of-Cambodia-Booking-Database-Design.md)
 - [Architecture implementation plan](docs/Root-of-Cambodia-Implementation-Plan.md)
+- [Step 4 workspace proposal — awaiting agreement](docs/Root-of-Cambodia-Workspace-Plan.md)
+- [Service and persistence boundaries](docs/Root-of-Cambodia-Service-Boundaries.md)
 - [Database safeguards and upgrade verification](docs/Root-of-Cambodia-Database-Safeguards.md)
 - [Completed Vitest alignment and verification](docs/Root-of-Cambodia-Vitest-Alignment.md)
 - [Technical plan](docs/Root-of-Cambodia-Technical-Plan.md)
@@ -67,4 +69,4 @@ The fixture captures email locally and uses synthetic data. Local secrets, runti
 
 ## Next work
 
-The application architecture and detailed booking/database direction are approved. Vitest alignment and database safeguards are complete locally. Follow the implementation plan next: separate business/persistence code while preserving the tested atomic behavior. Review exact workspace/tooling changes before a broad restructuring. PR #2 is merged; its local checks remain evidence with explicit release gates. Resolve arrival/occupancy/support policies and implement complete product flows before staging and pilot verification. Use the Claude brief for a Phase 1 guest prototype; the technical plan provides implementation constraints but does not specify enough screen behavior by itself. Complete staging and configured-service checks before a pilot. Operational decisions still open are listed in the build specification.
+The application architecture and detailed booking/database direction are approved. Vitest alignment, database safeguards and service/persistence separation are complete locally; PR #7 is merged. Next, agree the [step 4 workspace proposal](docs/Root-of-Cambodia-Workspace-Plan.md) before restructuring the application. Its npm-workspaces layout is proposed, not implemented or approved yet. Resolve arrival/occupancy/support policies and implement complete product flows before staging and pilot verification. Use the Claude brief for a Phase 1 guest prototype; the technical plan provides implementation constraints but does not specify enough screen behavior by itself. Complete staging and configured-service checks before a pilot. Operational decisions still open are listed in the build specification.
