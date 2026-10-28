@@ -222,7 +222,10 @@ test("safeguards upgrade retains every populated row, old schema object and orig
       );
     }
     await migrate(db); // Full discovery/reapplication is safe on an upgraded database.
-    assert.deepEqual(await snapshot(db), before);
+    const afterDraftMigration = await snapshot(db);
+    assert.deepEqual(afterDraftMigration.property_draft_event, []);
+    delete afterDraftMigration.property_draft_event;
+    assert.deepEqual(afterDraftMigration, before);
     assert.deepEqual(
       await transition(db, owner, "accept-then-cancel", cancelled.id, "accept"),
       accepted,

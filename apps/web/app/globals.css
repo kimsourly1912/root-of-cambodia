@@ -1,0 +1,79 @@
+@import "tailwindcss";
+@import "@fontsource/noto-sans-khmer/400.css";
+@import "@fontsource/noto-sans-khmer/600.css";
+:root {
+  --background: #f8f7f3;
+  --foreground: #222b28;
+  --card: #fff;
+  --card-foreground: #222b28;
+  --popover: #fff;
+  --popover-foreground: #222b28;
+  --primary: #245743;
+  --primary-foreground: #fff;
+  --secondary: #edf1eb;
+  --secondary-foreground: #274c3a;
+  --muted: #f1f1ec;
+  --muted-foreground: #626c65;
+  --accent: #edf1eb;
+  --accent-foreground: #274c3a;
+  --destructive: #b42318;
+  --destructive-foreground: #fff;
+  --border: #dce1d9;
+  --input: #c3cdc2;
+  --ring: #32795a;
+  --radius: 0.75rem;
+}
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, "Noto Sans Khmer", sans-serif;
+    line-height: 1.65;
+    margin: 0;
+  }
+  button,
+  a,
+  input,
+  textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button:enabled {
+    cursor: pointer;
+  }
+  a:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+  input,
+  textarea {
+    font-size: 1rem !important;
+  }
+}

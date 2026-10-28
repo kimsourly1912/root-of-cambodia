@@ -11,6 +11,7 @@ export async function endpoint(
     key: string;
     body: Record<string, unknown>;
   }) => Promise<unknown>,
+  successStatus: 200 | 201 = 200,
 ) {
   const context = diagnostics("http");
   const headers = {
@@ -68,7 +69,7 @@ export async function endpoint(
         key: request.headers.get("idempotency-key") ?? "",
         body,
       }),
-      { headers },
+      { headers, status: successStatus },
     );
     context.completed();
     return response;

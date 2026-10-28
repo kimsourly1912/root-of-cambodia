@@ -12,3 +12,6 @@
 *.log
 .DS_Store
 apps/jobs/dist/
+
+test-results/
+playwright-report/
