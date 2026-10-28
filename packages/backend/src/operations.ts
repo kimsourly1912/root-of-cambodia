@@ -1,4 +1,4 @@
-import { DomainError } from "./errors";
+import { DomainError, databaseFailureReason } from "./errors";
 export type Actor = { id: string };
 export type Receipt = { id: string; status: string };
 export const verifiedSQL =
@@ -87,7 +87,11 @@ export async function operate(
         message,
       )
     )
-      throw new DomainError("booking_conflict");
+      throw new DomainError(
+        "booking_conflict",
+        409,
+        databaseFailureReason(error),
+      );
     throw error;
   }
   const committed = await existing();

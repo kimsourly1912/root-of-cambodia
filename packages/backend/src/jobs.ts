@@ -19,6 +19,6 @@ export async function consume(
     typeof message.id !== "string" ||
     message.id.length > 200
   )
-    return { discarded: true };
+    return { discarded: true as const };
   return deliver(db, message.id, provider);
 }

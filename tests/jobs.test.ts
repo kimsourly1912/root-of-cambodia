@@ -45,7 +45,9 @@ test("actual scheduled handler expires once across overlaps and recovers failed 
       get(target, prop) {
         if (prop === "send")
           return async () => {
-            throw new Error("queue_unavailable");
+            throw new Error(
+              "queue_unavailable private@example.invalid token=never-log",
+            );
           };
         const value = Reflect.get(target, prop);
         return typeof value === "function" ? value.bind(target) : value;
@@ -53,7 +55,13 @@ test("actual scheduled handler expires once across overlaps and recovers failed 
     });
     await assert.rejects(
       worker.scheduled(createScheduledController(), broken),
-      /queue_unavailable/,
+      (error) => {
+        assert.ok(error instanceof Error);
+        assert.equal(error.message, "jobs_maintenance_failed");
+        assert.ok(!String(error.stack).includes("private@example.invalid"));
+        assert.ok(!("cause" in error));
+        return true;
+      },
     );
     assert.equal(
       await scalar(

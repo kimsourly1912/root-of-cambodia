@@ -16,7 +16,8 @@
     "./outbox": "./src/outbox.ts",
     "./operations": "./src/operations.ts",
     "./booking-persistence": "./src/booking-persistence.ts",
-    "./quotes": "./src/quotes.ts"
+    "./quotes": "./src/quotes.ts",
+    "./diagnostics": "./src/diagnostics.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

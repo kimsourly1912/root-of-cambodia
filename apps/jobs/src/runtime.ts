@@ -1,8 +1,8 @@
+import { JobsConfigurationError } from "@root-of-cambodia/backend/errors";
 import type { Provider } from "@root-of-cambodia/backend/outbox";
 
 export function requireLocal(env: JobsEnv) {
-  if (env.APP_MODE !== "local")
-    throw new Error("Jobs provider is not configured");
+  if (env.APP_MODE !== "local") throw new JobsConfigurationError();
 }
 
 // This captures synthetic local delivery only. It cannot send real email.

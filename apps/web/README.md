@@ -23,7 +23,7 @@ Run these commands from the repository root using Node 24.22.1 and npm 11.9.0. T
 
 init:local applies the single authoritative migration set from packages/backend/migrations through the web configuration. It creates local-only auth-mail and notification capture tables without seeding business properties. Repeating initialization preserves data and skips applied migrations. Web and jobs previews use the same root .wrangler/state path and unchanged local database ID. Stop local previews before the first handoff. For an existing checkout, the initializer copies legacy application/.dev.vars and application/.wrangler/state once, retains the originals, and rejects conflicting destinations. The marker prevents a later run from overwriting newer workspace data. Reconcile conflicts explicitly; do not delete a populated database to force initialization.
 
-Tests use isolated synthetic databases. The suite now reports 69 tests: 64 native D1/runtime scenarios, three workspace/handoff checks and two built-Worker journeys. The web journey retains its 12 HTTP checks; the jobs journey exercises the prebuilt jobs bundle, scheduled expiry and actual local queue delivery. Both builds are required before npm test. See the [workspace review](../../docs/Root-of-Cambodia-Workspace-Review.md) for verification and limits.
+Tests use isolated synthetic databases. The suite now reports 77 tests: 72 native D1/runtime scenarios, three workspace/handoff checks and two built-Worker journeys. The web journey retains its 12 HTTP checks; the jobs journey exercises the prebuilt jobs bundle, scheduled expiry and actual local queue delivery. Both builds are required before npm test. See the [workspace review](../../docs/Root-of-Cambodia-Workspace-Review.md) for verification and limits.
 
 The checked-in configurations and capture adapters are local-only; they send no real email and fail closed outside local mode. build:jobs uses Wrangler's --dry-run to write a local bundle. No deployment command or live sending provider is configured. Do not deploy these local configurations as production.
 
@@ -47,6 +47,8 @@ Migration 0004 adds database guards for command/status consistency, the supporte
 - Inventory edits use optimistic revisions and cannot edit reserved counters. Catalog/calendar/rate creation interfaces remain future work.
 
 ## API
+
+Application endpoints return a server-generated X-Request-Id on success and error without changing their response bodies/statuses. Private structured diagnostics use that reference, never raw payloads or credentials. See the [step 5 review](../../docs/Root-of-Cambodia-Diagnostics-Delivery-Review.md). Better Auth endpoints keep their separate library handler contract.
 
 All application endpoints require verified cookie sessions. Mutations require the configured Origin and application/json; bodies are limited to 32 KiB. Responses are private/no-store.
 
@@ -73,6 +75,6 @@ Engineering ceilings: 10 lines, quantity 100, 60 total line/night rows, 366 cale
 
 The shared jobs.ts exposes bounded maintenance/consume operations. apps/jobs now provides thin scheduled/queue entrypoints and local queue/capture adapters; live bindings/provider remain unconfigured. No automatic Cron schedule is enabled. maintenance expires due requests and republishes due outbox IDs. consume claims a lease and invokes the injected provider.
 
-Pending rows and expired sending leases remain discoverable: publication never sets a permanent published bit. Queue duplicates are safe. Attempts record started/delivered/retry and sanitized failure codes. Backoff starts at 60 seconds and caps at one hour. Five-minute fenced leases recover process death. All sends reuse the outbox ID as provider idempotency key. Provider support, timeout/deduplication windows and operator/dead-letter policy need staging validation. Exactly-once inbox delivery is not promised.
+Pending rows and expired sending leases remain discoverable: publication never sets a permanent published bit. Queue duplicates are safe. Attempts record started/delivered/retry and sanitized failure codes. Backoff starts at 60 seconds and caps at one hour. Five-minute fenced leases recover process death. All sends reuse the outbox ID as provider idempotency key. Provider support, timeout/deduplication windows and operator/dead-letter policy need staging validation. Exactly-once inbox delivery is not promised. New results use provider_accepted/retry_scheduled/not_claimed/lease_superseded and always report inboxDelivery=unknown. Legacy delivered fields record adapter acceptance only; they are not inbox evidence.
 
 No reminder schedule, no-show rule, late-cancellation fee or admin impersonation was invented. See the [backend foundation review](../../docs/Root-of-Cambodia-Backend-Foundation-Review.md) for decisions and release gates.

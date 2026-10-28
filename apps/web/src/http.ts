@@ -1,7 +1,7 @@
 import { runtime } from "./runtime";
 import { verified, type Actor } from "@root-of-cambodia/backend/operations";
 import { DomainError } from "@root-of-cambodia/backend/errors";
-const headers = { "Cache-Control": "private, no-store", Vary: "Cookie" };
+import { diagnostics } from "@root-of-cambodia/backend/diagnostics";
 export async function endpoint(
   request: Request,
   mutates: boolean,
@@ -12,6 +12,12 @@ export async function endpoint(
     body: Record<string, unknown>;
   }) => Promise<unknown>,
 ) {
+  const context = diagnostics("http");
+  const headers = {
+    "Cache-Control": "private, no-store",
+    Vary: "Cookie",
+    "X-Request-Id": context.correlationId,
+  };
   try {
     const { env, auth } = await runtime();
     if (
@@ -55,7 +61,7 @@ export async function endpoint(
       if (!body || Array.isArray(body) || typeof body !== "object")
         throw new DomainError("invalid_request", 422);
     }
-    return Response.json(
+    const response = Response.json(
       await handle({
         db: env.DB,
         actor,
@@ -64,16 +70,14 @@ export async function endpoint(
       }),
       { headers },
     );
+    context.completed();
+    return response;
   } catch (error) {
-    if (error instanceof DomainError)
-      return Response.json(
-        { error: error.code },
-        { status: error.status, headers },
-      );
-    // A generic 503 deliberately does not claim whether a mutation committed.
+    const failure = context.failure(error);
+    // The response body/status and uncertain-outcome retry contract are retained.
     return Response.json(
-      { error: "temporarily_unavailable_retry_same_key" },
-      { status: 503, headers },
+      { error: failure.code },
+      { status: failure.status, headers },
     );
   }
 }
