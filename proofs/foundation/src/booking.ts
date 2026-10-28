@@ -20,13 +20,21 @@ export async function accept(db: D1Database, id: string, actor: Actor) {
   }
   return { status: "confirmed", repeated: false };
 }
-export async function cancel(db: D1Database, id: string, actor: Actor) {
+export async function cancel(
+  db: D1Database, id: string, actor: Actor,
+  options: { as: 'guest' | 'owner'; reason?: string }
+) {
   if (!actor.emailVerified) throw new BookingError("email_unverified");
+  const reason=options.reason?.trim() || null;
+  if (options.as === 'owner' && !reason) throw new BookingError("owner_reason_required");
   const result = await db.prepare(`
-    UPDATE booking SET status='cancelled', cancelled_at=unixepoch()
+    UPDATE booking SET status='cancelled', cancelled_at=unixepoch(),
+      cancelled_by=?, cancellation_role=?, cancellation_reason=?
     WHERE id=? AND status IN ('pending','confirmed') AND checkin_at>unixepoch()
-      AND (guest_id=? OR EXISTS(SELECT 1 FROM property p WHERE p.id=booking.property_id AND p.owner_id=?))
-  `).bind(id,actor.id,actor.id).run();
+      AND ((?='guest' AND guest_id=?) OR (?='owner' AND EXISTS(
+        SELECT 1 FROM property p WHERE p.id=booking.property_id AND p.owner_id=?
+      )))
+  `).bind(actor.id,options.as,reason,id,options.as,actor.id,options.as,actor.id).run();
   // D1's changes metadata includes trigger side effects, so a successful
   // single-booking transition can report more than one changed row.
   return { changed: result.meta.changes > 0 };
