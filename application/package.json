@@ -1,0 +1,36 @@
+{
+  "name": "root-of-cambodia",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "npm@11.9.0",
+  "engines": {
+    "node": ">=24.22.1 <25"
+  },
+  "scripts": {
+    "build": "next build --webpack",
+    "build:worker": "opennextjs-cloudflare build",
+    "preview:worker": "wrangler dev --ip 127.0.0.1 --port 8787",
+    "typecheck": "tsc --noEmit",
+    "test:worker": "node --import tsx tests/worker-http.ts",
+    "types:bindings": "wrangler types --env-interface CloudflareEnv",
+    "test:backend": "node --import tsx --test tests/*.test.ts",
+    "init:local": "node scripts/init-local.mjs"
+  },
+  "dependencies": {
+    "next": "16.4.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "better-auth": "1.7.14",
+    "drizzle-orm": "0.45.4"
+  },
+  "devDependencies": {
+    "@opennextjs/cloudflare": "1.20.13",
+    "wrangler": "4.154.0",
+    "typescript": "7.0.2",
+    "@types/node": "26.6.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "tsx": "4.23.15"
+  }
+}
