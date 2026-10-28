@@ -1,0 +1,33 @@
+{
+  "name": "roc-foundation-local-proof",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-28",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "roc-foundation-local-only",
+      "database_id": "local-roc-foundation"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "roc-foundation-local-media"
+    }
+  ],
+  "vars": {
+    "PROOF_MODE": "local",
+    "AUTH_URL": "http://127.0.0.1:8787"
+  },
+  "workers_dev": false,
+  "observability": {
+    "enabled": true
+  }
+}
