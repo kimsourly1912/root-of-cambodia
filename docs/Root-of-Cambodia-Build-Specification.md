@@ -4,7 +4,7 @@ Implementation update (28 October 2026): the [backend foundation review](Root-of
 
 Date: 28 October 2026
 
-Status: First technical design draft based on the agreed product scope. The local compatibility proof validates a narrow core; this document is not a complete production schema or an implemented application.
+Status: Feature/build contract based on the agreed product scope. The [approved architecture](Root-of-Cambodia-Architecture.md) now governs overall structure; application/ contains a locally tested backend foundation. This draft still includes unimplemented flows and unresolved policies, and does not certify production readiness.
 
 ## 1. Architecture contract
 
@@ -42,7 +42,7 @@ The fixture uses native D1 for the critical atomic transition and verifies Drizz
 | Media asset | Owner/property, controlled object keys, format/dimensions, processing/publication state | Owner/property and cleanup indexes |
 | Saved place / report | User/place uniqueness; report status and reason | User/place and review-queue indexes |
 
-This model must still be expressed as reviewed D1 migrations with exact foreign keys, deletion rules, required fields, payload limits, and schema tests. The fixture SQL intentionally implements only a small subset.
+The booking foundation subset is now expressed in application/migrations/ with local schema/upgrade tests; see the backend review for coverage and limits. Remaining product entities and operational policies still need implementation/review. The historical fixture SQL intentionally implements only a small subset.
 
 The [schema review](Root-of-Cambodia-Schema-Review.md) records the follow-up proof safeguards and unresolved production work. The [Claude mockup brief](Claude-Mockup-Brief.md) translates the product rules into screen flows and states.
 

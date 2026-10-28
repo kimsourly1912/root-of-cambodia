@@ -22,9 +22,12 @@ The following table records the earlier isolated proof; it remains historical ev
 
 The proof covers last-room contention, rollback, repeated actions, verified sessions, owner isolation, password reset, and authentication throttling. Live email, remote deployment, media/jobs, maps, performance, and recovery remain unverified.
 
+Overall architecture is approved: one modular Next.js application, one background Worker, shared business rules and one initial D1 database per environment. The [architecture record](docs/Root-of-Cambodia-Architecture.md) separates approved direction, current implementation and open decisions.
+
 ## Planning documents
 
 - [Product plan](docs/Root-of-Cambodia-Product-Plan.md)
+- [Approved architecture and next decisions](docs/Root-of-Cambodia-Architecture.md)
 - [Technical plan](docs/Root-of-Cambodia-Technical-Plan.md)
 - [Initial build specification](docs/Root-of-Cambodia-Build-Specification.md)
 - [Foundation check and evidence limits](docs/Root-of-Cambodia-Foundation-Check.md)
@@ -60,4 +63,4 @@ The fixture captures email locally and uses synthetic data. Local secrets, runti
 
 ## Next work
 
-Review the dependent backend-foundation PR and its release gates, agree arrival/occupancy/support policies, wire the selected email/jobs services, and design the guest/owner screens in product-plan order. Use the Claude brief for a Phase 1 guest prototype; the technical plan provides implementation constraints but does not specify enough screen behavior by itself. Complete staging and configured-service checks before a pilot. Operational decisions still open are listed in the build specification.
+Complete the detailed booking/database design review in plain language, then agree the module layout and tooling migration plan before restructuring code. PR #2 is merged; its local checks remain evidence with explicit release gates. Resolve arrival/occupancy/support policies and implement complete product flows before staging and pilot verification. Use the Claude brief for a Phase 1 guest prototype; the technical plan provides implementation constraints but does not specify enough screen behavior by itself. Complete staging and configured-service checks before a pilot. Operational decisions still open are listed in the build specification.

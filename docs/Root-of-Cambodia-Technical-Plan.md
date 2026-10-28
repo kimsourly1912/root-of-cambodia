@@ -4,7 +4,7 @@ Implementation update (28 October 2026): the [backend foundation review](Root-of
 
 Updated: 28 October 2026
 
-Status: Next.js/OpenNext, Better Auth, Drizzle, and core D1 reservation behavior passed the local foundation proof. The proof is a separate disposable fixture; the application and remote infrastructure remain unimplemented.
+Status: Overall application architecture approved; see the [architecture decision](Root-of-Cambodia-Architecture.md). A backend foundation now exists in application/ and has local validation evidence. Full product flows and remote infrastructure remain incomplete; detailed booking/database design review is next.
 
 Companion: Root-of-Cambodia-Product-Plan.md
 
@@ -15,14 +15,14 @@ Companion: Root-of-Cambodia-Product-Plan.md
 | Application | Next.js full stack, React, TypeScript, App Router | User selected |
 | UI | shadcn/ui with Tailwind CSS | User selected |
 | Verification | Email verification; no phone verification | User selected; product plan updated |
-| Database | Cloudflare D1, using SQLite and Drizzle's D1 driver | Recommended; local core proof passed, staging remains pending |
+| Database | Cloudflare D1, using SQLite and Drizzle's D1 driver | Approved initial database; detailed persistence review and staging remain pending |
 | Hosting | Cloudflare Workers; upstream Next.js via OpenNext as the proposed deployment path | Next.js 16.4.3 + OpenNext 1.20.13 tested locally; remote deployment remains pending |
-| Authentication | Better Auth, email/password with verification link | Recommended sign-in mechanism |
+| Authentication | Better Auth, email/password with verification link | Selected; local foundation tested, live email remains unconfigured |
 | Email delivery | Resend candidate behind a provider interface | Provider/domain not yet configured |
 | Files and images | R2 plus an explicit Cloudflare Images integration | Retained |
 | Jobs | Queues and a small Cron-driven jobs Worker | Retained |
 | Maps | Google Maps candidate | Coverage, quota, and budget checks remain |
-| Quality | TypeScript, ESLint, Vitest, React Testing Library where useful, Playwright | Updated for React/Next.js |
+| Quality | TypeScript, ESLint, Vitest, React Testing Library where useful, Playwright | Approved direction; current Node-runner tests still need Vitest alignment |
 
 Neon, Hyperdrive, PostgreSQL row-locking logic, Nuxt/Vue/Nuxt UI, Nuxt ESLint, phone OTP, and Twilio are removed from the proposed first-version stack.
 
@@ -92,7 +92,7 @@ Use an atomic SQL transition entrypoint with database-enforced invariants. A nar
 5. A missing night, capacity conflict, inconsistent allocation, or other invariant violation raises a database error.
 6. D1 executes the complete operation in a transactional statement/batch. A failed statement must roll back the entire batch.
 
-This is a proposed design, not an implemented or D1-tested schema. SQLite documents triggers and RAISE(ABORT); validate the exact migrations and behavior on D1 before adopting them.
+The application foundation now implements and locally tests a version of this approach; see the backend review. The detailed trigger/transaction design still needs architecture review and remote verification before extension or production adoption. SQLite documents triggers and RAISE(ABORT); a local test does not establish production behavior.
 
 All confirmation side effects must be linked to an actual permitted transition. A zero-row transition must not be followed by inventory/outbox writes that can run independently. Never use an application read followed by unrelated auto-committed writes as the reservation guarantee.
 
@@ -166,6 +166,8 @@ Sources 15–18 cover provider and queue behavior.
 
 ## 7. Application structure and authorization
 
+The [approved architecture](Root-of-Cambodia-Architecture.md) establishes a modular monolith: one web application and a small jobs Worker reuse business modules. Shared code is a library, not a third network service. Detailed persistence/module layout review precedes restructuring.
+
 One repository contains:
 
 - Next.js web application: guest, owner, and super-admin areas, route handlers, auth, and server-side business entrypoints.
@@ -221,7 +223,7 @@ Sources 8, 23, and 24 support these operational choices.
 | Staging | Separate D1, R2, queues, auth settings, sender/keys; synthetic data |
 | Production | Dedicated live resources, domain, monitored quotas, recovery and access controls |
 
-- Use one pnpm-managed repository, a pinned package manager/lockfile, and a compatible maintained Node LTS for development and CI.
+- Use one repository, a pinned package manager/lockfile, and a compatible maintained Node LTS for development and CI. This draft originally proposed pnpm; the implemented foundation uses npm. Standardizing the package manager is an explicit open tooling decision, not an approved silent migration.
 - Pin Next.js, React, adapter, Better Auth, Drizzle, Tailwind, and component dependencies to a verified compatible set.
 - Do not copy an @rc dependency from documentation without deliberately choosing a release candidate.
 - shadcn/ui component source is maintained in our repository; updates require review.
@@ -233,7 +235,7 @@ Sources 8, 23, and 24 support these operational choices.
 - Keep production deploy paths singular; version web and jobs code against compatible event/schema contracts.
 - Keep bindings and provider secrets server-only and separate per environment.
 
-An exact version set is now pinned in the separate local proof fixture. Application resources, domain/provider accounts, and CI credentials have not been configured. See the local-proof section below.
+Version sets are pinned in application/ and in the separate historical proof. The application foundation has local checks; deployed resources, domain/provider accounts and CI credentials remain unconfigured. See the backend review for current evidence and the local-proof section below for historical results.
 
 ## 11. Required proof before feature rollout
 

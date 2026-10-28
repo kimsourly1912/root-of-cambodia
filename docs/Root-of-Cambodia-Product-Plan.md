@@ -4,11 +4,11 @@ Implementation update (28 October 2026): the [backend foundation review](Root-of
 
 Updated: 28 October 2026
 
-Status: Product direction agreed; revised to email verification and Next.js/shadcn with a D1 infrastructure proposal. Detailed design and runtime validation remain open.
+Status: Product direction and overall application architecture agreed. See the [architecture decision](Root-of-Cambodia-Architecture.md). A backend foundation is locally tested; detailed booking/database design, unresolved product policies and staging verification remain open.
 
-Purpose: Preserve the agreed scope and provide a starting specification for design and implementation. This document does not authorize implementation, service purchases, or public launch.
+Purpose: Preserve the agreed scope and product policies. Implemented and approved work is recorded in the architecture decision and backend review; this product document alone does not authorize service purchases, deployment or public launch.
 
-Revision note: The user replaced phone verification with email verification and selected Next.js full stack with shadcn/ui. D1 is the revised database recommendation, subject to the technical-plan checks. These decisions supersede the earlier phone/Nuxt/PostgreSQL proposals.
+Revision note: The user replaced phone verification with email verification and selected Next.js full stack with shadcn/ui. D1 is now the approved initial database, subject to detailed persistence review and the technical-plan verification gates. These decisions supersede the earlier phone/Nuxt/PostgreSQL proposals.
 
 ## 1. Product goal
 
