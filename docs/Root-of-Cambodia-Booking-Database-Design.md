@@ -1,11 +1,11 @@
-# Root of Cambodia — Booking and Database Design Proposal
+# Root of Cambodia — Approved Booking and Database Design
 
 Date: 28 October 2026
-Status: Proposed; awaiting project-owner approval of the detailed approach.
+Status: Detailed approach approved by the project owner on 28 October 2026. Implementation and verification remain separate work.
 Baseline reviewed: main at 67bec618133d17e3c21ac8a55f22e097c461e002, following merged architecture PR #3.
 Change scope: Design and source review only. No runtime, schema, dependency or infrastructure changes are made by this proposal.
 
-The [overall architecture](Root-of-Cambodia-Architecture.md) is approved. This document supplies the next, deliberately separate decision: how booking operations safely update the database and where that code belongs.
+The [overall architecture](Root-of-Cambodia-Architecture.md) is approved. This document records the separately approved decision: how booking operations safely update the database and where that code belongs. The [implementation plan](Root-of-Cambodia-Implementation-Plan.md) defines the next delivery steps and distinguishes pending tooling/layout recommendations.
 
 ## 1. The recommendation in plain language
 
@@ -134,14 +134,14 @@ These are static source observations and proposed follow-up work, not newly repr
 
 Any required table rebuild must be designed as a populated-data migration: preserve relationships, triggers, snapshots, history and receipts. Replacing a table by dropping it without reviewing dependent objects and retention protection is not an acceptable shortcut.
 
-## 10. Verification and implementation sequence after approval
+## 10. Verification and implementation sequence
 
-1. Record the accepted detailed design and its boundaries.
-2. Plan the exact module folders and test-tool versions separately; preserve Vitest as the agreed runner direction.
-3. Add targeted regressions, then small subsequent migration fixes for invariant gaps. Preserve existing scenarios.
+1. Record the accepted detailed design and its boundaries; this approval is now recorded.
+2. Align the existing scenarios with compatible Vitest/Workers tooling in the current directory before adding new behavior. Validate exact versions and preserve the real built-Worker harness.
+3. Add targeted regressions, then small subsequent migration fixes for invariant gaps; remove hardcoded/custom migration-loading drift.
 4. Extract atomic persistence functions in small behavior-preserving changes; routes and jobs call the same operations.
-5. Align tests with compatible Vitest/Workers tooling and remove hardcoded/custom migration-loading drift.
-6. Re-run types, relevant D1/upgrade tests, Next.js/OpenNext build and actual built-Worker checks.
+5. Agree the exact shared-code layout/workspace tooling before a broad move; keep the earlier safety changes separate.
+6. Re-run types, relevant D1/upgrade tests, Next.js/OpenNext build and actual built-Worker checks as appropriate to each change.
 7. With separately authorized staging work, test real D1, HTTPS sessions, queues, sending provider, failure recovery, observability and load.
 
 Required targeted cases include:
@@ -156,11 +156,11 @@ Required targeted cases include:
 
 The earlier 24 D1 tests, 12 built-Worker checks and builds remain historical local evidence for the baseline. This proposal does not rerun them, migrate the runner, make code changes or claim production verification.
 
-## 11. Decision requested
+## 11. Approved decision and scope
 
-Approve retaining **TypeScript business services + named atomic D1 persistence operations + bounded database constraints/triggers + transactional history/outbox**, with the source-review hardening and regression work above addressed in subsequent implementation PRs.
+The project owner approved retaining **TypeScript business services + named atomic D1 persistence operations + bounded database constraints/triggers + transactional history/outbox**, with the source-review hardening and regression work above addressed in subsequent implementation PRs.
 
-This approval would settle the detailed persistence direction. It would not settle arrival/no-show/late-cancellation policies, child/infant definitions, physical-unit continuity, admin/support scope, provider/domain, retention, package manager, exact folder layout, or authorize live deployment.
+This approval settles the detailed persistence direction. It does not settle arrival/no-show/late-cancellation policies, child/infant definitions, physical-unit continuity, admin/support scope, provider/domain, retention, package manager, exact folder layout, or authorize live deployment. Routine implementation within this design does not require repeated approval of individual files/functions.
 
 ## References checked
 

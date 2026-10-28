@@ -1,7 +1,7 @@
 # Root of Cambodia — Approved Application Architecture
 
 Decision date: 28 October 2026
-Status: Approved overall architecture. The [detailed booking/database proposal](Root-of-Cambodia-Booking-Database-Design.md) is prepared and awaits its own approval; it is not adopted by this overall decision.
+Status: Overall architecture and the separately reviewed [booking/database design](Root-of-Cambodia-Booking-Database-Design.md) are approved by the project owner. Implementation follows the [delivery plan](Root-of-Cambodia-Implementation-Plan.md); pending tooling/layout and product decisions remain explicit.
 Scope: Direction for application organization and delivery. This decision does not authorize deployment, purchases, or changes to unresolved product policies.
 
 ## 1. What we agreed, in plain language
@@ -44,7 +44,7 @@ An HTTP endpoint or Server Action receives input, derives the caller from the se
 
 A business service coordinates permissions, validation, rules and persistence. Pure rules should remain testable without Next.js request objects.
 
-Database code owns query details and atomic persistence. Ordinary operations may use Drizzle. Booking-critical SQL, constraints and triggers are an explicit candidate approach that still needs the detailed review below; an ORM does not replace the atomicity guarantee.
+Database code owns query details and atomic persistence. Ordinary operations may use Drizzle. Booking-critical SQL, constraints and bounded triggers follow the approved detailed design; an ORM does not replace the atomicity guarantee. Source-review hardening and runtime verification remain required.
 
 Server-rendered pages may call authorized read services directly instead of making HTTP requests to the application's own endpoints. Browser mutations use thin HTTP endpoints initially, matching the current foundation. Any future Server Actions must call the same services and enforce their own authentication/authorization.
 
@@ -60,7 +60,7 @@ The jobs Worker uses the same lifecycle and persistence operations as the web ap
 
 Acceptance checks the authoritative deadline itself. A delayed expiry job must never allow late acceptance. Booking confirmation is not delegated to an eventually delivered email/queue job.
 
-Detailed trigger boundaries, operation receipts, SQL ownership and migration evolution are the **next review**, not silently approved implementation details.
+The [approved detailed design](Root-of-Cambodia-Booking-Database-Design.md) defines the transaction/trigger boundaries, receipt semantics and migration authority. Implement its hardening work in subsequent tested changes; design approval is not evidence that those changes are already complete.
 
 ## 5. Growth and operational boundaries
 
@@ -97,7 +97,7 @@ Future pull-request checks should cover formatting/lint, types, relevant tests, 
 | --- | --- | --- |
 | Repository/application | application/ contains a Next.js backend foundation; proofs/foundation/ is historical | Plan a small, reviewable organization change after detailed design decisions |
 | Shared modules | Several services exist in application/src/ | Establish module APIs and web/jobs boundaries without changing behavior accidentally |
-| Booking persistence | Native D1 batches, constraints, triggers and receipts are locally tested | Review the detailed design and tradeoffs before extension |
+| Booking persistence | Native D1 batches, constraints, triggers and receipts are locally tested | Detailed direction is approved; implement source-review hardening and clear persistence boundaries |
 | Jobs and providers | Shared functions/interfaces exist; live wiring is absent | Review entrypoint contracts and choose providers/settings separately |
 | Test tooling | Built-in Node tests and Worker harness pass locally | Align with Vitest while preserving behavior and runtime coverage |
 | Screens and supply setup | Full owner/guest/admin interfaces are absent | Build complete flows after architecture alignment |
@@ -107,7 +107,7 @@ The recorded local results are 24 D1 tests, 12 built-Worker checks, TypeScript a
 
 ## 8. Decisions still open
 
-- Detailed booking/database design: transaction coordinator, service/persistence boundaries, scope of SQL triggers, schema ownership and migration evolution.
+- Detailed booking/database direction is settled; concrete migrations, runtime implementation and verification remain delivery work rather than open architectural choices.
 - Exact module folders/workspace layout, package manager and compatible test-tool versions.
 - Arrival, late arrival, no-show and cancellation after scheduled check-in.
 - Child/infant definitions, detailed party distribution and physical-unit continuity.
@@ -118,7 +118,7 @@ The recorded local results are 24 D1 tests, 12 built-Worker checks, TypeScript a
 
 ## 9. Next step and change control
 
-Next, review the [booking/database design proposal](Root-of-Cambodia-Booking-Database-Design.md), which provides a booking example, responsibilities, alternatives, source-review findings and tradeoffs in plain language. Its detailed approach remains proposed pending owner approval. Do not begin a broad restructure or testing-tool migration as an implied part of this documentation decision.
+Next, follow the [implementation plan](Root-of-Cambodia-Implementation-Plan.md): align the existing tests with Vitest, strengthen the identified safeguards, then extract named persistence functions. Review exact workspace/layout changes before a broad move. This documentation update itself makes no runtime changes.
 
 The project owner should not need to discover missing engineering steps. Explain the current phase, the next action and any material decision before substantial work. Continue routine implementation within approved choices; bring material changes to architecture, technologies, product policy, costs or deployment back for agreement.
 
