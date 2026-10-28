@@ -1,7 +1,7 @@
 # Root of Cambodia — Approved Application Architecture
 
 Decision date: 28 October 2026
-Status: Approved overall architecture; detailed booking/database design review is next.
+Status: Approved overall architecture. The [detailed booking/database proposal](Root-of-Cambodia-Booking-Database-Design.md) is prepared and awaits its own approval; it is not adopted by this overall decision.
 Scope: Direction for application organization and delivery. This decision does not authorize deployment, purchases, or changes to unresolved product policies.
 
 ## 1. What we agreed, in plain language
@@ -118,7 +118,7 @@ The recorded local results are 24 D1 tests, 12 built-Worker checks, TypeScript a
 
 ## 9. Next step and change control
 
-Next, prepare the detailed booking/database design as a reviewable proposal with a booking example, responsibilities, alternatives and tradeoffs explained in plain language. Do not begin a broad restructure or testing-tool migration as an implied part of this documentation decision.
+Next, review the [booking/database design proposal](Root-of-Cambodia-Booking-Database-Design.md), which provides a booking example, responsibilities, alternatives, source-review findings and tradeoffs in plain language. Its detailed approach remains proposed pending owner approval. Do not begin a broad restructure or testing-tool migration as an implied part of this documentation decision.
 
 The project owner should not need to discover missing engineering steps. Explain the current phase, the next action and any material decision before substantial work. Continue routine implementation within approved choices; bring material changes to architecture, technologies, product policy, costs or deployment back for agreement.
 

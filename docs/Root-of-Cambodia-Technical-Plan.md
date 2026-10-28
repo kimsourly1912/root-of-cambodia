@@ -4,7 +4,7 @@ Implementation update (28 October 2026): the [backend foundation review](Root-of
 
 Updated: 28 October 2026
 
-Status: Overall application architecture approved; see the [architecture decision](Root-of-Cambodia-Architecture.md). A backend foundation now exists in application/ and has local validation evidence. Full product flows and remote infrastructure remain incomplete; detailed booking/database design review is next.
+Status: Overall application architecture approved; see the [architecture decision](Root-of-Cambodia-Architecture.md). A backend foundation now exists in application/ and has local validation evidence. Full product flows and remote infrastructure remain incomplete. The [detailed booking/database proposal](Root-of-Cambodia-Booking-Database-Design.md) is prepared but awaits owner approval.
 
 Companion: Root-of-Cambodia-Product-Plan.md
 
