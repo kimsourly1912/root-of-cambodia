@@ -8,7 +8,7 @@ Guests request stays and pay at the property. Owners manage their own property i
 
 The active application uses [apps/web](apps/web/README.md), [apps/jobs](apps/jobs/README.md) and [packages/backend](packages/backend/README.md), with reviewed migrations, verified sessions, atomic booking/inventory operations and notification recovery contracts. The product interface and live infrastructure are not built or deployed. See the [backend review report](docs/Root-of-Cambodia-Backend-Foundation-Review.md) for tests, scope and remaining decisions.
 
-Current local workspace validation: **69 Vitest tests passed** — 64 D1/runtime scenarios, three workspace/handoff checks and two built-Worker journeys. The website retains all 12 HTTP checks; the jobs journey uses its prebuilt Worker with scheduled expiry and actual local queue delivery. Separate typechecks, Next.js/OpenNext and jobs builds passed. See the [step 4 review](docs/Root-of-Cambodia-Workspace-Review.md). These are local synthetic-data results, not production verification.
+Current local validation: **77 Vitest tests passed** — 72 D1/runtime cases, three workspace checks and two built-Worker journeys. All 12 original website HTTP checks remain, with added request/log correlation and privacy checks. Delivery results now distinguish provider acceptance from inbox delivery and detect superseded leases. Separate typechecks and both builds passed. See the [step 5 review](docs/Root-of-Cambodia-Diagnostics-Delivery-Review.md). These are synthetic local results, not production verification.
 
 Run active application commands from the repository root with Node 24.22.1 and npm 11.9.0:
 
@@ -43,6 +43,7 @@ Overall architecture is approved: one modular Next.js application, one backgroun
 - [Approved booking/database design](docs/Root-of-Cambodia-Booking-Database-Design.md)
 - [Architecture implementation plan](docs/Root-of-Cambodia-Implementation-Plan.md)
 - [Approved step 4 workspace plan](docs/Root-of-Cambodia-Workspace-Plan.md)
+- [Diagnostics and delivery contracts](docs/Root-of-Cambodia-Diagnostics-Delivery-Review.md)
 - [Workspace/jobs verification](docs/Root-of-Cambodia-Workspace-Review.md)
 - [Service and persistence boundaries](docs/Root-of-Cambodia-Service-Boundaries.md)
 - [Database safeguards and upgrade verification](docs/Root-of-Cambodia-Database-Safeguards.md)
@@ -82,4 +83,4 @@ The fixture captures email locally and uses synthetic data. Local secrets, runti
 
 ## Next work
 
-The application architecture and detailed booking/database direction are approved. Implementation-plan steps 1–4 are complete locally. The owner approved the workspace layout; PR #8 contains its implementation and remains unmerged. Step 5, diagnostics and delivery contracts, is next. Resolve arrival/occupancy/support policies and implement complete product flows before staging and pilot verification. Use the Claude brief for a Phase 1 guest prototype; the technical plan provides implementation constraints but does not specify enough screen behavior by itself. Complete staging and configured-service checks before a pilot. Operational decisions still open are listed in the build specification.
+The application architecture and detailed booking/database direction are approved. Implementation-plan steps 1–5 are complete locally; PR #8 is merged. Step 6 is next: complete owner/supply and guest journeys. The diagnostics/delivery implementation remains a separate reviewable PR. Resolve arrival/occupancy/support policies and implement complete product flows before staging and pilot verification. Use the Claude brief for a Phase 1 guest prototype; the technical plan provides implementation constraints but does not specify enough screen behavior by itself. Complete staging and configured-service checks before a pilot. Operational decisions still open are listed in the build specification.

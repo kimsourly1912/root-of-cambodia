@@ -2,6 +2,7 @@ import { test, expect } from "vitest";
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
 import { createTestHarness } from "wrangler";
+import type { DiagnosticRecord } from "@root-of-cambodia/backend/diagnostics";
 import { catalog, scalar } from "./fixtures";
 const baseURL = "http://127.0.0.1:8787";
 const server = createTestHarness({
@@ -16,6 +17,17 @@ const server = createTestHarness({
     },
   ],
 });
+const diagnosticsFromWorker = () =>
+  server.getLogs().flatMap((log) => {
+    try {
+      const value = JSON.parse(log.message);
+      return value?.version === 1 && typeof value?.correlationId === "string"
+        ? [value as DiagnosticRecord]
+        : [];
+    } catch {
+      return [];
+    }
+  });
 let checks = 0;
 const pass = (label: string) => {
   checks++;
@@ -127,7 +139,32 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     pass(
       "Better Auth signup, verification and sessions use the versioned application auth schema",
     );
-    assert.equal((await post("/api/booking-quotes", input)).status, 401);
+    const anonymous = await server.fetch(
+      baseURL + "/api/booking-quotes?private-query=never-log",
+      {
+        method: "POST",
+        headers: {
+          Origin: baseURL,
+          "Content-Type": "application/json",
+          "X-Request-Id": "private-client-reference-never-log",
+        },
+        body: JSON.stringify(input),
+      },
+    );
+    assert.equal(anonymous.status, 401);
+    assert.deepEqual(await anonymous.json(), { error: "unauthorized" });
+    const anonymousReference = anonymous.headers.get("x-request-id");
+    assert.match(anonymousReference!, /^[a-f0-9-]{36}$/);
+    await expect
+      .poll(() =>
+        diagnosticsFromWorker().some(
+          (r) =>
+            r.correlationId === anonymousReference &&
+            r.code === "unauthorized" &&
+            r.event === "failure",
+        ),
+      )
+      .toBe(true);
     assert.equal(
       (
         await post(
@@ -153,6 +190,8 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     pass("Anonymous, cross-origin and missing-origin mutations rejected");
     const preview = await post("/api/booking-quotes", input, guest.cookie);
     assert.equal(preview.status, 200);
+    assert.match(preview.headers.get("x-request-id")!, /^[a-f0-9-]{36}$/);
+    assert.notEqual(preview.headers.get("x-request-id"), anonymousReference);
     assert.ok(preview.headers.get("cache-control")?.includes("no-store"));
     const q = (await preview.json()) as { hash: string; totalCents: number };
     assert.equal(q.totalCents, 7500);
@@ -455,6 +494,42 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     pass(
       "Application rechecks verification in D1 even with an existing session",
     );
+    // Exercise a genuine unknown runtime/database failure after retaining every
+    // historical journey assertion. No raw SQL error may become an API/log field.
+    await db
+      .prepare("UPDATE user SET emailVerified=1 WHERE id=?")
+      .bind(guest.id)
+      .run();
+    await db.prepare("DROP TABLE nightly_rate").run();
+    const unavailable = await post("/api/booking-quotes", input, guest.cookie);
+    assert.equal(unavailable.status, 503);
+    assert.deepEqual(await unavailable.json(), {
+      error: "temporarily_unavailable_retry_same_key",
+    });
+    assert.ok(unavailable.headers.get("cache-control")?.includes("no-store"));
+    await expect
+      .poll(() =>
+        diagnosticsFromWorker().some(
+          (r) =>
+            r.correlationId === unavailable.headers.get("x-request-id") &&
+            r.reason === "unexpected_failure",
+        ),
+      )
+      .toBe(true);
+    const diagnosticJson = JSON.stringify(diagnosticsFromWorker());
+    for (const secret of [
+      guest.cookie,
+      password,
+      "private-query",
+      "private-client-reference",
+      "nightly_rate",
+      guest.email,
+    ])
+      assert.ok(
+        !diagnosticJson.includes(secret),
+        "Private content in diagnostics",
+      );
+    assert.equal(await scalar(db, "SELECT count(*) n FROM booking"), 2);
     assert.equal(checks, 12, "All historical built-Worker checks must execute");
     console.log(
       JSON.stringify({
