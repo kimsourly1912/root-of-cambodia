@@ -85,7 +85,7 @@ Local, staging and production must have separate resources, secrets, auth settin
 
 Preserve existing regression scenarios during migration. Validate the exact Vitest/Cloudflare versions and runtime compatibility before replacing the current runner. The Wrangler harness provides the built-Worker environment; it is not a competing choice of business-rule test runner.
 
-The current application uses Node's built-in runner for 24 local D1 tests and a standalone 12-check built-Worker script. These remain existing evidence, not completed Vitest adoption. Node is also a development runtime; using Vitest does not remove Node from local tooling.
+The application now uses Vitest for 24 native Workers/D1 tests and one Node-orchestrated built-Worker journey retaining all 12 HTTP checks. This is 25 Vitest tests across four files. The [alignment report](Root-of-Cambodia-Vitest-Alignment.md) records fresh local evidence and scope. Node remains a development/orchestration runtime, not a replacement test runner.
 
 One repository and a consistent lockfile/tooling policy are required. The current application/proof use npm; the older technical plan proposed pnpm. Package-manager choice, exact workspace paths and migration order need an explicit tooling decision before changing them. This architecture approval does not silently switch the package manager.
 
@@ -99,7 +99,7 @@ Future pull-request checks should cover formatting/lint, types, relevant tests, 
 | Shared modules | Several services exist in application/src/ | Establish module APIs and web/jobs boundaries without changing behavior accidentally |
 | Booking persistence | Native D1 batches, constraints, triggers and receipts are locally tested | Detailed direction is approved; implement source-review hardening and clear persistence boundaries |
 | Jobs and providers | Shared functions/interfaces exist; live wiring is absent | Review entrypoint contracts and choose providers/settings separately |
-| Test tooling | Built-in Node tests and Worker harness pass locally | Align with Vitest while preserving behavior and runtime coverage |
+| Test tooling | Vitest alignment passes locally with native Workers tests and the built-Worker harness | Preserve coverage while adding the approved database regressions |
 | Screens and supply setup | Full owner/guest/admin interfaces are absent | Build complete flows after architecture alignment |
 | Live verification | No authorized deployment from this decision | Prepare staging work separately when requested |
 
@@ -118,7 +118,7 @@ The recorded local results are 24 D1 tests, 12 built-Worker checks, TypeScript a
 
 ## 9. Next step and change control
 
-Next, follow the [implementation plan](Root-of-Cambodia-Implementation-Plan.md): align the existing tests with Vitest, strengthen the identified safeguards, then extract named persistence functions. Review exact workspace/layout changes before a broad move. This documentation update itself makes no runtime changes.
+Next, follow the [implementation plan](Root-of-Cambodia-Implementation-Plan.md): Vitest alignment is complete locally; strengthen the identified safeguards, then extract named persistence functions. Review exact workspace/layout changes before a broad move. This documentation update itself makes no runtime changes.
 
 The project owner should not need to discover missing engineering steps. Explain the current phase, the next action and any material decision before substantial work. Continue routine implementation within approved choices; bring material changes to architecture, technologies, product policy, costs or deployment back for agreement.
 
