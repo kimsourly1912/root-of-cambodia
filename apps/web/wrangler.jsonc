@@ -1,0 +1,26 @@
+{
+  "name": "roc-application-local",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-28",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS",
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "roc-application-local-only",
+      "database_id": "local-roc-application",
+      "migrations_dir": "../../packages/backend/migrations",
+    },
+  ],
+  "vars": {
+    "APP_MODE": "local",
+    "AUTH_URL": "http://127.0.0.1:8787",
+  },
+  "workers_dev": false,
+  "observability": {
+    "enabled": true,
+  },
+}

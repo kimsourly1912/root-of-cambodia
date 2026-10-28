@@ -11,3 +11,4 @@
 **/reports/raw/
 *.log
 .DS_Store
+apps/jobs/dist/

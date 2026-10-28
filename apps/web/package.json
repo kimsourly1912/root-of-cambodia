@@ -1,0 +1,20 @@
+{
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "name": "@root-of-cambodia/web",
+  "scripts": {
+    "build": "next build --webpack",
+    "build:worker": "opennextjs-cloudflare build",
+    "preview:worker": "wrangler dev --ip 127.0.0.1 --port 8787 --persist-to ../../.wrangler/state",
+    "init:local": "node scripts/init-local.mjs",
+    "types:bindings": "wrangler types --include-runtime=false --env-interface CloudflareEnv",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@root-of-cambodia/backend": "0.0.0",
+    "next": "16.4.3",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  }
+}

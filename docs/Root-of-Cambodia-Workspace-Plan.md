@@ -1,10 +1,10 @@
 # Root of Cambodia — Step 4 Workspace Proposal
 
 Date: 28 October 2026
-Status: Proposed; awaiting the project owner's agreement on the layout/tooling below. Step 4 implementation has not started.
+Status: Approved by the project owner in conversation on 28 October 2026 (“Yes sure”), then implemented and verified locally. See the [step 4 review](Root-of-Cambodia-Workspace-Review.md). This approval does not authorize deployment or merging a pull request.
 Baseline: main at 22347591d7b3a20373bc7464b1974edd96c7ded8. PR #7 is merged; this commit's source tree is identical to tested step-3 commit 2c9ae0142b0982e822267f5bf854ac798d8a7368.
 
-## Decision requested
+## Approved decision
 
 Use three private npm workspaces in this repository: apps/web, apps/jobs and packages/backend. Keep npm 11.9.0, Node 24.22.1 and the current pinned dependencies. Move the active application lockfile to one root workspace lockfile, preserving existing resolved dependency versions. The historical proof stays outside the workspace with its existing independent lockfile.
 
@@ -56,11 +56,11 @@ Local Wrangler state and ignored secrets require deliberate path handling. A sou
 5. Verify the actual web bundle's sessions/routes and the actual jobs entrypoint after the move. Validate migration discovery, documentation links and package exports from their final paths.
 6. Update the implementation plan and a short review report, then open/update an implementation PR. Do not deploy or merge it.
 
-## Evidence and limits today
+## Proposal-stage evidence and limits (historical)
 
 PR #7's merged state and source equality were checked. Current imports/configuration were inspected, and npm/Next.js workspace guidance was consulted. No application source, schema, dependency lockfile or runtime configuration changed in this proposal. No tests were rerun for this documentation-only change; step 3's recorded 61-test result remains historical local evidence.
 
-Arrival stays blocked. No-show/late cancellation, infant/age bands, physical-room continuity, external contact/price/consent and admin/support policies remain open. Provider/domain, reminders, delivery diagnostics, retention, load, monitoring and restore verification remain later decisions/work. No architecture or policy is approved merely by merging this proposal document; record the owner's actual decision before implementing the migration.
+Arrival stays blocked. No-show/late cancellation, infant/age bands, physical-room continuity, external contact/price/consent and admin/support policies remain open. Provider/domain, reminders, delivery diagnostics, retention, load, monitoring and restore verification remain later decisions/work. The owner subsequently approved the exact layout/tooling in conversation; that decision is recorded above. Product-policy questions remain unresolved.
 
 ## Primary technical references
 
@@ -68,4 +68,4 @@ Arrival stays blocked. No-show/late cancellation, infant/age bands, physical-roo
 - [Next.js transpilePackages](https://nextjs.org/docs/app/api-reference/config/next-config-js/transpilePackages)
 - [Next.js output tracing and monorepo caveats](https://nextjs.org/docs/app/api-reference/config/next-config-js/output)
 
-These describe supported mechanisms, not verification that this application's proposed layout already builds.
+These describe supported mechanisms; actual implementation verification is recorded in the [workspace review](Root-of-Cambodia-Workspace-Review.md).
