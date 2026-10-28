@@ -28,6 +28,8 @@ Overall architecture is approved: one modular Next.js application, one backgroun
 
 - [Product plan](docs/Root-of-Cambodia-Product-Plan.md)
 - [Approved architecture and next decisions](docs/Root-of-Cambodia-Architecture.md)
+- [Approved booking/database design](docs/Root-of-Cambodia-Booking-Database-Design.md)
+- [Architecture implementation plan](docs/Root-of-Cambodia-Implementation-Plan.md)
 - [Technical plan](docs/Root-of-Cambodia-Technical-Plan.md)
 - [Initial build specification](docs/Root-of-Cambodia-Build-Specification.md)
 - [Foundation check and evidence limits](docs/Root-of-Cambodia-Foundation-Check.md)
@@ -63,4 +65,4 @@ The fixture captures email locally and uses synthetic data. Local secrets, runti
 
 ## Next work
 
-Complete the detailed booking/database design review in plain language, then agree the module layout and tooling migration plan before restructuring code. PR #2 is merged; its local checks remain evidence with explicit release gates. Resolve arrival/occupancy/support policies and implement complete product flows before staging and pilot verification. Use the Claude brief for a Phase 1 guest prototype; the technical plan provides implementation constraints but does not specify enough screen behavior by itself. Complete staging and configured-service checks before a pilot. Operational decisions still open are listed in the build specification.
+The application architecture and detailed booking/database direction are approved. Follow the implementation plan: align tests with Vitest, add regression-backed safeguards, then separate business/persistence code. Review exact workspace/tooling changes before a broad restructuring. PR #2 is merged; its local checks remain evidence with explicit release gates. Resolve arrival/occupancy/support policies and implement complete product flows before staging and pilot verification. Use the Claude brief for a Phase 1 guest prototype; the technical plan provides implementation constraints but does not specify enough screen behavior by itself. Complete staging and configured-service checks before a pilot. Operational decisions still open are listed in the build specification.

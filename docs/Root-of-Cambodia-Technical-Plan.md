@@ -4,7 +4,7 @@ Implementation update (28 October 2026): the [backend foundation review](Root-of
 
 Updated: 28 October 2026
 
-Status: Overall application architecture approved; see the [architecture decision](Root-of-Cambodia-Architecture.md). A backend foundation now exists in application/ and has local validation evidence. Full product flows and remote infrastructure remain incomplete; detailed booking/database design review is next.
+Status: Overall application architecture approved; see the [architecture decision](Root-of-Cambodia-Architecture.md). A backend foundation now exists in application/ and has local validation evidence. Full product flows and remote infrastructure remain incomplete. The [detailed booking/database design](Root-of-Cambodia-Booking-Database-Design.md) is approved; the [implementation plan](Root-of-Cambodia-Implementation-Plan.md) records the next steps.
 
 Companion: Root-of-Cambodia-Product-Plan.md
 
@@ -15,7 +15,7 @@ Companion: Root-of-Cambodia-Product-Plan.md
 | Application | Next.js full stack, React, TypeScript, App Router | User selected |
 | UI | shadcn/ui with Tailwind CSS | User selected |
 | Verification | Email verification; no phone verification | User selected; product plan updated |
-| Database | Cloudflare D1, using SQLite and Drizzle's D1 driver | Approved initial database; detailed persistence review and staging remain pending |
+| Database | Cloudflare D1, using SQLite and Drizzle's D1 driver | Approved initial database and persistence direction; hardening and staging remain pending |
 | Hosting | Cloudflare Workers; upstream Next.js via OpenNext as the proposed deployment path | Next.js 16.4.3 + OpenNext 1.20.13 tested locally; remote deployment remains pending |
 | Authentication | Better Auth, email/password with verification link | Selected; local foundation tested, live email remains unconfigured |
 | Email delivery | Resend candidate behind a provider interface | Provider/domain not yet configured |
@@ -92,7 +92,7 @@ Use an atomic SQL transition entrypoint with database-enforced invariants. A nar
 5. A missing night, capacity conflict, inconsistent allocation, or other invariant violation raises a database error.
 6. D1 executes the complete operation in a transactional statement/batch. A failed statement must roll back the entire batch.
 
-The application foundation now implements and locally tests a version of this approach; see the backend review. The detailed trigger/transaction design still needs architecture review and remote verification before extension or production adoption. SQLite documents triggers and RAISE(ABORT); a local test does not establish production behavior.
+The application foundation now implements and locally tests a version of this approach; see the backend review. The detailed trigger/transaction direction is now approved; source-review hardening and remote verification remain required before production adoption. SQLite documents triggers and RAISE(ABORT); a local test does not establish production behavior.
 
 All confirmation side effects must be linked to an actual permitted transition. A zero-row transition must not be followed by inventory/outbox writes that can run independently. Never use an application read followed by unrelated auto-committed writes as the reservation guarantee.
 

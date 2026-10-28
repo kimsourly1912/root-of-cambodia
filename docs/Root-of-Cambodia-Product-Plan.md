@@ -4,7 +4,7 @@ Implementation update (28 October 2026): the [backend foundation review](Root-of
 
 Updated: 28 October 2026
 
-Status: Product direction and overall application architecture agreed. See the [architecture decision](Root-of-Cambodia-Architecture.md). A backend foundation is locally tested; detailed booking/database design, unresolved product policies and staging verification remain open.
+Status: Product direction and overall application architecture agreed. See the [architecture decision](Root-of-Cambodia-Architecture.md). A backend foundation is locally tested and the detailed booking/database direction is approved. Implementation hardening, unresolved product policies and staging verification remain open.
 
 Purpose: Preserve the agreed scope and product policies. Implemented and approved work is recorded in the architecture decision and backend review; this product document alone does not authorize service purchases, deployment or public launch.
 
