@@ -42,7 +42,11 @@ The application package-manager decision remains open: pnpm 11.25.0 import hit a
 
 ## Important boundaries
 
-The schema only covers a narrow reservation prototype. It is not the final migration for room quotes, occupancy, full stay-date coverage, all statuses, external bookings, support, or retention.
+The schema only covers a narrow reservation prototype. The follow-up schema review adds immutable sealed quote rows, canonical dates and complete per-room-type stay coverage, integer quantities/prices, total validation, transition guards, and attributable owner cancellation reasons. Its 18 D1 tests include these safeguards. See [the review](../../docs/Root-of-Cambodia-Schema-Review.md) for results and remaining gaps.
+
+Fixture construction writes a pending booking and nightly rows, then seals the snapshot in one D1 batch. Acceptance requires a sealed snapshot. `expected_nights` means the number of quoted room-type/night rows in this fixture; it is not the number of nights in a multi-room-type stay. Production should use explicit booking-line identities and derive stay duration from local dates.
+
+This is a fresh-database proof schema, not an upgrade migration. Existing local proof databases must be recreated; do not apply it to an existing application. It is not the final model for full policy/occupancy snapshots, all statuses, external bookings, support, or retention. The cancellation command takes an explicit guest/owner context, checks ownership, and requires an owner reason; there is no cancellation HTTP endpoint in this fixture.
 
 The production email provider, real delivery, remote deployment, shadcn component screens, R2/Images processing, Queues/Cron delivery, maps, performance, and backups have not been proven by this fixture.
 

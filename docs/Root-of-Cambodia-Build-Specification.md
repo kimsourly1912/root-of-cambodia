@@ -42,6 +42,8 @@ The fixture uses native D1 for the critical atomic transition and verifies Drizz
 
 This model must still be expressed as reviewed D1 migrations with exact foreign keys, deletion rules, required fields, payload limits, and schema tests. The fixture SQL intentionally implements only a small subset.
 
+The [schema review](Root-of-Cambodia-Schema-Review.md) records the follow-up proof safeguards and unresolved production work. The [Claude mockup brief](Claude-Mockup-Brief.md) translates the product rules into screen flows and states.
+
 Dates are local ISO calendar dates for occupied nights. Events and deadlines use explicit UTC instants. All property-time interpretation uses Asia/Phnom_Penh. Monetary totals use integer USD cents.
 
 ## 3. Booking rules and state changes
@@ -67,6 +69,10 @@ Pausing a property prevents new requests while retaining existing booking action
 - No read/check/write sequence spread across independently committed calls.
 - The confirmed transition, all-night allocation, history, and outbox commit together.
 - Missing inventory, invalid property/room relation, incomplete quote coverage, or insufficient capacity aborts the operation.
+- Build the submitted quote header, stable room lines, nightly rows, charges, occupancy, and policy snapshot in one atomic creation operation. Seal it before exposing the request; later changes require a new request.
+- Require every room line to cover exactly the local dates from check-in through the night before checkout, with a consistent requested quantity. Do not validate coverage by counting rows alone.
+- Reconcile integer nightly amounts and mandatory charges to the submitted total. Enforce bounded integer quantities and money at the service and database boundaries.
+- Reject unsupported state transitions and direct inserts that bypass allocation. Retain the actor, role, time, and required owner cancellation reason as immutable history.
 - A zero-row transition cannot be followed by unconditional side effects.
 - Cancellation releases only existing unreleased allocations.
 - SQL constraints protect stock even during external booking entry, maintenance blocking, and capacity reduction.

@@ -12,7 +12,7 @@ Product planning and an initial technical specification are available. A separat
 | --- | --- |
 | TypeScript and Next.js production build | Passed |
 | OpenNext Cloudflare Worker bundle | Passed |
-| D1/Drizzle reservation tests | 7 passed |
+| D1/Drizzle reservation tests | 18 passed after schema review |
 | Better Auth native D1 flow | Passed with local email capture |
 | Built Worker request checks | 9 passed under local workerd |
 
@@ -24,6 +24,8 @@ The proof covers last-room contention, rollback, repeated actions, verified sess
 - [Technical plan](docs/Root-of-Cambodia-Technical-Plan.md)
 - [Initial build specification](docs/Root-of-Cambodia-Build-Specification.md)
 - [Foundation check and evidence limits](docs/Root-of-Cambodia-Foundation-Check.md)
+- [Schema and booking-rule review](docs/Root-of-Cambodia-Schema-Review.md)
+- [Claude screen mockup brief and copy-ready prompts](docs/Claude-Mockup-Brief.md)
 
 ## Selected direction
 
@@ -54,4 +56,4 @@ The fixture captures email locally and uses synthetic data. Local secrets, runti
 
 ## Next work
 
-Finalize the full D1 migrations and booking contracts, design guest/owner screens, and implement in product-plan order. Complete staging and configured-service checks before a pilot. Operational decisions still open are listed in the build specification.
+Finalize the full D1 migrations and booking contracts, design guest/owner screens, and implement in product-plan order. Use the Claude brief for a Phase 1 guest prototype; the technical plan provides implementation constraints but does not specify enough screen behavior by itself. Complete staging and configured-service checks before a pilot. Operational decisions still open are listed in the build specification.
