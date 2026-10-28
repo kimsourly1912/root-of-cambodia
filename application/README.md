@@ -4,7 +4,7 @@ This is the application foundation; the historical compatibility proof remains i
 
 ## Local validation
 
-Use Node 24.22.1. Dependencies are pinned. packageManager records npm 11.9.0; this review ran npm 11.19.1.
+Use Node 24.22.1. Dependencies are pinned. packageManager records npm 11.9.0; the safeguards verification also ran npm 11.9.0 (the earlier runner review used npm 11.19.1).
 
 ~~~sh
 npm ci
@@ -17,14 +17,16 @@ npm run test:worker
 npm test
 ~~~
 
-init:local creates a random ignored secret, applies versioned migrations through Wrangler locally, and creates a local-only email capture table. It does not seed business properties. Re-running it preserves existing data and skips applied migrations. Tests create disposable synthetic catalogs/accounts. The HTTP harness applies the same migrations to its isolated database. Vitest now runs both projects: 24 backend scenarios in the Workers runtime and one built-Worker journey preserving all 12 HTTP checks. npm test runs both and requires the current bundle from build:worker; test:backend can run the shared-service scenarios separately. See the [Vitest alignment report](../docs/Root-of-Cambodia-Vitest-Alignment.md) for versions, verification and the existing dependency audit finding.
+init:local creates a random ignored secret, applies versioned migrations through Wrangler locally, and creates a local-only email capture table. It does not seed business properties. Re-running it preserves existing data and skips applied migrations. Tests create disposable synthetic catalogs/accounts. The HTTP harness applies the same migrations to its isolated database. Vitest now runs both projects: 52 backend scenarios in the Workers runtime and one built-Worker journey preserving all 12 HTTP checks. npm test runs both and requires the current bundle from build:worker; test:backend can run the shared-service scenarios separately. See the [Vitest alignment report](../docs/Root-of-Cambodia-Vitest-Alignment.md) for versions, verification and the existing dependency audit finding.
 
 The checked-in configuration is local-only. runtime.ts fails closed outside local capture mode. There is no deployment script, live sending provider or public infrastructure in this change. Do not deploy this configuration as production.
 
 ## Persistence and operation contracts
 
+Migration 0004 adds database guards for command/status consistency, the supported pre-check-in cancellation cutoff, non-null business identities, coherent Cambodia schedules and stable operation receipts. It checks existing records first and rejects incompatible data without rewriting history. Use the migration runner atomically; a failed preflight needs a reviewed repair plan. See the [safeguards review](../docs/Root-of-Cambodia-Database-Safeguards.md) for fresh/populated upgrade evidence, exact command mapping and limits.
+
 - SQL migrations are authoritative, including composite FKs, CHECK constraints, delete restrictions and triggers. schema.ts provides Drizzle read projections; do not replace migrations with drizzle-kit push.
-- 0001 creates identity/catalog/inventory/rates; 0002 creates booking operations/history/outbox; 0003 adds delivery recovery diagnostics/indexes. These do not upgrade the disposable proof database.
+- 0001 creates identity/catalog/inventory/rates; 0002 creates booking operations/history/outbox; 0003 adds delivery recovery diagnostics/indexes; 0004 adds booking/identity/receipt safeguards. These do not upgrade the disposable proof database.
 - Quotes use server-side settings, nightly rates and itemized per-stay mandatory charges. Submission recalculates the quote/hash and rechecks revisions, availability and complete coverage inside one D1 batch.
 - Internal building state is sealed to pending/confirmed before commit and is excluded from public reads.
 - Stable lines retain quantities, adult/child counts, capacity limits, room names and occupied-night prices. Headers retain property/guest names, guest email, dates, UTC check-in/out, timezone, arrival/departure times, USD total, policy text/version, terms version and cancellation wording.

@@ -9,6 +9,8 @@ Change scope: Design and source review only. No runtime, schema, dependency or i
 
 The [overall architecture](Root-of-Cambodia-Architecture.md) is approved. This document records the separately approved decision: how booking operations safely update the database and where that code belongs. The [implementation plan](Root-of-Cambodia-Implementation-Plan.md) defines the next delivery steps and distinguishes pending tooling/layout recommendations.
 
+Implementation update (28 October 2026): the [database safeguards review](Root-of-Cambodia-Database-Safeguards.md) records completion of implementation-plan step 2 and its local evidence. The source-review findings below describe the pre-hardening baseline.
+
 ## 1. The recommendation in plain language
 
 Keep booking rules in understandable TypeScript services. Give every booking change one named database operation that saves all required records together. Keep a limited, documented set of database constraints and triggers to protect stock, snapshots, valid transitions and mandatory history/notification writes.

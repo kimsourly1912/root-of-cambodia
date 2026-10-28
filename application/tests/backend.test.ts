@@ -583,7 +583,7 @@ test("completion from an existing checked-in fixture retains occupied-night allo
     await db.batch([
       db
         .prepare(
-          "INSERT INTO operation(id,principal,actor_id,key,fingerprint,kind,actor_role) VALUES (?,'user:owner','owner',?,'import-fixture','checked_in_import','owner')",
+          "INSERT INTO operation(id,principal,actor_id,key,fingerprint,kind,actor_role) VALUES (?,'user:owner','owner',?,'import-fixture','check_in','owner')",
         )
         .bind(op, op),
       db
