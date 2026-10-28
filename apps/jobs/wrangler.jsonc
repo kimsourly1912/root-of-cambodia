@@ -1,0 +1,36 @@
+{
+  "name": "roc-jobs-local",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-28",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "roc-application-local-only",
+      "database_id": "local-roc-application",
+      "migrations_dir": "../../packages/backend/migrations",
+    },
+  ],
+  "vars": {
+    "APP_MODE": "local",
+  },
+  "queues": {
+    "producers": [
+      {
+        "binding": "NOTIFICATIONS",
+        "queue": "roc-notifications-local-only",
+      },
+    ],
+    "consumers": [
+      {
+        "queue": "roc-notifications-local-only",
+        "max_batch_size": 10,
+        "max_batch_timeout": 1,
+      },
+    ],
+  },
+  "workers_dev": false,
+  "observability": {
+    "enabled": true,
+  },
+}

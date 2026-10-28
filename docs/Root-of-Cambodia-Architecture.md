@@ -1,5 +1,7 @@
 # Root of Cambodia — Approved Application Architecture
 
+Implementation update (28 October 2026): the exact [workspace plan](Root-of-Cambodia-Workspace-Plan.md) was subsequently approved and implemented locally. apps/web and apps/jobs reuse packages/backend through private npm workspaces. The [step 4 review](Root-of-Cambodia-Workspace-Review.md) is the current local evidence; earlier counts/paths below are historical.
+
 Decision date: 28 October 2026
 Status: Overall architecture and the separately reviewed [booking/database design](Root-of-Cambodia-Booking-Database-Design.md) are approved by the project owner. Implementation follows the [delivery plan](Root-of-Cambodia-Implementation-Plan.md); pending tooling/layout and product decisions remain explicit.
 Scope: Direction for application organization and delivery. This decision does not authorize deployment, purchases, or changes to unresolved product policies.
@@ -108,7 +110,7 @@ The recorded local results are 24 D1 tests, 12 built-Worker checks, TypeScript a
 ## 8. Decisions still open
 
 - Detailed booking/database direction is settled; concrete migrations, runtime implementation and verification remain delivery work rather than open architectural choices.
-- Exact module folders/workspace layout, package manager and compatible test-tool versions.
+- Workspace/tooling is settled by the approved step 4 plan: native npm workspaces, npm 11.9.0, Node 24.22.1 and retained pinned dependencies. Future reorganizations/upgrades still need their own review.
 - Arrival, late arrival, no-show and cancellation after scheduled check-in.
 - Child/infant definitions, detailed party distribution and physical-unit continuity.
 - External reservation contact fields, negotiated prices and consent records.

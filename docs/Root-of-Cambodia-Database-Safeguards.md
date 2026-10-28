@@ -24,7 +24,7 @@ These are defense against future trusted-writer mistakes, not evidence that anon
 
 ## Migration design and compatibility
 
-[0004_booking_safeguards.sql](../application/migrations/0004_booking_safeguards.sql) adds bounded guards. Migrations 0001–0003, tables, indexes, existing constraints and deletion rules are unchanged. There is no table rebuild, booking rewrite or destructive cleanup. The existing primary-key column metadata still reports its original nullability; the new triggers enforce non-null business identities. Generated Better Auth tables are unchanged.
+[0004_booking_safeguards.sql](../packages/backend/migrations/0004_booking_safeguards.sql) adds bounded guards. Migrations 0001–0003, tables, indexes, existing constraints and deletion rules are unchanged. There is no table rebuild, booking rewrite or destructive cleanup. The existing primary-key column metadata still reports its original nullability; the new triggers enforce non-null business identities. Generated Better Auth tables are unchanged.
 
 Before installing guards, the migration checks existing business identities and booking schedules. An incompatible row fails the named migration_0004_existing_data_valid constraint. Apply the whole file through the atomic D1 migration runner. Do not execute individual statements by hand. A failed upgrade must leave the prior schema/data/migration tracking intact.
 

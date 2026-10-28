@@ -60,7 +60,7 @@ The D1 suite covers multi-room snapshots/totals, missing rates/calendar, foreign
 
 HTTP checks exercise the actual built Worker: Khmer SSR, generated auth schema, captured verification mail, cookie sessions, anonymous/origin rejection, authoritative quotes/submission/replay, private-data isolation, last-room contention, cancellation retries, explicit unresolved-policy errors, JSON bounds, password reset, persistent throttling and verification revocation despite an existing cookie. No live email or production D1 is used.
 
-Reproduction commands: [application/README.md](../application/README.md). Historical proof files remain unchanged.
+Reproduction commands: [application/README.md](../apps/web/README.md). Historical proof files remain unchanged.
 
 ## Remaining decisions and release gates
 

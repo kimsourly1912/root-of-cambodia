@@ -1,0 +1,40 @@
+{
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "name": "root-of-cambodia",
+  "packageManager": "npm@11.9.0",
+  "engines": {
+    "node": ">=24.22.1 <25"
+  },
+  "workspaces": [
+    "apps/web",
+    "apps/jobs",
+    "packages/backend"
+  ],
+  "scripts": {
+    "init:local": "npm run init:local --workspace @root-of-cambodia/web",
+    "build": "npm run build --workspace @root-of-cambodia/web",
+    "build:worker": "npm run build:worker --workspace @root-of-cambodia/web",
+    "build:jobs": "npm run build --workspace @root-of-cambodia/jobs",
+    "preview:worker": "npm run preview:worker --workspace @root-of-cambodia/web",
+    "preview:jobs": "npm run preview --workspace @root-of-cambodia/jobs",
+    "types:bindings": "npm run types:runtime --workspace @root-of-cambodia/backend && npm run types:bindings --workspace @root-of-cambodia/web && npm run types:bindings --workspace @root-of-cambodia/jobs",
+    "typecheck": "npm run typecheck --workspaces && tsc --noEmit -p tests/tsconfig.json",
+    "test:backend": "vitest run --project backend",
+    "test:jobs": "vitest run --project backend tests/jobs.test.ts",
+    "test:worker": "vitest run --project worker-http",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "1.4.9",
+    "@opennextjs/cloudflare": "1.20.13",
+    "@types/node": "26.6.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5",
+    "wrangler": "4.154.0"
+  }
+}

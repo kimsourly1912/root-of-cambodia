@@ -13,14 +13,14 @@ This implements the approved [architecture](Root-of-Cambodia-Architecture.md) an
 
 | Location | Responsibility |
 | --- | --- |
-| [bookings.ts](../application/src/bookings.ts) | Submission intent, early authorization, fresh quote/hash comparison, reason validation, arrival block and bounded expiry coordination |
-| [quotes.ts](../application/src/quotes.ts) | Canonical selection, dates, occupancy, complete nightly coverage, charges, totals and the unchanged quote hash |
-| [inventory.ts](../application/src/inventory.ts) | Inventory input validation and early verified-owner checks |
-| [access.ts](../application/src/access.ts) | Existing verified, guest/owner-scoped Drizzle booking detail read; extracted resource checks and trusted due-request discovery |
-| [quote-queries.ts](../application/src/quote-queries.ts) | Internal catalog reads, published/owned-property scope and active property-room scope; called after service verification |
-| [booking-persistence.ts](../application/src/booking-persistence.ts) | commitRequest, commitBookingTransition and expireRequest; complete snapshot/transition batches and receipts |
-| [inventory-persistence.ts](../application/src/inventory-persistence.ts) | editInventoryNight; conditional versioned update, attributable event and receipt in one batch |
-| [operations.ts](../application/src/operations.ts) | Retained verified-user query and operation primitive: fingerprint, key scope, transactional execution, assertions, stored receipt and uncertain-outcome recovery |
+| [bookings.ts](../packages/backend/src/bookings.ts) | Submission intent, early authorization, fresh quote/hash comparison, reason validation, arrival block and bounded expiry coordination |
+| [quotes.ts](../packages/backend/src/quotes.ts) | Canonical selection, dates, occupancy, complete nightly coverage, charges, totals and the unchanged quote hash |
+| [inventory.ts](../packages/backend/src/inventory.ts) | Inventory input validation and early verified-owner checks |
+| [access.ts](../packages/backend/src/access.ts) | Existing verified, guest/owner-scoped Drizzle booking detail read; extracted resource checks and trusted due-request discovery |
+| [quote-queries.ts](../packages/backend/src/quote-queries.ts) | Internal catalog reads, published/owned-property scope and active property-room scope; called after service verification |
+| [booking-persistence.ts](../packages/backend/src/booking-persistence.ts) | commitRequest, commitBookingTransition and expireRequest; complete snapshot/transition batches and receipts |
+| [inventory-persistence.ts](../packages/backend/src/inventory-persistence.ts) | editInventoryNight; conditional versioned update, attributable event and receipt in one batch |
+| [operations.ts](../packages/backend/src/operations.ts) | Retained verified-user query and operation primitive: fingerprint, key scope, transactional execution, assertions, stored receipt and uncertain-outcome recovery |
 
 HTTP routes and jobs.ts remain thin adapters calling the same services. outbox.ts retains its existing named publication/delivery operations and fenced delivery batches. Delivery-contract changes belong to step 5. application/ stays in place; no workspace migration, generic table repositories or live jobs wiring is introduced.
 

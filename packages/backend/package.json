@@ -1,0 +1,29 @@
+{
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "name": "@root-of-cambodia/backend",
+  "exports": {
+    "./jobs": "./src/jobs.ts",
+    "./auth": "./src/auth.ts",
+    "./access": "./src/access.ts",
+    "./errors": "./src/errors.ts",
+    "./quote-queries": "./src/quote-queries.ts",
+    "./bookings": "./src/bookings.ts",
+    "./inventory-persistence": "./src/inventory-persistence.ts",
+    "./inventory": "./src/inventory.ts",
+    "./schema": "./src/schema.ts",
+    "./outbox": "./src/outbox.ts",
+    "./operations": "./src/operations.ts",
+    "./booking-persistence": "./src/booking-persistence.ts",
+    "./quotes": "./src/quotes.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "types:runtime": "wrangler types --include-env=false worker-configuration.d.ts --config ../../apps/jobs/wrangler.jsonc"
+  },
+  "dependencies": {
+    "better-auth": "1.7.14",
+    "drizzle-orm": "0.45.4"
+  }
+}
