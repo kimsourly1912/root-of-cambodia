@@ -1,7 +1,7 @@
 # Root of Cambodia — Architecture Implementation Plan
 
 Date: 28 October 2026
-Status: Step 1 (Vitest alignment) is completed locally; see the [verification report](Root-of-Cambodia-Vitest-Alignment.md). Remaining steps are delivery work under the approved application and booking/database designs. The folder layout and workspace tooling below are recommendations for a later implementation change, not changes made by this document.
+Status: Steps 1 (Vitest alignment) and 2 (database safeguards) are completed locally; see the [alignment report](Root-of-Cambodia-Vitest-Alignment.md) and [safeguards review](Root-of-Cambodia-Database-Safeguards.md). Remaining steps are delivery work under the approved application and booking/database designs. The folder layout and workspace tooling below are recommendations for a later implementation change, not changes made by this document.
 
 ## 1. Where we are
 
@@ -19,7 +19,7 @@ The existing application foundation is useful but does not yet match every appro
 | Step | Plain-language goal | Planned work | Evidence needed before moving on |
 | --- | --- | --- | --- |
 | 1. Align the test tools — completed locally | Use the agreed test runner without losing our current checks | Validate compatible Vitest/Cloudflare tooling in the current application directory; preserve the baseline scenarios and actual built-Worker harness | All existing D1 scenarios and HTTP checks remain covered and pass; types and bundle checks appropriate to the change |
-| 2. Strengthen database safeguards | Close the gaps found in source review | Add failing regressions, then subsequent migrations for supported cancellation cutoff, operation-kind/transition consistency, null identities and valid/coherent instants; improve migration discovery | Targeted regressions pass; fresh/populated upgrade checks retain snapshots, allocations, receipts, history and notifications |
+| 2. Strengthen database safeguards — completed locally | Close the gaps found in source review | Add failing regressions, then subsequent migrations for supported cancellation cutoff, operation-kind/transition consistency, null identities and valid/coherent instants; improve migration discovery | Targeted regressions pass; fresh/populated upgrade checks retain snapshots, allocations, receipts, history and notifications |
 | 3. Separate business and database code | Make the code easier to understand safely | Extract named persistence functions and authorized query functions; keep routes and jobs thin; preserve one booking/inventory transaction | Existing behavior and concurrency/rollback checks remain unchanged and pass |
 | 4. Establish shared code and jobs boundaries | Let the website and jobs reuse the same rules | Implement a reviewed workspace/layout change; shared backend cannot import Next.js runtime; jobs cannot duplicate lifecycle SQL | Next.js/OpenNext build, built-Worker checks and jobs-entrypoint integration pass with the new import/binding paths |
 | 5. Add clear diagnostics and delivery contracts | Make failures understandable and recoverable | Stable safe error codes, sanitized correlation records, stale-lease regressions; provider acceptance distinguished from inbox delivery | Retry/uncertain-outcome cases remain correct; no private data/tokens in logs; provider-specific behavior remains explicitly unverified until configured |
@@ -68,6 +68,8 @@ Open product decisions remain open: arrival/no-show/late cancellation, infants/a
 
 ## 6. Current evidence
 
-Step 1 has fresh local verification: 24 D1 scenarios and the 12-check built-Worker journey pass under Vitest (25 reported tests), as do TypeScript and Next.js/OpenNext builds. The [alignment report](Root-of-Cambodia-Vitest-Alignment.md) records the versions, evidence and existing audit finding. Remaining hardening/refactoring/product/staging steps are not completed by those results.
+Step 2 adds migration 0004 and regression-backed guards. Fresh installation, populated upgrades, rollback on incompatible legacy records and existing retry/history continuity pass locally. The combined suite passes 53 Vitest tests: 52 D1 scenarios plus the 12-check built-Worker journey. TypeScript and Next.js/OpenNext builds pass. See the [safeguards review](Root-of-Cambodia-Database-Safeguards.md). Step 3, separating business and persistence code, is next. No remote infrastructure was deployed or verified.
+
+Step 1 recorded local verification: 24 D1 scenarios and the 12-check built-Worker journey pass under Vitest (25 reported tests), as do TypeScript and Next.js/OpenNext builds. The [alignment report](Root-of-Cambodia-Vitest-Alignment.md) records the versions, evidence and existing audit finding. The later refactoring/product/staging steps are not completed by those results.
 
 Read the [approved application architecture](Root-of-Cambodia-Architecture.md), [approved booking/database design](Root-of-Cambodia-Booking-Database-Design.md) and [backend review](Root-of-Cambodia-Backend-Foundation-Review.md) for authority, rationale and evidence limits.
