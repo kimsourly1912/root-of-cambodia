@@ -1,5 +1,7 @@
 # Root of Cambodia — Approved Application Architecture
 
+Tooling amendment (28 October 2026): the owner subsequently selected pnpm workspaces; see the [pnpm migration review](Root-of-Cambodia-Pnpm-Workspace-Review.md). Earlier npm references are historical.
+
 Implementation update (28 October 2026): the exact [workspace plan](Root-of-Cambodia-Workspace-Plan.md) was subsequently approved and implemented locally. apps/web and apps/jobs reuse packages/backend through private npm workspaces. The [step 4 review](Root-of-Cambodia-Workspace-Review.md) is the current local evidence; earlier counts/paths below are historical.
 
 Decision date: 28 October 2026

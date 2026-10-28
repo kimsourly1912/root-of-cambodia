@@ -1,9 +1,7 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["node", "@cloudflare/vitest-plugin/types"],
-    "allowJs": true,
-    "checkJs": true
+    "types": ["node", "@cloudflare/vitest-plugin/types"]
   },
   "include": [
     "**/*.ts",

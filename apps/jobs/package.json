@@ -10,6 +10,6 @@
     "preview": "wrangler dev --persist-to ../../.wrangler/state"
   },
   "dependencies": {
-    "@root-of-cambodia/backend": "0.0.0"
+    "@root-of-cambodia/backend": "workspace:*"
   }
 }

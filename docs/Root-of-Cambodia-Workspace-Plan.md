@@ -6,6 +6,8 @@ Baseline: main at 22347591d7b3a20373bc7464b1974edd96c7ded8. PR #7 is merged; thi
 
 ## Approved decision
 
+Subsequent amendment (28 October 2026): the owner explicitly requested pnpm. The folder layout remains approved; the earlier npm choice below is superseded by the [pnpm workspace review](Root-of-Cambodia-Pnpm-Workspace-Review.md).
+
 Use three private npm workspaces in this repository: apps/web, apps/jobs and packages/backend. Keep npm 11.9.0, Node 24.22.1 and the current pinned dependencies. Move the active application lockfile to one root workspace lockfile, preserving existing resolved dependency versions. The historical proof stays outside the workspace with its existing independent lockfile.
 
 This gives the website and background worker their own startup/configuration code while both import the same booking services and database operations. It implements the approved [architecture](Root-of-Cambodia-Architecture.md); it does not create another booking API or database.

@@ -4,26 +4,26 @@ The Next.js application now lives in apps/web and imports the private packages/b
 
 ## Local validation
 
-Use Node 24.22.1. Dependencies are pinned. packageManager records npm 11.9.0; the safeguards verification also ran npm 11.9.0 (the earlier runner review used npm 11.19.1).
+Use Node 24.22.1. Dependencies are pinned; packageManager records pnpm 12.15.0. Earlier reports retain their historical npm results. See the [pnpm review](../../docs/Root-of-Cambodia-Pnpm-Workspace-Review.md) for the new verification.
 
 ~~~sh
 cd ../.. # repository root
-npm ci
-npm run init:local
-npm run types:bindings
-npm run typecheck
-npm run test:backend
-npm run build:worker
-npm run build:jobs
-npm run test:worker
-npm test
+pnpm install --frozen-lockfile
+pnpm run init:local
+pnpm run types:bindings
+pnpm run typecheck
+pnpm run test:backend
+pnpm run build:worker
+pnpm run build:jobs
+pnpm run test:worker
+pnpm test
 ~~~
 
-Run these commands from the repository root using Node 24.22.1 and npm 11.9.0. There is one active root lockfile. The proof remains outside the workspace with its own lockfile.
+Run these commands from the repository root using Node 24.22.1 and pnpm 12.15.0. There is one active root pnpm lockfile. The historical proof remains outside the workspace with its original npm lockfile.
 
 init:local applies the single authoritative migration set from packages/backend/migrations through the web configuration. It creates local-only auth-mail and notification capture tables without seeding business properties. Repeating initialization preserves data and skips applied migrations. Web and jobs previews use the same root .wrangler/state path and unchanged local database ID. Stop local previews before the first handoff. For an existing checkout, the initializer copies legacy application/.dev.vars and application/.wrangler/state once, retains the originals, and rejects conflicting destinations. The marker prevents a later run from overwriting newer workspace data. Reconcile conflicts explicitly; do not delete a populated database to force initialization.
 
-Tests use isolated synthetic databases. The suite now reports 77 tests: 72 native D1/runtime scenarios, three workspace/handoff checks and two built-Worker journeys. The web journey retains its 12 HTTP checks; the jobs journey exercises the prebuilt jobs bundle, scheduled expiry and actual local queue delivery. Both builds are required before npm test. See the [workspace review](../../docs/Root-of-Cambodia-Workspace-Review.md) for verification and limits.
+Tests use isolated synthetic databases. The suite now reports 77 tests: 72 native D1/runtime scenarios, three workspace/handoff checks and two built-Worker journeys. The web journey retains its 12 HTTP checks; the jobs journey exercises the prebuilt jobs bundle, scheduled expiry and actual local queue delivery. Both builds are required before pnpm test. See the [workspace review](../../docs/Root-of-Cambodia-Workspace-Review.md) for verification and limits.
 
 The checked-in configurations and capture adapters are local-only; they send no real email and fail closed outside local mode. build:jobs uses Wrangler's --dry-run to write a local bundle. No deployment command or live sending provider is configured. Do not deploy these local configurations as production.
 

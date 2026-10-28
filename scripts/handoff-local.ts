@@ -1,7 +1,6 @@
 import { access, cp, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-/** @param {string} file */
-const exists = async (file) =>
+const exists = async (file: string) =>
   access(file).then(
     () => true,
     () => false,
@@ -9,8 +8,7 @@ const exists = async (file) =>
 
 // Preserve legacy ignored state before the first workspace initialization.
 // Refuse to merge two databases or silently choose between different secrets.
-/** @param {string} root */
-export async function handoffLocal(root) {
+export async function handoffLocal(root: string) {
   const oldSecret = path.join(root, "application/.dev.vars");
   const newSecret = path.join(root, "apps/web/.dev.vars");
   if (await exists(oldSecret)) {
