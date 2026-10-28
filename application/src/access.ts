@@ -43,3 +43,57 @@ export async function readBooking(db: D1Database, actor: Actor, id: string) {
     events: events.results,
   };
 }
+
+// Internal resource checks: services verify the actor first, including on receipt
+// replay. These early checks do not replace write-time authorization in SQL.
+export async function requireOwnedProperty(
+  db: D1Database,
+  actor: Actor,
+  id: string,
+) {
+  const property = await db
+    .prepare("SELECT id FROM property WHERE id=? AND owner_id=?")
+    .bind(id, actor.id)
+    .first();
+  if (!property) throw new DomainError("not_found", 404);
+}
+export async function requireBookingActor(
+  db: D1Database,
+  actor: Actor,
+  id: string,
+  asGuest: boolean,
+) {
+  const allowed = await db
+    .prepare(
+      "SELECT b.id FROM booking b WHERE b.id=? AND " +
+        (asGuest
+          ? "b.guest_id=?"
+          : "EXISTS(SELECT 1 FROM property p WHERE p.id=b.property_id AND p.owner_id=?)"),
+    )
+    .bind(id, actor.id)
+    .first();
+  if (!allowed) throw new DomainError("not_found", 404);
+}
+export async function requireOwnedRoom(
+  db: D1Database,
+  actor: Actor,
+  id: string,
+) {
+  const room = await db
+    .prepare(
+      "SELECT r.id FROM room_type r JOIN property p ON p.id=r.property_id WHERE r.id=? AND p.owner_id=?",
+    )
+    .bind(id, actor.id)
+    .first();
+  if (!room) throw new DomainError("not_found", 404);
+}
+// Trusted system discovery only; expireRequest rechecks the deadline in its batch.
+export async function findDueRequests(db: D1Database, limit: number) {
+  const due = await db
+    .prepare(
+      "SELECT id FROM booking WHERE status='pending' AND expires_at<=unixepoch() ORDER BY expires_at,id LIMIT ?",
+    )
+    .bind(limit)
+    .all<{ id: string }>();
+  return due.results;
+}
