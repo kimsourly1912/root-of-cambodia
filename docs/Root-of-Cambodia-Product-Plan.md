@@ -1,5 +1,7 @@
 # Root of Cambodia — First-Version Product Plan
 
+Implementation update (28 October 2026): the [backend foundation review](Root-of-Cambodia-Backend-Foundation-Review.md) records the new application migrations/services, 24 D1 tests, 12 built-Worker checks, and unresolved release gates. Earlier proof results below are historical; no production verification or deployment is implied.
+
 Updated: 28 October 2026
 
 Status: Product direction agreed; revised to email verification and Next.js/shadcn with a D1 infrastructure proposal. Detailed design and runtime validation remain open.

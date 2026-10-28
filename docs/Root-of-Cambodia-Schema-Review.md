@@ -1,5 +1,7 @@
 # Root of Cambodia — Schema and Booking-Rule Review
 
+Implementation update (28 October 2026): the [backend foundation review](Root-of-Cambodia-Backend-Foundation-Review.md) records the new application migrations/services, 24 D1 tests, 12 built-Worker checks, and unresolved release gates. Earlier proof results below are historical; no production verification or deployment is implied.
+
 Date: 28 October 2026
 
 Scope: Review the product/build contracts and the isolated local D1 reservation proof. This does not finalize the application migrations or certify a production booking engine.

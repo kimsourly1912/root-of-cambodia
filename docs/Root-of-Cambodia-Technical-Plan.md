@@ -1,5 +1,7 @@
 # Root of Cambodia — Revised Technical Stack and Infrastructure Plan
 
+Implementation update (28 October 2026): the [backend foundation review](Root-of-Cambodia-Backend-Foundation-Review.md) records the new application migrations/services, 24 D1 tests, 12 built-Worker checks, and unresolved release gates. Earlier proof results below are historical; no production verification or deployment is implied.
+
 Updated: 28 October 2026
 
 Status: Next.js/OpenNext, Better Auth, Drizzle, and core D1 reservation behavior passed the local foundation proof. The proof is a separate disposable fixture; the application and remote infrastructure remain unimplemented.

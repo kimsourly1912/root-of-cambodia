@@ -1,5 +1,7 @@
 # Root of Cambodia — Initial Build Specification
 
+Implementation update (28 October 2026): the [backend foundation review](Root-of-Cambodia-Backend-Foundation-Review.md) records the new application migrations/services, 24 D1 tests, 12 built-Worker checks, and unresolved release gates. Earlier proof results below are historical; no production verification or deployment is implied.
+
 Date: 28 October 2026
 
 Status: First technical design draft based on the agreed product scope. The local compatibility proof validates a narrow core; this document is not a complete production schema or an implemented application.
