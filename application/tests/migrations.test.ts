@@ -1,21 +1,28 @@
-import { test } from "node:test";
+import { env } from "cloudflare:workers";
+import { test } from "vitest";
 import assert from "node:assert/strict";
-import { getPlatformProxy } from "wrangler";
 import { getMigrations } from "better-auth/db/migration";
-import { readFile } from "node:fs/promises";
-import { migrate, catalog, request, owner, scalar } from "./support";
+import { database, migrate, catalog, request, owner, scalar } from "./support";
 import { transition } from "../src/bookings";
 import { deliver } from "../src/outbox";
 import { makeAuth } from "../src/auth";
 test("fresh installation has all FKs/indexes and matches the pinned Better Auth configuration", async () => {
-  const p = await getPlatformProxy<{ DB: D1Database }>({
-    configPath: "wrangler.jsonc",
-    remoteBindings: false,
-    persist: false,
-  });
+  const p = await database({ migrate: false });
   try {
-    const db = p.env.DB;
+    const db = p.db;
     await migrate(db);
+    const applied = await db
+      .prepare("SELECT name FROM d1_migrations ORDER BY name")
+      .all<{ name: string }>();
+    assert.deepEqual(
+      applied.results.map((row) => row.name),
+      env.TEST_MIGRATIONS.map((migration) => migration.name).sort(),
+    );
+    await migrate(db);
+    assert.equal(
+      await scalar(db, "SELECT count(*) n FROM d1_migrations"),
+      env.TEST_MIGRATIONS.length,
+    );
     const schema = await getMigrations(
       makeAuth(db, {
         secret: "local-test-secret-with-more-than-32-characters",
@@ -56,13 +63,9 @@ test("fresh installation has all FKs/indexes and matches the pinned Better Auth 
   }
 });
 test("populated identity/catalog upgrade and populated booking/outbox upgrade preserve history and pending work", async () => {
-  const p = await getPlatformProxy<{ DB: D1Database }>({
-    configPath: "wrangler.jsonc",
-    remoteBindings: false,
-    persist: false,
-  });
+  const p = await database({ migrate: false });
   try {
-    const db = p.env.DB;
+    const db = p.db;
     await migrate(db, ["0001_identity_catalog.sql"]);
     const { input } = await catalog(db);
     await db

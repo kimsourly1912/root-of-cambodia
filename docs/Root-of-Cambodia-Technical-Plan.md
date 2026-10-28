@@ -22,7 +22,7 @@ Companion: Root-of-Cambodia-Product-Plan.md
 | Files and images | R2 plus an explicit Cloudflare Images integration | Retained |
 | Jobs | Queues and a small Cron-driven jobs Worker | Retained |
 | Maps | Google Maps candidate | Coverage, quota, and budget checks remain |
-| Quality | TypeScript, ESLint, Vitest, React Testing Library where useful, Playwright | Approved direction; current Node-runner tests still need Vitest alignment |
+| Quality | TypeScript, ESLint, Vitest, React Testing Library where useful, Playwright | Vitest alignment completed locally; browser journeys and full release gates remain pending |
 
 Neon, Hyperdrive, PostgreSQL row-locking logic, Nuxt/Vue/Nuxt UI, Nuxt ESLint, phone OTP, and Twilio are removed from the proposed first-version stack.
 

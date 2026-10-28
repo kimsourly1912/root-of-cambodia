@@ -14,9 +14,10 @@ npm run typecheck
 npm run test:backend
 npm run build:worker
 npm run test:worker
+npm test
 ~~~
 
-init:local creates a random ignored secret, applies versioned migrations through Wrangler locally, and creates a local-only email capture table. It does not seed business properties. Re-running it preserves existing data and skips applied migrations. Tests create disposable synthetic catalogs/accounts. The HTTP harness applies the same migrations to its isolated database.
+init:local creates a random ignored secret, applies versioned migrations through Wrangler locally, and creates a local-only email capture table. It does not seed business properties. Re-running it preserves existing data and skips applied migrations. Tests create disposable synthetic catalogs/accounts. The HTTP harness applies the same migrations to its isolated database. Vitest now runs both projects: 24 backend scenarios in the Workers runtime and one built-Worker journey preserving all 12 HTTP checks. npm test runs both and requires the current bundle from build:worker; test:backend can run the shared-service scenarios separately. See the [Vitest alignment report](../docs/Root-of-Cambodia-Vitest-Alignment.md) for versions, verification and the existing dependency audit finding.
 
 The checked-in configuration is local-only. runtime.ts fails closed outside local capture mode. There is no deployment script, live sending provider or public infrastructure in this change. Do not deploy this configuration as production.
 

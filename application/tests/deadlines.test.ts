@@ -1,4 +1,4 @@
-import { test } from "node:test";
+import { test } from "vitest";
 import assert from "node:assert/strict";
 import { database, catalog, request, guest, owner, scalar } from "./support";
 import { quote } from "../src/quotes";

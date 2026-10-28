@@ -3,6 +3,8 @@
 Date: 28 October 2026
 Status: Detailed approach approved by the project owner on 28 October 2026. Implementation and verification remain separate work.
 Baseline reviewed: main at 67bec618133d17e3c21ac8a55f22e097c461e002, following merged architecture PR #3.
+
+Implementation update: [Vitest alignment](Root-of-Cambodia-Vitest-Alignment.md) is now completed locally, including configured migration discovery/tracking. Source-review observations below describe the original baseline; other database hardening remains pending.
 Change scope: Design and source review only. No runtime, schema, dependency or infrastructure changes are made by this proposal.
 
 The [overall architecture](Root-of-Cambodia-Architecture.md) is approved. This document records the separately approved decision: how booking operations safely update the database and where that code belongs. The [implementation plan](Root-of-Cambodia-Implementation-Plan.md) defines the next delivery steps and distinguishes pending tooling/layout recommendations.

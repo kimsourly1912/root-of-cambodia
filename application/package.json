@@ -12,25 +12,28 @@
     "build:worker": "opennextjs-cloudflare build",
     "preview:worker": "wrangler dev --ip 127.0.0.1 --port 8787",
     "typecheck": "tsc --noEmit",
-    "test:worker": "node --import tsx tests/worker-http.ts",
+    "test:worker": "vitest run --project worker-http",
     "types:bindings": "wrangler types --env-interface CloudflareEnv",
-    "test:backend": "node --import tsx --test tests/*.test.ts",
-    "init:local": "node scripts/init-local.mjs"
+    "test:backend": "vitest run --project backend",
+    "init:local": "node scripts/init-local.mjs",
+    "test": "vitest run"
   },
   "dependencies": {
+    "better-auth": "1.7.14",
+    "drizzle-orm": "0.45.4",
     "next": "16.4.3",
     "react": "19.3.1",
-    "react-dom": "19.3.1",
-    "better-auth": "1.7.14",
-    "drizzle-orm": "0.45.4"
+    "react-dom": "19.3.1"
   },
   "devDependencies": {
+    "@cloudflare/vitest-plugin": "1.4.9",
     "@opennextjs/cloudflare": "1.20.13",
-    "wrangler": "4.154.0",
-    "typescript": "7.0.2",
     "@types/node": "26.6.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "tsx": "4.23.15"
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5",
+    "wrangler": "4.154.0"
   }
 }
