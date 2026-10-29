@@ -1,6 +1,6 @@
 # Root of Cambodia shared backend
 
-Private draft photos use `media.ts`, authorized `media-queries.ts` and named atomic saves in `media-persistence.ts`. Migration 0009 journals identities before R2 writes and guards gallery revisions/membership, removal tombstones and history. D1/R2 do not share a transaction. See the [photo review](../../docs/Root-of-Cambodia-Property-Photos-Review.md) for recovery boundaries and pending verification. Live retention/expiry, costs and publication remain unresolved.
+Private draft photos use `media.ts`, authorized `media-queries.ts` and named atomic saves in `media-persistence.ts`. Migration 0009 journals identities before R2 writes and guards gallery revisions/membership, removal tombstones and history. D1/R2 do not share a transaction. See the [photo review](../../docs/Root-of-Cambodia-Property-Photos-Review.md) for recovery boundaries and passing CI verification with local emulators. Live retention/expiry, costs and publication remain unresolved.
 
 This private workspace contains the existing booking/quote/inventory services, scoped queries, named atomic saves, Better Auth factory, Drizzle projections and notification operations. Both runtime apps import explicit package subpaths. The code cannot import Next.js, OpenNext or either app; the workspace boundary test checks that rule.
 

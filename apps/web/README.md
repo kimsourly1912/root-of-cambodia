@@ -64,9 +64,11 @@ Calendar validation, scoped queries and named atomic persistence are separate. M
 
 Only private setup is edited through this new flow. It does not publish a property or change the existing owner-only external-reservation/inventory APIs. Publication policy/readiness, live services and unresolved booking policies remain separate.
 
-## Private property information
+## Private property photos
 
-The next [photo slice](../../docs/Root-of-Cambodia-Property-Photos-Review.md) adds a Photos tab for private drafts, bounded uploads, authenticated processed previews and versioned ordering/removal. After installation run the existing initialization/binding commands; migration 0009 is additive. `MEDIA`/`IMAGES` explicitly use local simulation without account resources. Strict/runtime/browser verification is pending. Photos are not published by this flow.
+The [photo slice](../../docs/Root-of-Cambodia-Property-Photos-Review.md) adds a Photos tab for private drafts, bounded uploads, authenticated processed previews and versioned ordering/removal. After installation run the existing initialization/binding commands; migration 0009 is additive. `MEDIA`/`IMAGES` explicitly use local simulation without account resources. GitHub CI passes strict types, both builds, 131 Vitest tests and 12 desktop/phone browser checks. Live fidelity, permissions, cost, quotas and retention remain staging gates. Photos are not published by this flow.
+
+## Private property information
 
 Open a saved property and choose Information to edit its description, address and ordered facility list. Fields can remain blank while drafting. List one facility per line; blank lines are ignored, entries are trimmed and order is retained. These are owner-written listing descriptions, not verified facility claims, automated fees or booking policies. Address text is not checked against a map.
 

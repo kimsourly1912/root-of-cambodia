@@ -6,7 +6,7 @@ Guests request stays and pay at the property. Owners manage their own property i
 
 ## Current status
 
-Private property photos are the current review slice, based on merged PRs #13/#14. Source and regression/browser checks are present; required execution is blocked locally by dependency-network access. Do not extend previous passing counts to this branch. See the [photo review](docs/Root-of-Cambodia-Property-Photos-Review.md) for boundaries, verification status and remaining release decisions.
+Private property photos are implemented in PR #15, based on merged PRs #13/#14. GitHub CI passes frozen installation, strict types, both builds, **131 Vitest tests** and **12 desktop/phone browser checks**, using local Cloudflare emulators. PC dependency installation is network-blocked; real services remain unverified. See the [photo review](docs/Root-of-Cambodia-Property-Photos-Review.md) for boundaries, evidence and remaining release decisions. No merge or deployment was performed.
 
 The active application uses [apps/web](apps/web/README.md), [apps/jobs](apps/jobs/README.md) and [packages/backend](packages/backend/README.md), with reviewed migrations, verified sessions, atomic booking/inventory operations and notification recovery contracts. The owner interface supports verified access, private property drafts, room types, dated pricing/availability, descriptions, addresses and facility lists. The broader product journeys and live infrastructure remain unfinished. See the [backend review report](docs/Root-of-Cambodia-Backend-Foundation-Review.md) for tests, scope and remaining decisions.
 

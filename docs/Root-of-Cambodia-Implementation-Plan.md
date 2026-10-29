@@ -1,7 +1,7 @@
 # Root of Cambodia - Architecture Implementation Plan
 
 Date: 28 October 2026; progress updated 29 October 2026
-Status: Steps 1-5 are completed locally. Step 6 is in progress with owner access, private property/room setup, pricing/availability and property information. The [information review](Root-of-Cambodia-Property-Information-Review.md) records current evidence and remaining scope. Earlier-step decisions and verification remain below. Staging and deployment remain separately authorized.
+Status: Steps 1-5 are completed locally. Step 6 is in progress with owner access, private property/room setup, pricing/availability, information and private photos. The [photo review](Root-of-Cambodia-Property-Photos-Review.md) records 131 passing Vitest tests and 12 browser checks with local emulators in GitHub CI. Earlier-step evidence remains below. Staging and deployment remain separately authorized.
 
 ## 1. Where we are
 
@@ -70,7 +70,7 @@ Open product decisions remain open: arrival/no-show/late cancellation, infants/a
 
 ## 6. Current evidence
 
-PRs #13/#14 are merged at main `3dd6fb1ebcf52e2e0a33fe000dd2432cdf027ed7`. The private-photo slice starts there on `codex/private-property-photos`. Upload journalling, private processing/previews, ordering/removal and cleanup are implemented in source; Vitest/browser checks are authored. Required execution is blocked by local dependency-network access; no new application verification is claimed. See the [photo review](Root-of-Cambodia-Property-Photos-Review.md) for evidence, release decisions and the verification workflow. Step 6 remains in progress; staging, pilot, merge and deployment remain separate.
+PRs #13/#14 are merged at main `3dd6fb1ebcf52e2e0a33fe000dd2432cdf027ed7`. PR #15 starts there on `codex/private-property-photos`. Upload journalling, private processing/previews, ordering/removal and recoverable cleanup are implemented and verified using local Cloudflare emulators in GitHub CI: frozen pnpm install, nine migrations, bindings, strict types, both builds, all 131 Vitest tests and 12 desktop/phone browser checks pass. All earlier 114 Vitest and ten browser checks are retained. PC dependency installation remains network-blocked; real services are unverified. See the [photo review](Root-of-Cambodia-Property-Photos-Review.md). Step 6 remains in progress: map/contact/arrival information, publication requirements/review and guest/owner booking screens remain. Arrival stays blocked. No merge or deployment was performed.
 
 The next information slice is based on still-open PR #13 and reviewed separately. It adds private descriptions, addresses and ordered facility lists with their own versioned atomic save/history, without changing booking-setting revisions. Fresh local checks pass 114 Vitest tests and ten desktop/mobile browser checks, frozen installation, populated/fresh migrations, bindings, strict types and both builds. See the [property-information review](Root-of-Cambodia-Property-Information-Review.md). Photos/media, map/contact/arrival information, publication requirements/review and booking screens remain; no merge or deployment is implied.
 

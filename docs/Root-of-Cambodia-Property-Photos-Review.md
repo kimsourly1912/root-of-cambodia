@@ -4,7 +4,7 @@ Date: 29 October 2026. Step 6 remains **in progress**. Base: updated main `3dd6f
 
 ## Result and boundaries
 
-The Photos tab lets a verified owner upload, preview, order and remove photos of their own private property draft. Empty, unfinished, saving, uncertain-response, stale-tab and unavailable states are implemented in source. Publication, public delivery and room-specific photos remain outside this slice. Order is only private gallery order; no public cover-photo policy is assigned.
+The Photos tab lets a verified owner upload, preview, order and remove photos of their own private property draft. Empty, unfinished, saving, uncertain-response, stale-tab and unavailable states are implemented. Publication, public delivery and room-specific photos remain outside this slice. Order is only private gallery order; no public cover-photo policy is assigned.
 
 | Boundary | Responsibility |
 | --- | --- |
@@ -26,21 +26,27 @@ The UI retains the same registration key/body/file/asset identity after uncertai
 
 ## Verification status
 
-**Not yet verified as a working application. Keep the PR in draft until required checks pass.**
+**Implemented and tested with local Cloudflare emulators in GitHub CI; ready for code review in PR #15. Not staging-verified or production-ready.**
+
+Verified source/test/config commit: `4824e54b45ddd71bb1fef1eb1cc8b3b3701685fe`. [Full passing verification run](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40826965953). Subsequent handoff changes are documentation only.
 
 | Check | Current evidence |
 | --- | --- |
 | Base, merged dependencies and separate branch | Confirmed |
 | Toolchain | Node 24.22.1 and exact pnpm 12.15.0 binary found |
-| Frozen install | Blocked locally: registry DNS/network unavailable; offline cache incomplete; policies/pins not relaxed |
+| Frozen install | Passed in GitHub CI with the unchanged lockfile and supply-chain policies; PC installation remains blocked by registry DNS/network access |
 | SQL syntax/fresh application | Nine migrations apply to disposable in-memory Node SQLite; supplemental, **not D1 verification** |
 | Backend syntax/whitespace | Node TypeScript transformation and `git diff --check` pass; **not a strict typecheck** |
-| Generated binding types, strict types, web/jobs builds | Pending installation |
-| Vitest | Existing 114 retained; new media cases authored, **not yet run** |
-| Playwright | Existing ten retained; photo journey authored for both layouts, **not run or visually inspected** |
-| GitHub verification workflow | Added for pinned install, bindings/types, builds, Vitest and matching Chromium checks; outcome pending |
+| Generated binding types and strict types | Passed for backend, web, jobs and tests |
+| Next.js/OpenNext and jobs dry-run builds | Both passed; no deployment |
+| Vitest | **131 passed across 16 files**: all 114 prior tests plus 16 media and one scheduled-cleanup case |
+| Playwright | **12 passed**: all ten previous journeys plus the photo journey in desktop and phone emulation |
+| Browser version | Pinned Playwright 1.64.1 installed matching Chrome for Testing 156.0.8078.4, build v1248; no executable override |
+| Verification workflow | Pinned installation, binding generation, strict types, both builds, Vitest and browser checks passed |
 
-Authored tests cover emulated R2/Images, validation/metadata, private access, same-key/stale/concurrent actions, partial storage failures, lost responses, processing-time removal/access changes, cleanup failure/late writes, rollback/history and populated upgrade continuity. Browser checks cover upload/preview, lost-response retry, order, stale tabs, removal/reload, Origin and cross-owner/property access. Authored tests are intentions until executed.
+Executed tests cover real emulated R2/Images, validation/metadata, private access, same-key/stale/concurrent actions, partial storage failures, lost responses, processing-time removal/access changes, cleanup failure/late writes, rollback/history and populated upgrade continuity. The actual scheduled handler removes journalled objects. Browser checks cover upload/decoded preview, lost-response retry, order, stale tabs, removal/reload, MIME/byte/Origin bounds and cross-owner/property access. Both layouts pass an automated no-horizontal-overflow check. Full manual visual/accessibility inspection, other engines and real devices remain unverified.
+
+Local handoff: the Windows checkout retains the implementation as working changes over the base commit. The committed remote PR branch is authoritative for continuation; preserve local changes when synchronizing. No dependency pins or lockfile were changed to work around the PC's network limitation.
 
 ## Remaining decisions and release gates
 
