@@ -247,3 +247,182 @@ test("verification resend and password reset use the captured real authenticatio
   await expect(page.getByRole("status")).toContainText("Password updated");
   await signIn(page, email, next);
 });
+
+test("owner creates and edits room types with safe retries, stale-tab protection and private property scoping", async ({
+  page,
+}, info) => {
+  const email = `rooms-${info.project.name}@example.invalid`;
+  await register(page, email);
+  const headers = {
+    Origin: "http://127.0.0.1:8787",
+    "Idempotency-Key": "room-property",
+  };
+  const created = await page.request.post("/api/owner/properties", {
+    headers,
+    data: { ...fields, ownerName: "Local Owner" },
+  });
+  expect(created.status()).toBe(201);
+  const property = (await created.json()) as { id: string };
+  const base = `/owner/properties/${property.id}/rooms`,
+    apiBase = "/api" + base;
+  await page.goto(`/owner/properties/${property.id}`);
+  await page.getByRole("link", { name: "Room types", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "No room types yet" }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Create first room type" }).click();
+  await page.getByLabel(/Room type name/).fill("Twin room");
+  await page.getByLabel("Maximum adults", { exact: true }).fill("2");
+  await page.getByLabel("Maximum children", { exact: true }).fill("1");
+  await page.getByLabel("Maximum total guests", { exact: true }).fill("3");
+  let firstKey = "",
+    firstBody = "",
+    retryKey = "",
+    retryBody = "";
+  await page.route(
+    "**" + apiBase,
+    async (route) => {
+      firstKey = route.request().headers()["idempotency-key"];
+      firstBody = route.request().postData() ?? "";
+      const response = await route.fetch();
+      expect(response.status()).toBe(201);
+      await route.abort("failed");
+    },
+    { times: 1 },
+  );
+  await page
+    .getByRole("button", { name: "Save room type", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Retry same save" }),
+  ).toBeVisible();
+  await expect(page.getByLabel(/Room type name/)).toBeDisabled();
+  await page.route(
+    "**" + apiBase,
+    async (route) => {
+      retryKey = route.request().headers()["idempotency-key"];
+      retryBody = route.request().postData() ?? "";
+      await route.continue();
+    },
+    { times: 1 },
+  );
+  await page.getByRole("button", { name: "Retry same save" }).click();
+  await expect(page).toHaveURL(new RegExp(base + "/[0-9a-f-]+$"));
+  expect(retryKey).toBe(firstKey);
+  expect(retryBody).toBe(firstBody);
+  const roomURL = page.url(),
+    apiRoom = "/api" + new URL(roomURL).pathname;
+  const stale = await page.context().newPage();
+  await stale.goto(roomURL);
+  await page.getByLabel(/Room type name/).fill("Garden twin");
+  await page
+    .getByRole("button", { name: "Save room type", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText("Room type saved.");
+  await expect(
+    page.getByRole("button", { name: "Save room type", exact: true }),
+  ).toBeEnabled();
+  await stale.getByLabel(/Room type name/).fill("Stale twin");
+  await stale
+    .getByRole("button", { name: "Save room type", exact: true })
+    .click();
+  await expect(stale.locator("main").getByRole("alert")).toContainText(
+    "changed since you opened it",
+  );
+  await stale.getByRole("button", { name: "Reload latest details" }).click();
+  await expect(stale.getByLabel(/Room type name/)).toHaveValue("Garden twin");
+  await stale.close();
+  await page.reload();
+  await expect(page.getByLabel(/Room type name/)).toHaveValue("Garden twin");
+  await expect(
+    page.getByLabel("Maximum total guests", { exact: true }),
+  ).toHaveValue("3");
+  const read = await page.request.get(apiRoom);
+  expect(read.status()).toBe(200);
+  expect(read.headers()["cache-control"]).toContain("no-store");
+  const room = await read.json();
+  expect(room.revision).toBe(2);
+  expect(room.propertyId).toBe(property.id);
+  expect(
+    (
+      await page.request.patch(apiRoom, {
+        headers: {
+          Origin: "https://untrusted.example.invalid",
+          "Idempotency-Key": "bad-origin",
+        },
+        data: {
+          name: "No",
+          adultCapacity: 2,
+          childCapacity: 1,
+          totalCapacity: 3,
+          revision: 2,
+        },
+      })
+    ).status(),
+  ).toBe(403);
+  expect(
+    (
+      await page.request.patch(apiRoom, {
+        headers,
+        data: {
+          name: "No",
+          adultCapacity: 2,
+          childCapacity: 1,
+          totalCapacity: 3,
+          revision: 2,
+          quantity: 2,
+        },
+      })
+    ).status(),
+  ).toBe(422);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBeTruthy();
+  await page.evaluate(() => document.fonts.ready);
+  await page.screenshot({
+    path: `/tmp/roc-rooms/${info.project.name}-room.png`,
+    fullPage: true,
+  });
+  await page
+    .getByRole("link", { name: "Back to room types", exact: true })
+    .click();
+  await expect(
+    page.getByRole("link", { name: "Open room type →" }),
+  ).toHaveCount(1);
+  await expect(
+    page.getByRole("heading", { name: "Garden twin", exact: true }),
+  ).toBeVisible();
+  const second = await page.request.post("/api/owner/properties", {
+    headers: { ...headers, "Idempotency-Key": "second-room-property" },
+    data: { ...fields, ownerName: "Local Owner" },
+  });
+  expect(second.status()).toBe(201);
+  const secondProperty = await second.json();
+  const wrongPair = `/api/owner/properties/${secondProperty.id}/rooms/${room.id}`;
+  expect((await page.request.get(wrongPair)).status()).toBe(404);
+  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  await expect(page).toHaveURL(/\/sign-in$/);
+  await register(page, `rooms-other-${info.project.name}@example.invalid`);
+  expect((await page.request.get(apiBase)).status()).toBe(404);
+  expect((await page.request.get(apiRoom)).status()).toBe(404);
+  expect(
+    (
+      await page.request.patch(apiRoom, {
+        headers,
+        data: {
+          name: "No",
+          adultCapacity: 2,
+          childCapacity: 1,
+          totalCapacity: 3,
+          revision: 2,
+        },
+      })
+    ).status(),
+  ).toBe(404);
+  await page.goto(roomURL);
+  await expect(
+    page.getByRole("heading", { name: "Property unavailable" }),
+  ).toBeVisible();
+});

@@ -1,0 +1,48 @@
+import { notFound } from "next/navigation";
+import { ownerSession, ownerRead } from "@/src/owner-session";
+import { ownerProperty } from "@root-of-cambodia/backend/property-queries";
+import { ownerRoomType } from "@root-of-cambodia/backend/room-queries";
+import { DomainError } from "@root-of-cambodia/backend/errors";
+import { PropertyNavigation } from "@/components/property-navigation";
+import { RoomTypeForm } from "@/components/room-type-form";
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string; roomId: string }>;
+}) {
+  const { db, actor } = await ownerSession();
+  const { id, roomId } = await params;
+  const data = await ownerRead(async () => {
+    try {
+      return {
+        property: await ownerProperty(db, actor, id),
+        room: await ownerRoomType(db, actor, id, roomId),
+      };
+    } catch (error) {
+      if (error instanceof DomainError && error.code === "not_found")
+        return null;
+      throw error;
+    }
+  });
+  if (!data) notFound();
+  return (
+    <>
+      <p lang="km" className="mb-2 break-words text-sm text-primary">
+        {data.property.nameKm}
+      </p>
+      <h1 className="text-3xl font-semibold tracking-tight">
+        Room type details
+      </h1>
+      <p className="mt-3 text-muted-foreground">
+        Review the name and guest limits for this room type.
+      </p>
+      <PropertyNavigation propertyId={id} active="rooms" />
+      <RoomTypeForm
+        key={data.room.id}
+        propertyId={id}
+        editable={data.property.publication === "draft"}
+        room={data.room}
+      />
+    </>
+  );
+}

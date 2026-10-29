@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { ownerSession, ownerRead } from "@/src/owner-session";
 import { ownerProperty } from "@root-of-cambodia/backend/property-queries";
 import { DomainError } from "@root-of-cambodia/backend/errors";
+import { PropertyNavigation } from "@/components/property-navigation";
 import { PropertyForm } from "@/components/property-form";
 export default async function Page({
   params,
@@ -28,6 +29,7 @@ export default async function Page({
       <p className="mb-8 mt-3 text-muted-foreground">
         Review and update your saved details.
       </p>
+      <PropertyNavigation propertyId={property.id} active="details" />
       <PropertyForm key={property.id} property={property} />
     </>
   );

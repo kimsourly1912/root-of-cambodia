@@ -6,7 +6,7 @@ Date: 28 October 2026. Implementation-plan step 6 is **in progress**. This is it
 
 Owners can register, verify email, sign in/out, request another verification link, reset a password, and create, reopen and edit their own private property drafts. The responsive shadcn/ui/Tailwind screens have real empty, saving, retry, conflict and unavailable states. Khmer names and short labels use bundled Noto Sans Khmer fonts; the English working copy still needs a complete Khmer localization and pilot-user review.
 
-PR #10 remains open, so this branch is based on `codex/pnpm-workspace`. Review the pnpm conversion there; review only owner-draft changes here. No PR is merged and nothing is deployed.
+This slice was originally reviewed on top of the then-open pnpm branch. Follow-up on 29 October: PR #10 and PR #11 were merged into main with explicit authorization. The [room-type review](Root-of-Cambodia-Room-Types-Review.md) records subsequent work. The verification below remains the 28 October snapshot; no deployment was performed.
 
 ## Boundaries and decisions
 
