@@ -15,3 +15,4 @@ apps/jobs/dist/
 
 test-results/
 playwright-report/
+.pnpm-local-store/

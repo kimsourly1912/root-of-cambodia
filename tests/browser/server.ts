@@ -51,7 +51,7 @@ const server = createServer(async (req, res) => {
     let size = 0;
     for await (const chunk of req) {
       size += chunk.length;
-      if (size > 65536) {
+      if (size > 8 * 1024 * 1024) {
         res.writeHead(413);
         res.end();
         return;

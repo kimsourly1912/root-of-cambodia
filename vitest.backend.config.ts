@@ -36,6 +36,8 @@ export default defineConfig({
         compatibilityFlags: config.compatibility_flags,
         queueProducers: { NOTIFICATIONS: "roc-notifications-local-only" },
         d1Databases: bindings.map((binding) => binding.binding),
+        r2Buckets: ["MEDIA"],
+        images: { binding: "IMAGES", remote: false },
         bindings: {
           TEST_MIGRATIONS: await readD1Migrations({
             projectPath: path.join(root, "apps/web"),

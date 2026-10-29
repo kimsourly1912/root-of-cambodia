@@ -19,6 +19,8 @@
     "APP_MODE": "local",
     "AUTH_URL": "http://127.0.0.1:8787",
   },
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "roc-media-local-only", "remote": false }],
+  "images": { "binding": "IMAGES", "remote": false },
   "workers_dev": false,
   "observability": {
     "enabled": true,

@@ -58,11 +58,15 @@ room-types.ts, room-queries.ts and room-persistence.ts retain the same service/s
 
 From a saved room type, open Prices and availability. The seven-night window supports bulk fill and individual date edits. Only touched nights are saved together. Total units include blocked and reserved units; reserved is read-only. Missing inventory and rate rows remain explicit until configured. Dates are Cambodia calendar labels and prices are USD per unit/night, payable at the property.
 
-A save accepts roomRevision and 1–7 distinct nights in one seven-day span. Each night supplies night, capacity, blocked, unitCents, inventoryRevision and rateRevision. Revisions must be positive integers or explicit null for an absent row; reserved/owner IDs are never accepted. UI money parsing retains exact whole cents. The existing database constraints reject stock below blocked plus current reserved units.
+A save accepts roomRevision and 1-7 distinct nights in one seven-day span. Each night supplies night, capacity, blocked, unitCents, inventoryRevision and rateRevision. Revisions must be positive integers or explicit null for an absent row; reserved/owner IDs are never accepted. UI money parsing retains exact whole cents. The existing database constraints reject stock below blocked plus current reserved units.
 
 Calendar validation, scoped queries and named atomic persistence are separate. Migration 0007 adds immutable per-night history; the existing operation/receipt and revision primitives are retained. Save, history and receipt commit together or roll back together. Retry uncertain saves with the same request/key, keep the week open until confirmed, and save before changing weeks. See the [pricing/availability review](../../docs/Root-of-Cambodia-Pricing-Availability-Review.md) for 105 tests, eight browser checks and limits.
 
 Only private setup is edited through this new flow. It does not publish a property or change the existing owner-only external-reservation/inventory APIs. Publication policy/readiness, live services and unresolved booking policies remain separate.
+
+## Private property photos
+
+The [photo slice](../../docs/Root-of-Cambodia-Property-Photos-Review.md) adds a Photos tab for private drafts, bounded uploads, authenticated processed previews and versioned ordering/removal. After installation run the existing initialization/binding commands; migration 0009 is additive. `MEDIA`/`IMAGES` explicitly use local simulation without account resources. GitHub CI passes strict types, both builds, 131 Vitest tests and 12 desktop/phone browser checks. Live fidelity, permissions, cost, quotas and retention remain staging gates. Photos are not published by this flow.
 
 ## Private property information
 
@@ -89,7 +93,7 @@ Migration 0004 adds database guards for command/status consistency, the supporte
 - Quotes use server-side settings, nightly rates and itemized per-stay mandatory charges. Submission recalculates the quote/hash and rechecks revisions, availability and complete coverage inside one D1 batch.
 - Internal building state is sealed to pending/confirmed before commit and is excluded from public reads.
 - Stable lines retain quantities, adult/child counts, capacity limits, room names and occupied-night prices. Headers retain property/guest names, guest email, dates, UTC check-in/out, timezone, arrival/departure times, USD total, policy text/version, terms version and cancellation wording.
-- Mutations require a scoped Idempotency-Key: 1–128 ASCII letters/digits/colon/underscore/hyphen. Reuse the same key and normalized payload after a timeout/503. Receipts survive later price/state changes; changed payloads conflict. Receipt retention needs an approved policy.
+- Mutations require a scoped Idempotency-Key: 1-128 ASCII letters/digits/colon/underscore/hyphen. Reuse the same key and normalized payload after a timeout/503. Receipts survive later price/state changes; changed payloads conflict. Receipt retention needs an approved policy.
 - Critical operations use D1 batches/triggers. Zero-row mutations cannot commit success receipts or side effects. History records actor ID and role. Raw D1 access remains trusted infrastructure.
 - Inventory edits use optimistic revisions and cannot edit reserved counters. Private room/calendar setup now creates and versions dated stock and rates; publication and full operational screens remain future work.
 
