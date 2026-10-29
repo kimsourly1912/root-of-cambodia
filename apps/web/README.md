@@ -1,6 +1,6 @@
 # Root of Cambodia web application
 
-The Next.js application now lives in apps/web and imports the private packages/backend workspace; the historical compatibility proof remains in ../../proofs/foundation. Next.js full stack, Better Auth, D1 and Drizzle are retained. The first shadcn/ui/Tailwind interface now provides verified owner access and private property draft and room-type create/edit/reopen. Payment remains at the property.
+The Next.js application now lives in apps/web and imports the private packages/backend workspace; the historical compatibility proof remains in ../../proofs/foundation. Next.js full stack, Better Auth, D1 and Drizzle are retained. The first shadcn/ui/Tailwind interface now provides verified owner access and private property/room setup and a dated pricing/availability calendar. Payment remains at the property.
 
 ## Local validation
 
@@ -50,9 +50,19 @@ The five UI primitives in components/ui came from the official shadcn/ui New Yor
 
 ## Private room-type setup
 
-Open a saved draft and choose Room types. Create/reopen/edit room names and the existing per-unit adult/child/total limits. A room type has no stock, dated availability or nightly prices until later setup steps. Only private drafts are editable through this flow; published-property editing and age/infant policies are not inferred.
+Open a saved draft and choose Room types. Create/reopen/edit room names and the existing per-unit adult/child/total limits. Open Prices and availability from a saved room type to configure its dated stock and nightly prices. Only private drafts are editable through this flow; published-property editing and age/infant policies are not inferred.
 
 room-types.ts, room-queries.ts and room-persistence.ts retain the same service/scoped-read/atomic-save boundary. Migration 0006 adds attributable append-only room events. Existing room revision triggers, fingerprints and stored receipts are reused. See the [room-type review](../../docs/Root-of-Cambodia-Room-Types-Review.md) for 93 Vitest tests, six browser checks and evidence limits.
+
+## Private prices and availability
+
+From a saved room type, open Prices and availability. The seven-night window supports bulk fill and individual date edits. Only touched nights are saved together. Total units include blocked and reserved units; reserved is read-only. Missing inventory and rate rows remain explicit until configured. Dates are Cambodia calendar labels and prices are USD per unit/night, payable at the property.
+
+A save accepts roomRevision and 1–7 distinct nights in one seven-day span. Each night supplies night, capacity, blocked, unitCents, inventoryRevision and rateRevision. Revisions must be positive integers or explicit null for an absent row; reserved/owner IDs are never accepted. UI money parsing retains exact whole cents. The existing database constraints reject stock below blocked plus current reserved units.
+
+Calendar validation, scoped queries and named atomic persistence are separate. Migration 0007 adds immutable per-night history; the existing operation/receipt and revision primitives are retained. Save, history and receipt commit together or roll back together. Retry uncertain saves with the same request/key, keep the week open until confirmed, and save before changing weeks. See the [pricing/availability review](../../docs/Root-of-Cambodia-Pricing-Availability-Review.md) for 105 tests, eight browser checks and limits.
+
+Only private setup is edited through this new flow. It does not publish a property or change the existing owner-only external-reservation/inventory APIs. Publication policy/readiness, live services and unresolved booking policies remain separate.
 
 ## Service and persistence boundaries
 
@@ -67,13 +77,13 @@ Services authorize before receipt replay. Submission prepares a fresh quote lazi
 Migration 0004 adds database guards for command/status consistency, the supported pre-check-in cancellation cutoff, non-null business identities, coherent Cambodia schedules and stable operation receipts. It checks existing records first and rejects incompatible data without rewriting history. Use the migration runner atomically; a failed preflight needs a reviewed repair plan. See the [safeguards review](../../docs/Root-of-Cambodia-Database-Safeguards.md) for fresh/populated upgrade evidence, exact command mapping and limits.
 
 - SQL migrations are authoritative, including composite FKs, CHECK constraints, delete restrictions and triggers. schema.ts provides Drizzle read projections; do not replace migrations with drizzle-kit push.
-- 0001 creates identity/catalog/inventory/rates; 0002 creates booking operations/history/outbox; 0003 adds delivery recovery diagnostics/indexes; 0004 adds booking/identity/receipt safeguards; 0005 adds private draft history; 0006 adds room-type history. These do not upgrade the disposable proof database.
+- 0001 creates identity/catalog/inventory/rates; 0002 creates booking operations/history/outbox; 0003 adds delivery recovery diagnostics/indexes; 0004 adds booking/identity/receipt safeguards; 0005 adds private draft history; 0006 adds room-type history; 0007 adds calendar history. These do not upgrade the disposable proof database.
 - Quotes use server-side settings, nightly rates and itemized per-stay mandatory charges. Submission recalculates the quote/hash and rechecks revisions, availability and complete coverage inside one D1 batch.
 - Internal building state is sealed to pending/confirmed before commit and is excluded from public reads.
 - Stable lines retain quantities, adult/child counts, capacity limits, room names and occupied-night prices. Headers retain property/guest names, guest email, dates, UTC check-in/out, timezone, arrival/departure times, USD total, policy text/version, terms version and cancellation wording.
 - Mutations require a scoped Idempotency-Key: 1–128 ASCII letters/digits/colon/underscore/hyphen. Reuse the same key and normalized payload after a timeout/503. Receipts survive later price/state changes; changed payloads conflict. Receipt retention needs an approved policy.
 - Critical operations use D1 batches/triggers. Zero-row mutations cannot commit success receipts or side effects. History records actor ID and role. Raw D1 access remains trusted infrastructure.
-- Inventory edits use optimistic revisions and cannot edit reserved counters. Catalog/calendar/rate creation interfaces remain future work.
+- Inventory edits use optimistic revisions and cannot edit reserved counters. Private room/calendar setup now creates and versions dated stock and rates; publication and full operational screens remain future work.
 
 ## API
 
@@ -91,6 +101,8 @@ All application endpoints require verified cookie sessions. Mutations require th
 | POST /api/owner/properties/:id/rooms | name, adultCapacity, childCapacity, totalCapacity and Idempotency-Key; verified owner/private draft; 201 receipt |
 | GET /api/owner/properties/:id/rooms/:roomId | Owned room belonging to this exact property |
 | PATCH /api/owner/properties/:id/rooms/:roomId | Same room fields plus expected revision and Idempotency-Key; 200 receipt |
+| GET /api/owner/properties/:id/rooms/:roomId/calendar | Owned room's seven-night window; optional ISO start (default Cambodia today) |
+| PATCH /api/owner/properties/:id/rooms/:roomId/calendar | roomRevision, selected nights with inventory/rate revisions and Idempotency-Key; one atomic private-draft save; 200 receipt |
 | POST /api/booking-quotes | propertyId, checkin, checkout, termsVersion, lines; returns hash, nightly prices, charges and policy |
 | POST /api/bookings | Selection + quoteHash + Idempotency-Key; returns Pending, never confirmation |
 | GET /api/bookings/:id | Own guest booking or booking for a currently owned property |

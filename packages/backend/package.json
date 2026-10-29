@@ -23,7 +23,11 @@
     "./property-persistence": "./src/property-persistence.ts",
     "./room-types": "./src/room-types.ts",
     "./room-queries": "./src/room-queries.ts",
-    "./room-persistence": "./src/room-persistence.ts"
+    "./room-persistence": "./src/room-persistence.ts",
+    "./calendar": "./src/calendar.ts",
+    "./calendar-dates": "./src/calendar-dates.ts",
+    "./calendar-queries": "./src/calendar-queries.ts",
+    "./calendar-persistence": "./src/calendar-persistence.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

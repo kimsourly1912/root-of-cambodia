@@ -426,3 +426,230 @@ test("owner creates and edits room types with safe retries, stale-tab protection
     page.getByRole("heading", { name: "Property unavailable" }),
   ).toBeVisible();
 });
+
+test("owner sets weekly prices and units with exact cents, atomic retry and stale-calendar protection", async ({
+  page,
+}, info) => {
+  await register(page, `calendar-${info.project.name}@example.invalid`);
+  const headers = {
+    Origin: "http://127.0.0.1:8787",
+    "Idempotency-Key": "calendar-property",
+  };
+  const propertyResponse = await page.request.post("/api/owner/properties", {
+    headers,
+    data: { ...fields, ownerName: "Local Owner" },
+  });
+  expect(propertyResponse.status()).toBe(201);
+  const property = await propertyResponse.json();
+  const rooms = `/owner/properties/${property.id}/rooms`;
+  const roomResponse = await page.request.post("/api" + rooms, {
+    headers: { ...headers, "Idempotency-Key": "calendar-room" },
+    data: {
+      name: "Twin",
+      adultCapacity: 2,
+      childCapacity: 1,
+      totalCapacity: 3,
+    },
+  });
+  expect(roomResponse.status()).toBe(201);
+  const room = await roomResponse.json();
+  const calendar = `${rooms}/${room.id}/calendar`,
+    api = "/api" + calendar;
+  await page.goto(`${rooms}/${room.id}`);
+  await page
+    .getByRole("link", { name: "Prices and availability →", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Prices and availability", exact: true }),
+  ).toBeVisible();
+  await page.getByLabel("First night", { exact: true }).fill("2027-01-03");
+  await page.getByRole("button", { name: "Show week", exact: true }).click();
+  await expect(page).toHaveURL(/start=2027-01-03/);
+  const first = page.getByRole("group", { name: "2027-01-03", exact: true });
+  await expect(first).toBeVisible();
+  await page
+    .getByLabel("Nightly price for week (USD)", { exact: true })
+    .fill("19.99");
+  await page.getByLabel("Total units for week", { exact: true }).fill("3");
+  await page.getByLabel("Blocked units for week", { exact: true }).fill("1");
+  await page
+    .getByRole("button", { name: "Apply to seven nights", exact: true })
+    .click();
+  let key = "",
+    body = "",
+    retryKey = "",
+    retryBody = "";
+  await page.route(
+    "**" + api,
+    async (route) => {
+      if (route.request().method() !== "PATCH") {
+        await route.continue();
+        return;
+      }
+      key = route.request().headers()["idempotency-key"];
+      body = route.request().postData() ?? "";
+      expect((await route.fetch()).status()).toBe(200);
+      await route.abort("failed");
+    },
+    { times: 1 },
+  );
+  await page
+    .getByRole("button", { name: "Save changed nights", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Retry same save" }),
+  ).toBeVisible();
+  await expect(first.getByLabel("Total units", { exact: true })).toBeDisabled();
+  await page.route(
+    "**" + api,
+    async (route) => {
+      retryKey = route.request().headers()["idempotency-key"];
+      retryBody = route.request().postData() ?? "";
+      await route.continue();
+    },
+    { times: 1 },
+  );
+  await page.getByRole("button", { name: "Retry same save" }).click();
+  await expect(page.getByRole("status")).toContainText("Calendar saved.");
+  await expect(first.getByLabel("Total units", { exact: true })).toBeEnabled();
+  expect(retryKey).toBe(key);
+  expect(retryBody).toBe(body);
+  expect(JSON.parse(body).nights).toHaveLength(7);
+  expect(JSON.parse(body).nights[0]).not.toHaveProperty("reserved");
+  let read = await page.request.get(api + "?start=2027-01-03");
+  expect(read.status()).toBe(200);
+  expect(read.headers()["cache-control"]).toContain("no-store");
+  let saved = await read.json();
+  expect(
+    saved.nights.every(
+      (n: {
+        unitCents: number;
+        capacity: number;
+        blocked: number;
+        reserved: number;
+        inventoryRevision: number;
+        rateRevision: number;
+      }) =>
+        n.unitCents === 1999 &&
+        n.capacity === 3 &&
+        n.blocked === 1 &&
+        n.reserved === 0 &&
+        n.inventoryRevision === 1 &&
+        n.rateRevision === 1,
+    ),
+  ).toBeTruthy();
+  const stale = await page.context().newPage();
+  await stale.goto(page.url());
+  await first.getByLabel("Nightly price (USD)", { exact: true }).fill("20.01");
+  await page
+    .getByRole("button", { name: "Save changed nights", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText("Calendar saved.");
+  await expect(first.getByLabel("Total units", { exact: true })).toBeEnabled();
+  const staleNight = stale.getByRole("group", {
+    name: "2027-01-03",
+    exact: true,
+  });
+  await staleNight.getByLabel("Total units", { exact: true }).fill("2");
+  await stale
+    .getByRole("button", { name: "Save changed nights", exact: true })
+    .click();
+  await expect(stale.locator("main").getByRole("alert")).toContainText(
+    "changed since you opened this week",
+  );
+  await stale.getByRole("button", { name: "Reload latest week" }).click();
+  await expect(
+    staleNight.getByLabel("Nightly price (USD)", { exact: true }),
+  ).toHaveValue("20.01");
+  await stale.close();
+  read = await page.request.get(api + "?start=2027-01-03");
+  saved = await read.json();
+  expect(saved.nights[0].unitCents).toBe(2001);
+  expect(saved.nights[0].rateRevision).toBe(2);
+  expect(
+    saved.nights
+      .slice(1)
+      .every(
+        (n: { unitCents: number; rateRevision: number }) =>
+          n.unitCents === 1999 && n.rateRevision === 1,
+      ),
+  ).toBeTruthy();
+  await page.reload();
+  await expect(
+    first.getByLabel("Nightly price (USD)", { exact: true }),
+  ).toHaveValue("20.01");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBeTruthy();
+  await page.evaluate(() => document.fonts.ready);
+  await page.screenshot({
+    path: `/tmp/roc-calendar/${info.project.name}-calendar.png`,
+    fullPage: true,
+  });
+  const second = page.getByRole("group", { name: "2027-01-04", exact: true });
+  await second
+    .getByLabel("Nightly price (USD)", { exact: true })
+    .fill("19.999");
+  await page
+    .getByRole("button", { name: "Save changed nights", exact: true })
+    .click();
+  await expect(page.locator("main").getByRole("alert")).toContainText(
+    "enter a valid price",
+  );
+  await expect(page.getByRole("link", { name: "Sign in again" })).toHaveCount(
+    0,
+  );
+  expect(
+    (
+      await page.request.post("/api/booking-quotes", {
+        headers,
+        data: {
+          propertyId: property.id,
+          checkin: "2027-01-03",
+          checkout: "2027-01-04",
+          termsVersion: "unconfigured",
+          lines: [{ roomId: room.id, quantity: 1, adults: 1, children: 0 }],
+        },
+      })
+    ).status(),
+  ).toBe(404);
+  await page.getByRole("link", { name: "Next week →", exact: true }).click();
+  await expect(
+    page.getByRole("group", { name: "2027-01-10", exact: true }),
+  ).toContainText("Not fully set");
+  await page
+    .getByRole("link", { name: "← Previous week", exact: true })
+    .click();
+  await expect(
+    first.getByLabel("Nightly price (USD)", { exact: true }),
+  ).toHaveValue("20.01");
+  const otherProperty = await page.request.post("/api/owner/properties", {
+    headers: { ...headers, "Idempotency-Key": "calendar-other-property" },
+    data: { ...fields, ownerName: "Local Owner" },
+  });
+  const other = await otherProperty.json();
+  expect(
+    (
+      await page.request.get(
+        `/api/owner/properties/${other.id}/rooms/${room.id}/calendar?start=2027-01-03`,
+      )
+    ).status(),
+  ).toBe(404);
+  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  await expect(page).toHaveURL(/\/sign-in$/);
+  await register(page, `calendar-other-${info.project.name}@example.invalid`);
+  expect((await page.request.get(api + "?start=2027-01-03")).status()).toBe(
+    404,
+  );
+  expect(
+    (
+      await page.request.patch(api, { headers, data: JSON.parse(body) })
+    ).status(),
+  ).toBe(404);
+  await page.goto(calendar + "?start=2027-01-03");
+  await expect(
+    page.getByRole("heading", { name: "Property unavailable" }),
+  ).toBeVisible();
+});

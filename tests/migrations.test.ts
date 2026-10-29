@@ -227,6 +227,8 @@ test("safeguards upgrade retains every populated row, old schema object and orig
     delete afterDraftMigration.property_draft_event;
     assert.deepEqual(afterDraftMigration.room_type_event, []);
     delete afterDraftMigration.room_type_event;
+    assert.deepEqual(afterDraftMigration.room_calendar_event, []);
+    delete afterDraftMigration.room_calendar_event;
     assert.deepEqual(afterDraftMigration, before);
     assert.deepEqual(
       await transition(db, owner, "accept-then-cancel", cancelled.id, "accept"),
@@ -371,6 +373,88 @@ test("room history upgrade preserves populated owner drafts, bookings and origin
       draft,
     );
     assert.deepEqual(await request(db, input, "room-upgrade-booking"), booking);
+    assert.deepEqual(
+      (await db.prepare("PRAGMA foreign_key_check").all()).results,
+      [],
+    );
+  } finally {
+    await p.dispose();
+  }
+});
+
+test("calendar upgrade retains populated stock, rates, room/property history and original booking receipts", async () => {
+  const p = await database({ migrate: false });
+  try {
+    const db = p.db;
+    await migrate(db, [
+      ...legacyMigrations,
+      ...safeguards,
+      "0005_property_drafts.sql",
+      "0006_room_type_history.sql",
+    ]);
+    const { input } = await catalog(db);
+    const booking = await request(db, input, "calendar-upgrade-booking");
+    const { createPropertyDraft } =
+      await import("@root-of-cambodia/backend/property-drafts");
+    const { createRoomType } =
+      await import("@root-of-cambodia/backend/room-types");
+    const propertyFields = {
+      ownerName: "Owner",
+      nameKm: "ផ្ទះ",
+      nameEn: "Draft",
+      province: "Kampot",
+      checkinTime: "14:00",
+      checkoutTime: "11:00",
+      policyText: "Quiet hours.",
+    };
+    const property = await createPropertyDraft(
+      db,
+      owner,
+      "calendar-upgrade-property",
+      propertyFields,
+    );
+    const roomFields = {
+      name: "Twin",
+      adultCapacity: 2,
+      childCapacity: 1,
+      totalCapacity: 3,
+    };
+    const room = await createRoomType(
+      db,
+      owner,
+      "calendar-upgrade-room",
+      property.id,
+      roomFields,
+    );
+    const before = await snapshot(db);
+    await migrate(db, ["0007_room_calendar_history.sql"]);
+    const after = await snapshot(db);
+    assert.deepEqual(after.room_calendar_event, []);
+    delete after.room_calendar_event;
+    assert.deepEqual(after, before);
+    assert.deepEqual(
+      await createPropertyDraft(
+        db,
+        owner,
+        "calendar-upgrade-property",
+        propertyFields,
+      ),
+      property,
+    );
+    assert.deepEqual(
+      await createRoomType(
+        db,
+        owner,
+        "calendar-upgrade-room",
+        property.id,
+        roomFields,
+      ),
+      room,
+    );
+    assert.deepEqual(
+      await request(db, input, "calendar-upgrade-booking"),
+      booking,
+    );
     assert.deepEqual(
       (await db.prepare("PRAGMA foreign_key_check").all()).results,
       [],

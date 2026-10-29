@@ -2,7 +2,7 @@
 
 Date: 29 October 2026. Implementation-plan step 6 remains **in progress**.
 
-PR #10 (pnpm) and PR #11 (owner access/property drafts) were merged into main with explicit owner authorization. This change starts from updated main, commit `fabb78e9b2d0b44e98fb8b724f00581e4c8b9f18`, and remains a separate reviewable PR. No deployment was performed.
+PR #10 (pnpm) and PR #11 (owner access/property drafts) were merged into main with explicit owner authorization. This change starts from updated main, commit `fabb78e9b2d0b44e98fb8b724f00581e4c8b9f18`, and was reviewed separately as PR #12. Follow-up: PR #12 was merged with explicit authorization on 29 October. The [pricing/availability review](Root-of-Cambodia-Pricing-Availability-Review.md) records subsequent work; the verification below remains the room-type snapshot. No deployment was performed.
 
 ## What owners can do
 

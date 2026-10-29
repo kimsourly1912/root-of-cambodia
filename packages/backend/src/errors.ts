@@ -17,6 +17,7 @@ export const ERROR_CODES = [
   "invalid_property_charges",
   "invalid_property",
   "invalid_room_type",
+  "invalid_calendar",
   "invalid_reason",
   "invalid_request",
   "inventory_unavailable",

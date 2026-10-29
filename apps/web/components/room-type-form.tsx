@@ -216,7 +216,7 @@ export function RoomTypeForm({
             </CardTitle>
             <CardDescription>
               {editable
-                ? "Room types stay inside your private draft. They have no prices or dated availability yet."
+                ? "Room types stay inside your private draft. Configure prices and dated availability separately."
                 : "Editing is available while the property is a private draft."}
             </CardDescription>
           </CardHeader>
@@ -263,6 +263,14 @@ export function RoomTypeForm({
                     : "Save room type"}
               </Button>
             )}
+            {room && (
+              <Link
+                href={base + "/" + room.id + "/calendar"}
+                className="block text-center text-sm font-medium text-primary underline underline-offset-4"
+              >
+                Prices and availability →
+              </Link>
+            )}
             <Link
               href={base}
               className="block text-center text-sm font-medium text-primary underline underline-offset-4"
@@ -277,8 +285,8 @@ export function RoomTypeForm({
           </CardContent>
         </Card>
         <p className="px-1 text-xs text-muted-foreground">
-          Prices and availability will be added separately. This does not
-          publish your property.
+          Set prices and availability from this room type. This does not publish
+          your property.
         </p>
       </aside>
     </form>
