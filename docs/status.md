@@ -4,7 +4,7 @@
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026, [ed7035c](https://github.com/kimsourly1912/root-of-cambodia/commit/ed7035c6c267232d94537d94b5fc91806e4715b6), plus the dependency patch described below.
+**Last source verification:** 29 October 2026; candidate based on [b653b57](https://github.com/kimsourly1912/root-of-cambodia/commit/b653b57b711e0d03aebb8e119f9df10e0c31f8b3) (dependency PR #17) plus the private owner-detail slice described below.
 
 **Sources:** [.github/workflows/verify.yml](../.github/workflows/verify.yml), [apps/web/app/](../apps/web/app), [apps/jobs/src/index.ts](../apps/jobs/src/index.ts), [apps/web/src/runtime.ts](../apps/web/src/runtime.ts), [apps/jobs/src/runtime.ts](../apps/jobs/src/runtime.ts).
 
@@ -12,9 +12,9 @@ This is the single current delivery/evidence page. Feature docs define contracts
 
 ## Baseline and evidence
 
-The documentation foundation is merged in [PR #16](https://github.com/kimsourly1912/root-of-cambodia/pull/16), main commit [ed7035c6c267232d94537d94b5fc91806e4715b6](https://github.com/kimsourly1912/root-of-cambodia/commit/ed7035c6c267232d94537d94b5fc91806e4715b6), tree bd2146dd5bcb1261af61812997feaf34fd3cd440. Its [CI run 40862202635](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40862202635) passed. That is the base for branch fix/build-glob-advisory; no later main changes were present when dependency work began.
+The documentation foundation is merged in [PR #16](https://github.com/kimsourly1912/root-of-cambodia/pull/16), main commit [ed7035c6c267232d94537d94b5fc91806e4715b6](https://github.com/kimsourly1912/root-of-cambodia/commit/ed7035c6c267232d94537d94b5fc91806e4715b6), tree bd2146dd5bcb1261af61812997feaf34fd3cd440. Its [CI run 40862202635](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40862202635) passed. The dependency patch is [PR #17](https://github.com/kimsourly1912/root-of-cambodia/pull/17), head b653b57b711e0d03aebb8e119f9df10e0c31f8b3. Its [CI run 40867423899](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40867423899) passed. Current owner work is based on that patch; neither PR is recorded as merged by this candidate.
 
-### Current dependency verification
+### Dependency base (PR #17)
 
 The owner subsequently authorized the bounded dependency investigation/fix and relevant local checks. Only the pinned @node-minify/core@9.0.2 dependency on glob is overridden, from 10.3.3 to 10.5.0. OpenNext, Next.js, direct dependency versions, the package-manager lock document, native-build permissions and release-age policy are unchanged. Required helper changes are jackspeak 2.3.6 → 3.4.3 and new package-json-from-dist 1.0.1; every other existing package/version/integrity is retained.
 
@@ -30,9 +30,9 @@ Fresh verification on 29 October 2026 used Linux, Node 24.22.1 and pnpm 12.15.0 
 | Local initialization and binding generation | Passed; all existing migrations applied locally; no SQL files changed |
 | Strict backend/web/jobs/test types | Passed |
 | Next.js/OpenNext Worker and jobs dry-run builds | Passed; no deployment |
-| Vitest | 131 tests across 16 files passed, including native Workers/D1 and both built-Worker journeys |
+| Vitest | Passed for the dependency base; current owner-candidate totals below |
 | Local Playwright browser installation | Blocked: matching Chromium 156.0.8078.4 download returned an invalid/truncated ZIP; no executable override or version downgrade |
-| Browser execution / PR CI | No fresh local browser pass claimed; the unchanged PR workflow installs the matching browser and runs desktop/phone checks; report its candidate SHA/run in the PR |
+| Browser execution / PR CI | Dependency PR #17 CI passed matching-browser desktop/phone checks; no local browser pass claimed; owner candidate has its own CI result |
 
 These are local-emulator results, not staging/live verification. Zero audit findings is the registry audit result at this time, not a security certification. The independent historical proof was not dependency-audited or changed; its older lockfile is outside this fix. glob 10.x still has an upstream deprecation notice; removing the override requires a separately verified parent/adapter update that no longer pins an affected copy.
 
@@ -43,7 +43,7 @@ Historical audit/photo evidence remains in the [archive](archive/README.md), wit
 | Capability | Implementation state | Verification boundary / remaining work |
 | --- | --- | --- |
 | Accounts | Implemented locally | Email/password, email verification, recovery, verified private owner access; auth mail is local capture |
-| Owner supply | Implemented private draft subset | Property basics, room types, weekly USD prices/stock, information and private photos; [contract](features/owner-supply.md) |
+| Owner supply | Implemented private draft subset | Property basics, room types, weekly USD prices/stock, information, private photos and private location/contact/arrival notes; [contract](features/owner-supply.md) |
 | Booking foundation | Implemented API/database subset | Quotes, submission/detail, accept/decline/cancel/expiry, external allocation and inventory; [contract](features/bookings.md) |
 | Arrival/completion | Blocked/incomplete | `check_in` rejects with decision-required; complete requires an already checked-in record; no complete stay lifecycle |
 | Notifications | Implemented local substitute | Outbox, queues, lease fencing/backoff and capture; real sending/reminders/operations remain incomplete |
@@ -54,6 +54,16 @@ Historical audit/photo evidence remains in the [archive](archive/README.md), wit
 | Language/design | Partial | Khmer names/fonts and some labels; predominantly English working UI, not full Khmer localization |
 
 Implementation-plan steps 1–5 and the later pnpm amendment are recorded as locally completed history. Step 6 remains partial owner-supply/product work. Historical next-step lists do not override this table.
+
+## Current private owner-detail slice
+
+Branch feat/private-property-logistics adds the Location & contact tab and private GET/PATCH /api/owner/properties/:id/logistics. Owners can save/reopen/clear optional paired coordinates, informational contact name/phone/email and arrival notes. It uses the existing verified-owner, independent revision, atomic history/receipt and same-attempt recovery patterns. Migration 0010 is additive; earlier migrations and booking/stock/quote/provider behavior are unchanged.
+
+Fresh Linux/pinned-toolchain local checks include frozen install, local initialization/binding generation, strict types, both Worker builds and 140 Vitest tests across 17 files. Nine new native scenarios cover absent/cleared details, permissions/replay, competing saves, uncertain commit recovery, commit-time revocation/state/absence races, audit rollback/SQL guards, validation, unchanged booking data and populated upgrades. The legacy upgrade snapshot check accounts for two new empty extension tables.
+
+A new Playwright journey covers save/reopen/clear, paired-coordinate validation, lost-response same-key/body recovery, stale tabs, private/Origin refusal and phone-width overflow, in both existing browser projects. Local matching-browser installation remains blocked as above; this candidate's PR CI is authoritative for browser outcomes. No new local browser pass or manual visual/accessibility review is claimed.
+
+All details stay owner-private and do not change sign-in email, enable arrival/check-in, choose a map provider, publish a listing or define guest disclosure. Next policy work remains D05/D17 publication/disclosure and D01 arrival. See the [feature contract](features/owner-supply.md#private-location-contact-and-arrival-details).
 
 ## Environment scope
 
@@ -67,7 +77,7 @@ Earlier Windows network/browser-override notes remain historical environment evi
 
 ## Current work and authorization
 
-Documentation consolidation is completed/merged. Current authorized engineering work starts with the isolated dependency patch and its compatibility checks, followed by owner publication readiness. Runtime application behavior, SQL, deployment configuration and repository settings are unchanged by this dependency slice. No merge or deployment is performed by it. Remaining business decisions stay explicit in the [decision log](product/open-decisions.md).
+Documentation consolidation is completed/merged. Current authorized engineering work includes the isolated dependency patch and this separate private owner-detail slice. The owner slice adds only private draft behavior and migration 0010; deployment configuration, repository settings and existing booking rules remain unchanged. No merge or deployment is performed by it. Remaining business decisions stay explicit in the [decision log](product/open-decisions.md).
 
 ## Follow-ups requiring separate scope or decisions
 
@@ -81,4 +91,4 @@ Documentation consolidation is completed/merged. Current authorized engineering 
 | Pilot quality | Khmer copy, accessibility, slow-device/performance and real-service validation | No full accessibility, cross-engine/device or capacity certification |
 | Small source follow-up | Diagnostics success status can differ from creation response; photo UI has a stray replacement character | Audit A11/A10; unchanged here; separate focused code/copy fix |
 
-Next: review the dependency PR and continue the missing private location/contact/arrival-information slice before publication. Publication requirements, review/support powers and guest disclosure still need explicit product decisions; this status page does not decide them.
+Next: review dependency PR #17 and the owner-detail PR, then settle the publication checklist and reviewer procedure before implementing submission/approval. Publication requirements, review/support powers and guest disclosure still need explicit product decisions; this status page does not decide them.

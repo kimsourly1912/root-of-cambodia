@@ -4,15 +4,15 @@
 
 **Responsible role:** owner-supply maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
+**Last source verification:** 29 October 2026; candidate based on [b653b57](https://github.com/kimsourly1912/root-of-cambodia/commit/b653b57b711e0d03aebb8e119f9df10e0c31f8b3), with the private location/contact slice verified on feat/private-property-logistics.
 
 **Sources:** [apps/web/app/owner/](../../apps/web/app/owner), [apps/web/app/api/owner/properties/](../../apps/web/app/api/owner/properties), [packages/backend/src/property-drafts.ts](../../packages/backend/src/property-drafts.ts), [packages/backend/src/room-types.ts](../../packages/backend/src/room-types.ts), [packages/backend/src/calendar.ts](../../packages/backend/src/calendar.ts), [packages/backend/src/property-information.ts](../../packages/backend/src/property-information.ts), [packages/backend/src/media.ts](../../packages/backend/src/media.ts).
 
 ## Intent, permissions and non-goals
 
-A verified account can create and manage its own private property drafts, room types, dated rates/stock, information and photos. One account may be guest and owner; the first draft creates an owner profile without renaming an existing profile. Exact owner/property/room relationships are checked on reads, early service entry, receipt replay and inside atomic writes.
+A verified account can create and manage its own private property drafts, room types, dated rates/stock, information, photos and private location/contact/arrival details. One account may be guest and owner; the first draft creates an owner profile without renaming an existing profile. Exact owner/property/room relationships are checked on reads, early service entry, receipt replay and inside atomic writes.
 
-These editing operations are for drafts; published/review/paused editing is not added by this UI. A saved draft does not publish, become bookable, verify the business, submit a partner application or approve platform terms. Its technical `unconfigured` terms version is not publication-ready. General partner/contact submission, map/contact/arrival data, review/publication/admin and guest/owner booking screens remain planned.
+These editing operations are for drafts; published/review/paused editing is not added by this UI. A saved draft does not publish, become bookable, verify the business, submit a partner application or approve platform terms. Its technical `unconfigured` terms version is not publication-ready. General partner/contact submission, live maps/geocoding, review/publication/admin and guest/owner booking screens remain planned. Private draft contact/arrival fields are implemented; guest disclosure remains undecided.
 
 ## Identity and access surface
 
@@ -35,6 +35,18 @@ Blank optional information can be cleared while drafting. Facilities are ordered
 
 The calendar displays seven nights, supports bulk fill and individual edits, and saves touched dates atomically. USD input retains exact whole cents. Missing rate/stock rows and null versions remain explicit. Reserved is read-only. Save before changing weeks: switching discards unsaved edits. The weekly window is an editing bound, not a stay-length policy.
 
+## Private location, contact and arrival details
+
+The Location & contact tab saves optional draft details through GET/PATCH P/:id/logistics. GET returns latitude, longitude, contactName, contactPhone, contactEmail, arrivalInstructions and revision, defaulting to null coordinates/blank text/null revision when absent. PATCH requires all fields and revision plus Idempotency-Key; success is a 200 id/status=updated receipt.
+
+Latitude/longitude must be finite numbers in [-90, 90]/[-180, 180], supplied together or both null. Zero coordinates are valid. Contact name/phone/email are trimmed single-line strings, bounded to 200/100/254 characters; a nonempty email must have a basic email shape. Arrival instructions allow up to 5,000 trimmed characters with line breaks, rejecting unsupported controls. Unknown ownership, publication, verification or booking-policy fields are rejected. These are engineering validation bounds, not publication requirements.
+
+Service/query/persistence modules are [property-logistics.ts](../../packages/backend/src/property-logistics.ts), [property-logistics-queries.ts](../../packages/backend/src/property-logistics-queries.ts) and [property-logistics-persistence.ts](../../packages/backend/src/property-logistics-persistence.ts). Additive [migration 0010](../../packages/backend/migrations/0010_property_logistics.sql) stores an independently versioned extension and immutable attributable events. A first save checks expected absence; updates check the current positive revision. Data, revision/event and receipt commit atomically with current verified ownership/draft checks. Existing booking settings/revisions, snapshots, rates, reserved stock and outbox records do not change.
+
+Coordinates are owner-entered and not geocoded or verified. Contact methods are informational and unverified; they do not change the sign-in email or trigger messages. Details remain private to the owner: no guest/public read endpoint or booking disclosure is added. Arrival notes do not enable check-in, settle arrival/no-show/late-cancellation policy or change accepted terms.
+
+The form supports save/reopen/clear, blank drafts, exact same-key/body recovery after a lost response and refresh/review after a stale conflict. Pending attempts stay only in the open tab. The shared adapter still enforces Origin/JSON bounds/private caching; failures include invalid_property_logistics (422) and existing 401/403/404/409/413/503 codes. Publication readiness/review and guest snapshot/disclosure policy (D05/D17) remain separate.
+
 ## Implemented HTTP surface
 
 Let P = `/api/owner/properties`, R = `P/:id/rooms` and M = `P/:id/photos`. Params denote actual dynamic segments, not additional route namespaces.
@@ -47,6 +59,7 @@ Let P = `/api/owner/properties`, R = `P/:id/rooms` and M = `P/:id/photos`. Param
 | R/:roomId | GET; PATCH room fields/revision | Exact-parent owned room; PATCH 200 id/status=updated |
 | R/:roomId/calendar | GET optional start (default Cambodia today); PATCH calendar payload | GET roomRevision/nights; PATCH 200 id/status=updated |
 | P/:id/information | GET; PATCH information/revision | GET description/address/facilities/revision; PATCH 200 id/status=updated |
+| P/:id/logistics | GET; PATCH optional draft details/revision | GET private logistics projection; PATCH 200 id/status=updated |
 | M | GET; POST descriptor; PATCH reorder/remove | GET revision/photos; POST 201 id/status=pending; PATCH 200 id/status=reordered or removed |
 | M/:photoId | PUT raw bytes with exact registered Content-Type; GET ready preview | PUT 200 id/status=ready; GET authenticated JPEG bytes |
 

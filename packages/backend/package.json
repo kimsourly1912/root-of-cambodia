@@ -33,7 +33,10 @@
     "./property-information-persistence": "./src/property-information-persistence.ts",
     "./media": "./src/media.ts",
     "./media-queries": "./src/media-queries.ts",
-    "./media-persistence": "./src/media-persistence.ts"
+    "./media-persistence": "./src/media-persistence.ts",
+    "./property-logistics": "./src/property-logistics.ts",
+    "./property-logistics-queries": "./src/property-logistics-queries.ts",
+    "./property-logistics-persistence": "./src/property-logistics-persistence.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

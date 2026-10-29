@@ -866,3 +866,86 @@ test("owner saves private descriptions, addresses and facilities with safe retry
     page.getByRole("heading", { name: "Property unavailable" }),
   ).toBeVisible();
 });
+
+test("owner saves private location/contact/arrival details with same-attempt recovery and stale-tab protection", async ({ page }, info) => {
+  await register(page, "logistics-" + info.project.name + "@example.invalid");
+  const headers = { Origin: "http://127.0.0.1:8787", "Idempotency-Key": "logistics-property" };
+  const created = await page.request.post("/api/owner/properties", {
+    headers, data: { ...fields, ownerName: "Local Owner" },
+  });
+  expect(created.status()).toBe(201);
+  const property = await created.json();
+  const base = "/owner/properties/" + property.id, api = "/api" + base + "/logistics";
+  const originalProperty = await (await page.request.get("/api" + base)).json();
+  expect((await (await page.request.get(api)).json()).revision).toBeNull();
+  await page.goto(base);
+  await page.getByRole("link", { name: "Location & contact", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Location & contact", exact: true })).toBeVisible();
+  await page.getByLabel("Latitude", { exact: true }).fill("10.606");
+  await page.getByRole("button", { name: "Save location and contact", exact: true }).click();
+  await expect(page.locator("main").getByRole("alert")).toContainText("Enter both valid coordinates");
+  await page.getByLabel("Longitude", { exact: true }).fill("104.181");
+  await page.getByLabel("Contact name", { exact: true }).fill("Reception");
+  await page.getByLabel("Contact phone", { exact: true }).fill("+855 12 345 678");
+  await page.getByLabel("Contact email", { exact: true }).fill("reception@example.invalid");
+  await page.getByLabel("Directions and arrival notes", { exact: true }).fill("ផ្លូវភូមិ\nTurn left at the bridge.");
+  let firstKey = "", firstBody = "", retryKey = "", retryBody = "";
+  await page.route("**" + api, async route => {
+    if (route.request().method() !== "PATCH") { await route.continue(); return; }
+    firstKey = route.request().headers()["idempotency-key"];
+    firstBody = route.request().postData() ?? "";
+    expect((await route.fetch()).status()).toBe(200);
+    await route.abort("failed");
+  }, { times: 1 });
+  await page.getByRole("button", { name: "Save location and contact", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Retry same save" })).toBeVisible();
+  await expect(page.getByLabel("Latitude", { exact: true })).toBeDisabled();
+  await page.route("**" + api, async route => {
+    retryKey = route.request().headers()["idempotency-key"];
+    retryBody = route.request().postData() ?? "";
+    await route.continue();
+  }, { times: 1 });
+  await page.getByRole("button", { name: "Retry same save" }).click();
+  await expect(page.getByRole("status")).toContainText("Location and contact details saved.");
+  await expect(page.getByLabel("Latitude", { exact: true })).toBeEnabled();
+  expect(retryKey).toBe(firstKey);
+  expect(retryBody).toBe(firstBody);
+  const read = await page.request.get(api);
+  expect(read.headers()["cache-control"]).toContain("no-store");
+  expect(await read.json()).toMatchObject({ latitude: 10.606, longitude: 104.181, contactName: "Reception", revision: 1 });
+  expect(await (await page.request.get("/api" + base)).json()).toEqual(originalProperty);
+  await page.reload();
+  await expect(page.getByLabel("Directions and arrival notes", { exact: true })).toHaveValue("ផ្លូវភូមិ\nTurn left at the bridge.");
+  const stale = await page.context().newPage();
+  await stale.goto(page.url());
+  await page.getByLabel("Contact phone", { exact: true }).fill("+855 12 000 111");
+  await page.getByRole("button", { name: "Save location and contact", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("Location and contact details saved.");
+  await expect(page.getByLabel("Latitude", { exact: true })).toBeEnabled();
+  await stale.getByLabel("Contact name", { exact: true }).fill("Stale reception");
+  await stale.getByRole("button", { name: "Save location and contact", exact: true }).click();
+  await expect(stale.locator("main").getByRole("alert")).toContainText("changed since you opened");
+  await stale.getByRole("button", { name: "Reload latest details" }).click();
+  await expect(stale.getByLabel("Contact phone", { exact: true })).toHaveValue("+855 12 000 111");
+  await stale.close();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  for (const label of ["Latitude", "Longitude", "Contact name", "Contact phone", "Contact email", "Directions and arrival notes"]) {
+    await page.getByLabel(label, { exact: true }).fill("");
+  }
+  await page.getByRole("button", { name: "Save location and contact", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("Location and contact details saved.");
+  await expect(page.getByLabel("Latitude", { exact: true })).toBeEnabled();
+  const cleared = await (await page.request.get(api)).json();
+  expect(cleared).toMatchObject({ latitude: null, longitude: null, contactPhone: "", arrivalInstructions: "", revision: 3 });
+  expect((await page.request.patch(api, {
+    headers: { ...headers, Origin: "https://untrusted.invalid" },
+    data: { ...cleared, revision: 3 },
+  })).status()).toBe(403);
+  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  await expect(page).toHaveURL(/\/sign-in$/);
+  await register(page, "logistics-other-" + info.project.name + "@example.invalid");
+  expect((await page.request.get(api)).status()).toBe(404);
+  expect((await page.request.patch(api, { headers, data: cleared })).status()).toBe(404);
+  await page.goto(base + "/logistics");
+  await expect(page.getByRole("heading", { name: "Property unavailable" })).toBeVisible();
+});

@@ -4,7 +4,7 @@
 
 **Responsible role:** technical maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
+**Last source verification:** 29 October 2026; candidate based on [b653b57](https://github.com/kimsourly1912/root-of-cambodia/commit/b653b57b711e0d03aebb8e119f9df10e0c31f8b3), with the private location/contact slice verified on feat/private-property-logistics.
 
 **Sources:** [apps/web/src/runtime.ts](../../apps/web/src/runtime.ts), [apps/jobs/src/index.ts](../../apps/jobs/src/index.ts), [packages/backend/package.json](../../packages/backend/package.json), [tests/workspace.test.ts](../../tests/workspace.test.ts).
 
@@ -43,6 +43,7 @@ Package exports currently expose low-level modules too. These are conceptual bou
 | Draft properties | `property-drafts.ts`, `property-queries.ts`, `property-persistence.ts` |
 | Rooms/calendar | `room-types.ts`, `room-queries.ts`, `room-persistence.ts`; `calendar.ts`, `calendar-dates.ts`, `calendar-queries.ts`, `calendar-persistence.ts` |
 | Property information/media | `property-information*.ts`; `media.ts`, `media-queries.ts`, `media-persistence.ts` |
+| Private location/contact/arrival | property-logistics.ts, property-logistics-queries.ts, property-logistics-persistence.ts; no public disclosure or arrival action |
 | Booking/quotes | `bookings.ts`, `quotes.ts`, `quote-queries.ts`, `booking-persistence.ts` |
 | Inventory | `inventory.ts`, `inventory-persistence.ts` |
 | Delivery/diagnostics | `jobs.ts`, `outbox.ts`, `diagnostics.ts`, `errors.ts` |
