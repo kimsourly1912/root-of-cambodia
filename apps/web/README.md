@@ -83,7 +83,7 @@ Migration 0004 adds database guards for command/status consistency, the supporte
 - Stable lines retain quantities, adult/child counts, capacity limits, room names and occupied-night prices. Headers retain property/guest names, guest email, dates, UTC check-in/out, timezone, arrival/departure times, USD total, policy text/version, terms version and cancellation wording.
 - Mutations require a scoped Idempotency-Key: 1–128 ASCII letters/digits/colon/underscore/hyphen. Reuse the same key and normalized payload after a timeout/503. Receipts survive later price/state changes; changed payloads conflict. Receipt retention needs an approved policy.
 - Critical operations use D1 batches/triggers. Zero-row mutations cannot commit success receipts or side effects. History records actor ID and role. Raw D1 access remains trusted infrastructure.
-- Inventory edits use optimistic revisions and cannot edit reserved counters. Catalog/calendar/rate creation interfaces remain future work.
+- Inventory edits use optimistic revisions and cannot edit reserved counters. Private room/calendar setup now creates and versions dated stock and rates; publication and full operational screens remain future work.
 
 ## API
 
