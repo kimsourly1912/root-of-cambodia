@@ -4,7 +4,7 @@
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
+**Last source verification:** 29 October 2026, [ed7035c](https://github.com/kimsourly1912/root-of-cambodia/commit/ed7035c6c267232d94537d94b5fc91806e4715b6), plus the dependency patch described below.
 
 **Sources:** [.github/workflows/verify.yml](../.github/workflows/verify.yml), [apps/web/app/](../apps/web/app), [apps/jobs/src/index.ts](../apps/jobs/src/index.ts), [apps/web/src/runtime.ts](../apps/web/src/runtime.ts), [apps/jobs/src/runtime.ts](../apps/jobs/src/runtime.ts).
 
@@ -12,11 +12,31 @@ This is the single current delivery/evidence page. Feature docs define contracts
 
 ## Baseline and evidence
 
-On 29 October 2026, GitHub main was compared with audit commit [607a7057b908a005f9f3529141b0978f52d24ce0](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0): **identical; no intervening commits or changed files**. PR #15 (private draft photos) is merged in that baseline; earlier “ready for review”/“unmerged” statements belong to historical reviews.
+The documentation foundation is merged in [PR #16](https://github.com/kimsourly1912/root-of-cambodia/pull/16), main commit [ed7035c6c267232d94537d94b5fc91806e4715b6](https://github.com/kimsourly1912/root-of-cambodia/commit/ed7035c6c267232d94537d94b5fc91806e4715b6), tree bd2146dd5bcb1261af61812997feaf34fd3cd440. Its [CI run 40862202635](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40862202635) passed. That is the base for branch fix/build-glob-advisory; no later main changes were present when dependency work began.
 
-The source tree is `c036bc32a8a307d519e9dcb24e96123acc0a1244`. Historical [CI run 40827637763](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40827637763), head `ec5d8d1b71a5f8d1738ecbe08a13db85484863bd`, has the same tree as main. Run metadata, job steps and logs were reread during this phase: frozen install, generated bindings/strict types, both builds, **131 Vitest tests across 16 files and 12 Playwright checks passed**. This is GitHub-hosted Linux execution with local Cloudflare emulators and synthetic records, not deployed Cloudflare verification. The web journey includes the original 12 HTTP assertions; those are not 12 additional Vitest cases.
+### Current dependency verification
 
-Current documentation work used read-only source/config/test inspection, baseline comparison and documentation validation. No local dependency install, app initialization/migration, typecheck, application test/build or deployment was run. PR checks, if triggered automatically on opening the documentation PR, are separate from this historical baseline and must be reported by their own SHA/run.
+The owner subsequently authorized the bounded dependency investigation/fix and relevant local checks. Only the pinned @node-minify/core@9.0.2 dependency on glob is overridden, from 10.3.3 to 10.5.0. OpenNext, Next.js, direct dependency versions, the package-manager lock document, native-build permissions and release-age policy are unchanged. Required helper changes are jackspeak 2.3.6 → 3.4.3 and new package-json-from-dist 1.0.1; every other existing package/version/integrity is retained.
+
+The [maintainer advisory GHSA-5j98-mcp5-4vw2](https://github.com/isaacs/node-glob/security/advisories/GHSA-5j98-mcp5-4vw2) affects the glob CLI command-execution option, not ordinary library APIs. Installed source inspection found the OpenNext minifier uses the core library, whose wildcard expansion calls globSync; no vulnerable CLI invocation was found in that inspected chain or repository scripts. This is a bounded reachability assessment, not proof about every possible consumer. The override removes the affected copy without relying solely on that assessment.
+
+Fresh verification on 29 October 2026 used Linux, Node 24.22.1 and pnpm 12.15.0 with synthetic local data:
+
+| Check | Current result |
+| --- | --- |
+| Before/after active-workspace pnpm audit --json | One high advisory → zero reported advisories |
+| Regenerated lockfile and frozen installation | Passed; narrow dependency-closure change only; 537 existing package records retained unchanged |
+| Actual ESM minifier wildcard smoke | Passed; resolves glob 10.5.0 and correctly combines/minifies two fixture files |
+| Local initialization and binding generation | Passed; all existing migrations applied locally; no SQL files changed |
+| Strict backend/web/jobs/test types | Passed |
+| Next.js/OpenNext Worker and jobs dry-run builds | Passed; no deployment |
+| Vitest | 131 tests across 16 files passed, including native Workers/D1 and both built-Worker journeys |
+| Local Playwright browser installation | Blocked: matching Chromium 156.0.8078.4 download returned an invalid/truncated ZIP; no executable override or version downgrade |
+| Browser execution / PR CI | No fresh local browser pass claimed; the unchanged PR workflow installs the matching browser and runs desktop/phone checks; report its candidate SHA/run in the PR |
+
+These are local-emulator results, not staging/live verification. Zero audit findings is the registry audit result at this time, not a security certification. The independent historical proof was not dependency-audited or changed; its older lockfile is outside this fix. glob 10.x still has an upstream deprecation notice; removing the override requires a separately verified parent/adapter update that no longer pins an affected copy.
+
+Historical audit/photo evidence remains in the [archive](archive/README.md), with original dates/commits/results. New PR CI evidence belongs to its actual SHA/run and must not be confused with earlier baseline runs.
 
 ## Delivery state
 
@@ -45,15 +65,15 @@ Implementation-plan steps 1–5 and the later pnpm amendment are recorded as loc
 
 Earlier Windows network/browser-override notes remain historical environment evidence; they do not invalidate the matching-browser CI pass or establish today's PC setup. External Cloudflare account/deployed traffic/secrets were not inspected.
 
-## Approved documentation phase
+## Current work and authorization
 
-The approved slice is canonical docs/status, archived historical content, concise root/package READMEs, root AGENTS and PR template, with branch commit/push/PR opening. No code, dependency, schema, deployment configuration or repository-protection change is included. No merge is authorized. Review the PR's validation evidence for this phase; recording this scope does not claim the PR has merged.
+Documentation consolidation is completed/merged. Current authorized engineering work starts with the isolated dependency patch and its compatibility checks, followed by owner publication readiness. Runtime application behavior, SQL, deployment configuration and repository settings are unchanged by this dependency slice. No merge or deployment is performed by it. Remaining business decisions stay explicit in the [decision log](product/open-decisions.md).
 
 ## Follow-ups requiring separate scope or decisions
 
 | Priority | Follow-up | Boundary |
 | --- | --- | --- |
-| Before release | A01: transitive `glob@10.3.3` remains in [lockfile](../pnpm-lock.yaml), via OpenNext AWS / node-minify build chain | Audit reported [GHSA-5j98-mcp5-4vw2](https://github.com/isaacs/node-glob/security/advisories/GHSA-5j98-mcp5-4vw2); reachable CLI exploitation unknown; installed audit/remediation not executed here |
+| Dependency patch under review | A01: scoped override removes affected glob@10.3.3 from the active [lockfile](../pnpm-lock.yaml) | Fresh local audit/types/builds/runtime tests pass; matching-browser CI remains the review gate; remove override when a verified parent resolves a patched version itself |
 | Governance | A04: required verification/review policy and real reviewer assignment | Audit observed unprotected main/no rulesets; current settings not reread or changed; D18 approval needed |
 | Before public exposure | A02/A03: provider/environment path and action/upload/storage abuse budgets | Preserve local fail-closed guards; D07/D08/D11 before nonlocal work |
 | Policy/recovery | Arrival, publication/support, retention/erasure and recovery ownership | [Open decisions](product/open-decisions.md), especially D01/D05/D06/D09/D10 |
@@ -61,4 +81,4 @@ The approved slice is canonical docs/status, archived historical content, concis
 | Pilot quality | Khmer copy, accessibility, slow-device/performance and real-service validation | No full accessibility, cross-engine/device or capacity certification |
 | Small source follow-up | Diagnostics success status can differ from creation response; photo UI has a stray replacement character | Audit A11/A10; unchanged here; separate focused code/copy fix |
 
-Next the project owner reviews this documentation PR and chooses a separately scoped follow-up. No next feature or unresolved business rule is approved by this status page.
+Next: review the dependency PR and continue the missing private location/contact/arrival-information slice before publication. Publication requirements, review/support powers and guest disclosure still need explicit product decisions; this status page does not decide them.
