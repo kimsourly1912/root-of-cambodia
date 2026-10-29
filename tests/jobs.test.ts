@@ -8,7 +8,10 @@ import {
   getQueueResult,
 } from "cloudflare:test";
 import worker from "../apps/jobs/src/index";
-import { database, catalog, request, scalar } from "./support";
+import { database, catalog, request, scalar, owner } from "./support";
+import { createPropertyDraft } from "@root-of-cambodia/backend/property-drafts";
+import { preparePhoto, editPhotos } from "@root-of-cambodia/backend/media";
+import { mediaKeys } from "@root-of-cambodia/backend/media-queries";
 import { historical } from "./historical";
 
 const jobsEnv = (db: D1Database): JobsEnv => ({
@@ -23,6 +26,50 @@ const capture = (db: D1Database) =>
       "CREATE TABLE local_notification(id TEXT PRIMARY KEY,booking_id TEXT NOT NULL,kind TEXT NOT NULL,recipient TEXT NOT NULL)",
     )
     .run();
+
+test("actual scheduled handler cleans removed media from its shared R2 binding", async () => {
+  const p = await database();
+  try {
+    const db = p.db;
+    await catalog(db);
+    const property = await createPropertyDraft(db, owner, "media-property", {
+      ownerName: "Owner",
+      nameKm: "Draft",
+      nameEn: "House",
+      province: "Kampot",
+      checkinTime: "14:00",
+      checkoutTime: "11:00",
+      policyText: "Quiet hours.",
+    });
+    const photo = await preparePhoto(db, owner, "media", property.id, {
+      revision: null,
+      contentType: "image/jpeg",
+      byteSize: 1,
+      sha256: "a".repeat(64),
+    });
+    const keys = mediaKeys({ id: photo.id, property_id: property.id });
+    await env.MEDIA.put(keys.original, new Uint8Array([1]));
+    await env.MEDIA.put(keys.preview, new Uint8Array([2]));
+    await editPhotos(db, owner, "remove-media", property.id, {
+      action: "remove",
+      revision: 1,
+      id: photo.id,
+    });
+    await worker.scheduled(createScheduledController(), jobsEnv(db));
+    assert.equal(await env.MEDIA.get(keys.original), null);
+    assert.equal(await env.MEDIA.get(keys.preview), null);
+    assert.equal(
+      await scalar(
+        db,
+        "SELECT cleanup_attempts n FROM property_media WHERE id=?",
+        photo.id,
+      ),
+      1,
+    );
+  } finally {
+    await p.dispose();
+  }
+});
 const batchFor = (...ids: string[]) =>
   createMessageBatch(
     "roc-notifications-local-only",

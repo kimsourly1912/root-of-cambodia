@@ -187,20 +187,16 @@ export function safeJpeg(bytes: Uint8Array) {
   )
     throw new DomainError("photo_processing_unavailable", 503);
   const chunks: Uint8Array[] = [bytes.subarray(0, 2)];
-  let foundDimensions = false;
+  let foundDimensions = false,
+    foundScan = false;
   for (let i = 2; i < bytes.length; ) {
     const start = i;
     if (bytes[i++] !== 255) break;
     while (bytes[i] === 255) i++;
     const marker = bytes[i++];
-    if (marker === 218) {
-      if (
-        !foundDimensions ||
-        bytes[bytes.length - 2] !== 255 ||
-        bytes[bytes.length - 1] !== 217
-      )
-        break;
-      chunks.push(bytes.subarray(start));
+    if (marker === 217) {
+      if (!foundDimensions || !foundScan || i !== bytes.length) break;
+      chunks.push(bytes.subarray(start, i));
       const result = new Uint8Array(chunks.reduce((n, c) => n + c.length, 0));
       let offset = 0;
       for (const chunk of chunks) {
@@ -209,6 +205,13 @@ export function safeJpeg(bytes: Uint8Array) {
       }
       return result;
     }
+    if (
+      marker === 0 ||
+      marker === 216 ||
+      marker === 1 ||
+      (marker >= 208 && marker <= 215)
+    )
+      break;
     if (i + 2 > bytes.length) break;
     const length = bytes[i] * 256 + bytes[i + 1];
     if (length < 2 || i + length > bytes.length) break;
@@ -224,6 +227,25 @@ export function safeJpeg(bytes: Uint8Array) {
     if (!((marker >= 224 && marker <= 239) || marker === 254))
       chunks.push(bytes.subarray(start, i + length));
     i += length;
+    if (marker === 218) {
+      foundScan = true;
+      const scanStart = i;
+      // Entropy data escapes FF as FF00; restart markers are part of the scan.
+      // Stop at the next structural marker, including in progressive JPEGs,
+      // so metadata between scans or before EOI is stripped too.
+      while (i < bytes.length) {
+        if (bytes[i] === 255) {
+          const next = bytes[i + 1];
+          if (next === 0 || (next >= 208 && next <= 215)) {
+            i += 2;
+            continue;
+          }
+          break;
+        }
+        i++;
+      }
+      chunks.push(bytes.subarray(scanStart, i));
+    }
   }
   throw new DomainError("photo_processing_unavailable", 503);
 }

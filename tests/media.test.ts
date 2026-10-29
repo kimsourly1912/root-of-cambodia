@@ -706,6 +706,11 @@ test("JPEG preview stripping removes all metadata segments, including EXIF/GPS a
     false,
   );
   assert.deepEqual(output, safeJpeg(jpeg));
+  const afterScan = new Uint8Array(jpeg.length + segment.length);
+  afterScan.set(jpeg.subarray(0, -2));
+  afterScan.set(segment, jpeg.length - 2);
+  afterScan.set(jpeg.subarray(-2), jpeg.length - 2 + segment.length);
+  assert.deepEqual(safeJpeg(afterScan), safeJpeg(jpeg));
 });
 
 test("media migration preserves populated previous tables, schema objects and original booking/draft receipts", async () => {
@@ -726,7 +731,7 @@ test("media migration preserves populated previous tables, schema objects and or
       const tables = (
         await db
           .prepare(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name<>'d1_migrations' AND name NOT LIKE 'property_media%' ORDER BY name",
+            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT GLOB '_cf_*' AND name<>'d1_migrations' AND name NOT LIKE 'property_media%' ORDER BY name",
           )
           .all<{ name: string }>()
       ).results;
@@ -737,8 +742,23 @@ test("media migration preserves populated previous tables, schema objects and or
       return result;
     };
     const before = await snapshot();
+    const objects = (
+      await db
+        .prepare(
+          "SELECT type,name,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' AND name NOT GLOB '_cf_*' ORDER BY name",
+        )
+        .all()
+    ).results;
     await migrate(db, ["0009_property_media.sql"]);
     assert.deepEqual(await snapshot(), before);
+    for (const object of objects)
+      assert.deepEqual(
+        await db
+          .prepare("SELECT type,name,sql FROM sqlite_master WHERE name=?")
+          .bind(object.name)
+          .first(),
+        object,
+      );
     assert.deepEqual(await request(db, input, "before-media"), booking);
     assert.deepEqual(
       await createPropertyDraft(db, owner, "draft", fields),
