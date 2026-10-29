@@ -7,10 +7,16 @@ import {
   requireReviewer,
   reviewConfig,
   reviewPhotoAsset,
+  requestDisclosure,
 } from "./publication-queries";
 import { commitPublicationAction } from "./publication-persistence";
 import { mediaKeys } from "./media-queries";
 import { requirePublicationReadiness } from "./publication-readiness";
+import {
+  PUBLIC_DISCLOSURE_VERSION,
+  publicDisclosurePreview,
+  type PublicDisclosure,
+} from "./public-listing";
 const revision = (value: unknown) =>
   Number.isSafeInteger(value) && Number(value) > 0;
 function fields(input: Record<string, unknown>, allowed: string[]) {
@@ -27,9 +33,27 @@ export async function ownerReviewAction(
   await verified(db, actor);
   await requireOwnedProperty(db, actor, propertyId);
   if (input.action === "submit") {
-    fields(input, ["action", "propertyRevision"]);
+    fields(input, ["action", "propertyRevision", "publicDisclosure"]);
     if (!revision(input.propertyRevision))
       throw new DomainError("invalid_review", 422);
+    let disclosure: PublicDisclosure | undefined;
+    if (input.publicDisclosure !== undefined) {
+      const value = input.publicDisclosure;
+      if (!value || typeof value !== "object" || Array.isArray(value))
+        throw new DomainError("invalid_review", 422);
+      const data = value as Record<string, unknown>;
+      if (
+        Object.keys(data).length !== 2 ||
+        data.version !== PUBLIC_DISCLOSURE_VERSION ||
+        typeof data.previewHash !== "string" ||
+        !/^[a-f0-9]{64}$/.test(data.previewHash)
+      )
+        throw new DomainError("invalid_review", 422);
+      disclosure = {
+        version: PUBLIC_DISCLOSURE_VERSION,
+        previewHash: data.previewHash,
+      };
+    }
     const receipt = await commitPublicationAction(
       db,
       actor,
@@ -38,6 +62,7 @@ export async function ownerReviewAction(
         action: "submit",
         propertyId,
         propertyRevision: input.propertyRevision,
+        ...(disclosure ? { publicDisclosure: disclosure } : {}),
       },
       async () => {
         const config = await reviewConfig(db);
@@ -58,11 +83,17 @@ export async function ownerReviewAction(
         if (snapshot.data.photos.some((photo) => photo.state !== "ready"))
           throw new DomainError("unfinished_photos", 422);
         await requirePublicationReadiness(db, propertyId, actor.id);
+        if (!disclosure)
+          throw new DomainError("public_disclosure_required", 422);
+        const preview = await publicDisclosurePreview(snapshot.data);
+        if (preview.previewHash !== disclosure.previewHash)
+          throw new DomainError("public_disclosure_changed", 409);
         return {
           action: "submit",
           propertyId,
           propertyRevision: Number(input.propertyRevision),
           snapshotJson: snapshot.json,
+          disclosure,
         };
       },
       "owner",
@@ -153,6 +184,15 @@ export async function decideReview(
           request.propertyId,
           request.ownerId,
         );
+        const disclosure = await requestDisclosure(db, requestId);
+        if (!disclosure)
+          throw new DomainError("public_disclosure_required", 422);
+        if (
+          disclosure.version !== PUBLIC_DISCLOSURE_VERSION ||
+          disclosure.previewHash !==
+            (await publicDisclosurePreview(request.snapshot)).previewHash
+        )
+          throw new DomainError("public_disclosure_changed", 409);
       }
       return {
         action: action as "approve" | "return_changes",

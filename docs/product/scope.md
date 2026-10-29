@@ -4,7 +4,7 @@
 
 **Responsible role:** project owner (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
+**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
 **Sources:** [docs/archive/2026-10/Root-of-Cambodia-Product-Plan.md](../archive/2026-10/Root-of-Cambodia-Product-Plan.md), [docs/archive/2026-10/Root-of-Cambodia-Architecture.md](../archive/2026-10/Root-of-Cambodia-Architecture.md).
 
@@ -29,6 +29,7 @@ Accommodation is the first complete booking journey: hotels, resorts, guesthouse
 | Owner access | Owner accounts initially; staff invitations deferred |
 | Owner operations | Owners maintain information, rooms, prices, availability and bookings |
 | Publication | Verified owner email and first-property review before publication; project owner is the sole pilot listing reviewer (29 October 2026). Narrow procedure in [pilot review](../features/publication-review.md); the [minimum checklist](publication-checklist-proposal.md) was approved on 29 October 2026; broader editing/public delivery policies remain open |
+| Anonymous browsing | First [guest-browsing boundary](guest-browsing-proposal.md) approved 29 October 2026: allowlisted approved content, processed gallery/first-photo cover, province only and explicit owner public-display acknowledgement; exact logistics/originals private, booking-state disclosure unresolved |
 | Ongoing edits | Owners update information, with moderation/reports available; additional-property and high-impact-edit procedures remain open |
 | Response deadline | Accept or decline within 12 hours of submission, otherwise expire; acceptance at/after deadline is rejected even before a sweep runs |
 | Lead time | Submit at least 24 hours before the property's scheduled check-in |

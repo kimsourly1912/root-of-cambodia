@@ -1,14 +1,14 @@
 # ROOTS OF CAMBODIA
 
-**Status:** private owner-supply foundation with booking APIs.
+**Status:** local owner-supply and guest-browsing foundation with booking APIs.
 
 **Responsible role:** maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
+**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
 **Sources:** [package.json](package.json), [apps/web/app/](apps/web/app), [packages/backend/src/](packages/backend/src).
 
-A Cambodia discovery and accommodation platform in development. Guests request stays and pay the property directly. Current code provides verified owner access, private property/room/calendar/information/photo setup and booking APIs. Public discovery, broader moderation, complete guest/arrival journeys and live providers remain unfinished. The local publication workflow and accepted minimum checklist are documented in current status.
+A Cambodia discovery and accommodation platform in development. Guests request stays and pay the property directly. Current code provides verified owner access, private property/room/calendar/information/photo setup and booking APIs. Anonymous stay browsing now shows only explicitly authorized, reviewed listing content and processed photos. Booking screens, broader moderation, complete arrival journeys and live providers remain unfinished; see current status for verification limits.
 
 Start with the [documentation map](docs/README.md) and [current status/evidence](docs/status.md). For development use [setup](docs/development/setup.md) and [testing](docs/development/testing.md); agents must read [AGENTS.md](AGENTS.md).
 

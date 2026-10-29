@@ -35,7 +35,7 @@ import { preparePhoto } from "@root-of-cambodia/backend/media";
 import { completeMedia } from "@root-of-cambodia/backend/media-persistence";
 import { mediaKeys } from "@root-of-cambodia/backend/media-queries";
 import { readBooking } from "@root-of-cambodia/backend/access";
-import { readyPublicationFixture } from "./publication-fixtures";
+import { readyPublicationFixture, disclosureFor } from "./publication-fixtures";
 const fields = {
   ownerName: "Owner",
   nameKm: "ផ្ទះ",
@@ -58,7 +58,7 @@ async function setup(db: D1Database, configured = true, photo = true) {
   await readyPublicationFixture(db, owner, id, photo);
   return id;
 }
-const submit = (
+const submit = async (
   db: D1Database,
   id: string,
   key = "submit",
@@ -67,6 +67,7 @@ const submit = (
   ownerReviewAction(db, owner, key, id, {
     action: "submit",
     propertyRevision,
+    publicDisclosure: await disclosureFor(db, id, owner.id),
   });
 const decide = async (
   db: D1Database,
@@ -681,9 +682,7 @@ test("populated upgrade preserves all earlier tables and receipts; reviewer conf
     const db = p.db;
     await migrate(
       db,
-      env.TEST_MIGRATIONS.filter(
-        (m) => m.name !== "0011_property_publication_review.sql",
-      ).map((m) => m.name),
+      env.TEST_MIGRATIONS.filter((m) => m.name < "0011").map((m) => m.name),
     );
     const id = await setup(db, false);
     const tables = (

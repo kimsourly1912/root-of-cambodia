@@ -4,7 +4,7 @@
 
 **Responsible role:** owner-supply maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026; publication candidate based on merged main [484989d](https://github.com/kimsourly1912/root-of-cambodia/commit/484989df749689f797aa125ccf590e7eba0b0cb6).
+**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
 **Sources:** [apps/web/app/owner/](../../apps/web/app/owner), [apps/web/app/api/owner/properties/](../../apps/web/app/api/owner/properties), [packages/backend/src/property-drafts.ts](../../packages/backend/src/property-drafts.ts), [packages/backend/src/room-types.ts](../../packages/backend/src/room-types.ts), [packages/backend/src/calendar.ts](../../packages/backend/src/calendar.ts), [packages/backend/src/property-information.ts](../../packages/backend/src/property-information.ts), [packages/backend/src/media.ts](../../packages/backend/src/media.ts).
 
@@ -90,3 +90,7 @@ The UI supports empty, unsaved, saving, unavailable, uncertain retry and stale-c
 [Tests](../../tests/) cover permission/exact-parent refusal, absent/stale/concurrent writes, permission/state races, lost-response replay, atomic audit rollback, populated upgrades, exact cents, private media validation/partial failures/removal/cleanup and actual browser save/reopen journeys. [Testing](../development/testing.md) describes how to run them; [status](../status.md) owns observed results and environment limits.
 
 [D02–D06/D09/D11/D12/D13/D17](../product/open-decisions.md) remain open for occupancy, external details, publication/support, retention/abuse, maps/language and guest disclosure. Public media variants, room photos, live Images fidelity/permissions/budget, private-original retention and real-service recovery need separate decisions/verification.
+
+## Public display boundary
+
+Draft uploads/originals and exact logistics remain private. The owner now previews the explicit [guest listing](guest-browsing.md) and confirms its public fields/processed photos when submitting for review. This does not release an earlier upload/approval, expose an original or define guest booking-state logistics. Approved newly authorized listings use the separate public reader; existing private owner/reviewer endpoints retain their access checks.

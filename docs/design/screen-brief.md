@@ -28,7 +28,7 @@ Use semantic visible labels, keyboard/focus/error handling, adequate contrast/to
 | Booking detail/result | Pending reference/deadline/no hold; Confirmed arrival/contact/pay-at-property; Declined/Expired/new-search; Cancelled attribution/reason; supported cancellation confirmation |
 | My bookings | Upcoming/past grouping, status/date/property/total/reference and view action; signed-out/empty/loading/failure |
 
-These are planned, not implemented routes. Auth gate screens exist in the owner foundation but do not complete the guest journey. Backend detail/submission APIs do not imply booking list screens or an implemented collection GET.
+Read-only /stays and /stays/:id are now implemented under the [guest-browsing contract](../features/guest-browsing.md), with an explicit public field/photo boundary. The date/party/quote/request/My bookings journey in this table remains planned. Auth gate screens exist but do not complete that guest journey. Backend detail/submission APIs do not imply booking list screens or an implemented collection GET.
 
 Copy must say “Request to book” / “Pending confirmation” until owner acceptance succeeds. Show complete price, $0 due now, pay at property and exact Cambodia-time deadline. Pending does not reserve a room; an acceptance stock conflict is not confirmation. Cancellation is free before scheduled check-in; 24 hours is encouragement, not a fee cutoff. After cutoff, use the approved contact/support path once defined; do not invent arrival/no-show/late-cancellation timing.
 
@@ -38,7 +38,7 @@ Do not add card checkout, deposit/Pay now, phone OTP, instant booking, ratings/r
 
 Owner overview/property switcher, booking list/details/response, external entry, arrivals/payment and publication status remain future screen work beyond current private supply. Pending should not reduce booked stock; acceptance requires an actual server success. Stale calendar/gallery edits require refresh/review, never silent overwrite. Owner cancellation needs a reason. Pause must retain upcoming booking visibility. Payment record and booking state stay distinct.
 
-Admin review/support/account/report screens are planned. Review decisions need attributable reasons; no routine owner impersonation or silent cancellation on suspension. Publication, external contact/pricing/consent, support and arrival choices in [open decisions](../product/open-decisions.md) block final behavior.
+Broad admin support/account/report screens are planned; the configured single-reviewer publication workflow already exists. Review decisions need attributable reasons; no routine owner impersonation or silent cancellation on suspension. Publication, external contact/pricing/consent, support and arrival choices in [open decisions](../product/open-decisions.md) block final behavior.
 
 ## Prototype boundaries and consistent fixture
 

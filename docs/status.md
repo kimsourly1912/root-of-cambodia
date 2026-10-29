@@ -4,7 +4,7 @@
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026; guest-browsing planning based on merged main [d7e70bb](https://github.com/kimsourly1912/root-of-cambodia/commit/d7e70bbe9d0c0d18b34cfedaf4d143b0f59f89d2).
+**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
 **Sources:** [.github/workflows/verify.yml](../.github/workflows/verify.yml), [apps/web/app/](../apps/web/app), [apps/jobs/src/index.ts](../apps/jobs/src/index.ts), [apps/web/src/runtime.ts](../apps/web/src/runtime.ts), [apps/jobs/src/runtime.ts](../apps/jobs/src/runtime.ts).
 
@@ -47,7 +47,7 @@ Historical audit/photo evidence remains in the [archive](archive/README.md), wit
 | Booking foundation | Implemented API/database subset | Quotes, submission/detail, accept/decline/cancel/expiry, external allocation and inventory; [contract](features/bookings.md) |
 | Arrival/completion | Blocked/incomplete | `check_in` rejects with decision-required; complete requires an already checked-in record; no complete stay lifecycle |
 | Notifications | Implemented local substitute | Outbox, queues, lease fencing/backoff and capture; real sending/reminders/operations remain incomplete |
-| Discovery/destinations | Planned | No public search/catalog/destination journey in active app |
+| Guest stay browsing | Implemented local candidate | Anonymous allowlisted search/province/pagination/detail and processed-photo reads with explicit owner acknowledgement; [contract](features/guest-browsing.md). Destinations/maps and booking UI remain later work |
 | Guest and owner booking screens | Planned | Backend routes are not a complete booking/list/management UI |
 | Publication review | Implemented local pilot subset | Owner submit/withdraw, configured sole reviewer, correction notes, immutable snapshots and terms-gated approval; [contract](features/publication-review.md) |
 | Partner/admin/support | Planned | No general partner/contact submission, broad account/moderation or support dashboard |
@@ -129,13 +129,38 @@ New native coverage includes each missing requirement/optional fields, retained 
 
 [PR #21](https://github.com/kimsourly1912/root-of-cambodia/pull/21) is now merged at d7e70bbe9d0c0d18b34cfedaf4d143b0f59f89d2. Its tree 67544375b806e01d9cb72e740789ff93eeccd1ff exactly matches final tested head 2a93230c8b08342c5f22ad457d2c8e7745a4ad4e. [Final CI run 40889799436](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40889799436), job 123503175268, passed frozen install, all 11 fresh local migrations, bindings/types, both Worker builds, full Vitest and matching-Chromium desktop/phone checks. This is historical evidence for that merged source tree, not a fresh run during the next planning phase. No fresh audit, local browser, manual visual/accessibility, real-device, staging or production pass is claimed.
 
-## Current work and authorization
+## Merged browsing plan (PR #22)
 
 Following the merge of PR #21, the owner requested the next step. Branch docs/guest-browsing-plan starts from the confirmed updated main d7e70bb and prepares a [concrete first guest-browsing proposal](product/guest-browsing-proposal.md). The source review confirms that current review packets contain private address/contact/arrival fields, photos are served through private readers, and public list/detail routes are absent. The current scope is product/architecture planning before implementation of a new anonymous read boundary.
 
-The proposal recommends read-only stay browsing/detail pages, a public field allowlist, processed-only gallery delivery with the first photo as cover, explicit owner public-display acknowledgement and conservative handling of earlier approvals. It explains scope, alternatives, cost/maintenance implications, old-data boundaries and acceptance tests. These choices remain proposed; neither “Ok next” nor an existing publication approval silently authorizes public disclosure. Full guest booking-state logistics disclosure/snapshot rules remain D17.
+The proposal recommends read-only stay browsing/detail pages, a public field allowlist, processed-only gallery delivery with the first photo as cover, explicit owner public-display acknowledgement and conservative handling of earlier approvals. It explains scope, alternatives, cost/maintenance implications, old-data boundaries and acceptance tests. At that planning stage these choices remained proposed; neither “Ok next” nor an existing publication approval silently authorized public disclosure. Subsequent explicit approval is recorded below. Full guest booking-state logistics disclosure/snapshot rules remain D17.
 
-Only documentation changes in this phase: current merge/evidence status, the proposed slice and decision links, plus clarification that narrow publication review exists while broad admin/support does not. No application, dependency, schema, configuration, resource, repository-setting or data changes are made. Appropriate verification is source/scope inspection, Markdown links/anchors and whitespace. No install, initialization/migration, application build/test, deployment or new publication is performed or claimed by this planning phase.
+That phase changed only documentation: current merge/evidence status, the proposed slice and decision links, plus clarification that narrow publication review exists while broad admin/support does not. No application, dependency, schema, configuration, resource, repository-setting or data changes are made. Appropriate verification is source/scope inspection, Markdown links/anchors and whitespace. No install, initialization/migration, application build/test, deployment or new publication was performed by that planning phase. PR #22 was still open with passing [CI run 40893572752](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40893572752) when the owner instructed “Merged and continue”; its authorized merge was completed at ef971f1a863c6211a9a55fb1223982327fc5fdf7. The main tree fc66d8890944b81e8c6527fd9e8bbdc398e8a34f matched head a665ae0f15ab1c60c919545035ec64986b623a89.
+
+## Current implementation and authorization
+
+The owner instructed “Merged and continue” after the concrete public/private browsing recommendation and agreement question. [Approval record](product/open-decisions.md#public-browsing-decision--29-october-2026) and [ADR 0005](architecture/decisions/0005-public-listing-boundary.md) record the accepted scope independently of the PR merge. Branch feat/guest-browsing starts from ef971f1. This is local implementation/testing, not staging or public-pilot readiness; D17 booking-state logistics, actual terms/account selection, new spend/providers and deployment remain separate.
+
+The implementation adds /stays browsing/details, bounded literal Khmer/English search, exact province filtering, public-ID pagination and an allowlisted projection of approved listing content. Public media uses existing processed JPEGs from private R2, with current state/owner/member/ready checks before and after object access; originals and original metadata are excluded. All guest reads are dynamic/no-store, with no auth cookie or new nonlocal runtime path. Calendar aging/full stock and reviewer reassignment do not automatically remove an approved listing.
+
+Owner/reviewer pages show the same guest preview. New submission requires explicit public-display acknowledgement with policy version and digest, saved atomically with state/history/receipt. Migration 0012 adds immutable evidence and seal/approval guards without backfilling earlier data or changing migrations 0001–0011. Older pending records can correct/resubmit; old successful payloads/receipts remain recoverable; earlier approved records stay outside browsing. New snapshot construction explicitly preserves saved gallery order, fixing the earlier review-read ordering gap; stored snapshots remain unchanged. No published re-consent/pause/edit flow or guest booking UI is introduced.
+
+Fresh local Linux checks use Node 24.22.1 and pnpm 12.15.0, synthetic accounts and emulated services:
+
+| Command/scenario | Actual outcome |
+| --- | --- |
+| corepack pnpm install --frozen-lockfile | Passed; dependency versions/pins/lockfile unchanged |
+| corepack pnpm init:local; corepack pnpm types:bindings | Passed; local state upgraded through additive migration 0012, bindings generated; no remote resources |
+| corepack pnpm typecheck | Passed backend/web/jobs/tests |
+| corepack pnpm build:worker; corepack pnpm build:jobs | Passed actual web bundle and jobs dry run; no deployment |
+| corepack pnpm test | 173 passed across 20 files; all earlier 164 cases retained plus nine native catalog/disclosure cases |
+| Publication/readiness/catalog cases in full suite | 32 passed, including all earlier 23 publication/readiness cases with explicit acknowledgement prerequisites |
+| Native fresh/populated migrations | Fresh 12-migration application/foreign keys and populated 0011→0012 history/receipt/booking preservation passed; no old-row disclosure backfill |
+| Built-Worker HTTP/jobs journeys | Passed; all 12 historical HTTP checks retained, plus anonymous JSON/SSR/media/private-field/cache/cookie/read-only/paused/error checks |
+| Protected source/whitespace/document links | Prior booking operation SQL, migrations 0001–0011, runtime configs and dependency pins/lockfile unchanged; whitespace passed; link count in PR |
+| Matching-browser desktop/phone | Expanded owner/reviewer/visitor journey and new anonymous search/unavailable checks prepared; matching-head CI execution pending |
+
+Final matching-head CI/run evidence belongs in the candidate PR. No fresh local browser pass is claimed: matching Chromium remains unavailable after the previously documented truncated download. No manual visual/accessibility, real-device, staging or live-service pass is established. Production resource/cost, live image fidelity, abuse, recovery and pilot policy gates remain open.
 
 ## Follow-ups requiring separate scope or decisions
 
@@ -146,6 +171,6 @@ Only documentation changes in this phase: current merge/evidence status, the pro
 | Before public exposure | A02/A03: provider/environment path and action/upload/storage abuse budgets | Preserve local fail-closed guards; D07/D08/D11 before nonlocal work |
 | Policy/recovery | Arrival, support, retention/erasure and recovery ownership | [Open decisions](product/open-decisions.md), especially D01/D06/D09/D10/D17 |
 | Pilot quality | Khmer copy, accessibility, slow-device/performance and real-service validation | No full accessibility, cross-engine/device or capacity certification |
-| Guest journey | Agree on the [first browsing proposal](product/guest-browsing-proposal.md) before implementation | D05/public display choices remain proposed; D17 booking-state disclosure is outside this first slice |
+| Guest booking journey | Define D17 booking-state logistics/snapshot timing and scope request/detail screens next | Anonymous browsing is accepted/implemented locally; published re-consent/editing and public-pilot gates remain open |
 
-Next: the project owner agrees with or amends the public/private split, routed processed-photo delivery and explicit public-display acknowledgement. Then implement the focused local browsing slice. Booking request/detail screens and their private-logistics disclosure contract follow separately. Deliberate reviewer-account selection, actual approved terms and staged/live release gates remain open.
+Next: review this browsing implementation and its matching-head CI. Then scope guest request/detail screens and explicitly settle D17 before exposing private logistics. Deliberate reviewer-account selection, actual approved terms, published re-consent/editing and staged/live release gates remain open.

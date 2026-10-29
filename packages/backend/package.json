@@ -40,7 +40,9 @@
     "./publication": "./src/publication.ts",
     "./publication-queries": "./src/publication-queries.ts",
     "./publication-persistence": "./src/publication-persistence.ts",
-    "./publication-readiness": "./src/publication-readiness.ts"
+    "./publication-readiness": "./src/publication-readiness.ts",
+    "./public-listing": "./src/public-listing.ts",
+    "./catalog-queries": "./src/catalog-queries.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

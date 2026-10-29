@@ -4,7 +4,7 @@
 
 **Responsible role:** backend maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026; publication candidate based on merged main [484989d](https://github.com/kimsourly1912/root-of-cambodia/commit/484989df749689f797aa125ccf590e7eba0b0cb6).
+**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
 **Sources:** [packages/backend/migrations/](../../packages/backend/migrations), [packages/backend/src/operations.ts](../../packages/backend/src/operations.ts), [packages/backend/src/booking-persistence.ts](../../packages/backend/src/booking-persistence.ts), [packages/backend/src/schema.ts](../../packages/backend/src/schema.ts), [tests/migrations.test.ts](../../tests/migrations.test.ts), [tests/safeguards.test.ts](../../tests/safeguards.test.ts).
 
@@ -25,6 +25,7 @@
 | [0009](../../packages/backend/migrations/0009_property_media.sql) | Media journal, gallery versions, removal tombstones and events |
 | [0010](../../packages/backend/migrations/0010_property_logistics.sql) | Independently versioned private coordinates/contact/arrival instructions and attributable events |
 | [0011](../../packages/backend/migrations/0011_property_publication_review.sql) | Single reviewer configuration, immutable review requests/events and separately sealed owner/reviewer command receipts |
+| [0012](../../packages/backend/migrations/0012_public_listing_disclosure.sql) | Immutable owner-attributed public-display version/digest, new submission seal/approval guards and latest-review index; no backfill of earlier approvals |
 
 Add a new ordered migration; do not rewrite an applied one. Verify both fresh application and populated upgrades using the configured migration loader/tracker. A failed preflight needs a reviewed repair plan, never deletion of a populated database to force success. The proof schema is independent and is not an application upgrade path.
 
@@ -69,3 +70,7 @@ Existing indexes cover property ownership/catalog discovery, room/property, room
 R2 writes are outside D1 atomicity: [media ADR](decisions/0004-private-media-lifecycle.md) explains journaling, immutable objects and tombstones. Retention/erasure, pending expiry, exports, restore and alert ownership remain [D09/D10](../product/open-decisions.md). Worker rollback cannot undo committed SQL or restore deleted objects.
 
 Use [testing](../development/testing.md) for rollback, races, authorization revocation, replay, exact deadlines and populated upgrades; see [bookings](../features/bookings.md), [owner supply](../features/owner-supply.md) and [release/recovery](../operations/release-and-recovery.md). Historical safeguards findings are preserved in the [archive](../archive/README.md), not treated as all still pending.
+
+## Public listing acknowledgement
+
+[Guest browsing](../features/guest-browsing.md) uses an allowlist of immutable approved content. Public-display evidence is part of the same submission batch and records the current owner, request, policy version, displayed digest and database timestamp. New submit seals and approvals require it. Earlier sealed receipts still replay; earlier approved data is not backfilled or exposed. Ordered gallery construction is explicit for new snapshots; earlier stored snapshots remain immutable. Migration 0012 is additive, but older code cannot create new submissions without its required evidence; future rollout/rollback must preserve this privacy guard. No booking schema/operation rule changes.

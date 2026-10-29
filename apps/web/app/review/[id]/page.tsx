@@ -4,6 +4,7 @@ import { reviewDetails } from "@root-of-cambodia/backend/publication-queries";
 import { ReviewSnapshot } from "@/components/review-snapshot";
 import { PublicationAction } from "@/components/publication-action";
 import { PublicationChecklist } from "@/components/publication-checklist";
+import { PublicStayDetails } from "@/components/public-stay-details";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 export default async function Page({
   params,
@@ -27,10 +28,25 @@ export default async function Page({
       <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0 space-y-6">
           <PublicationChecklist readiness={data.readiness} />
-          <ReviewSnapshot
-            snapshot={data.request.snapshot}
-            previewBase={`/api/property-reviews/${id}/photos`}
-          />
+          <details open className="rounded-xl border bg-card p-5">
+            <summary className="mb-5 cursor-pointer text-lg font-semibold">
+              Guest listing preview
+            </summary>
+            <PublicStayDetails
+              listing={data.publicPreview.listing}
+              heading="h3"
+              photoBase={`/api/property-reviews/${id}/photos`}
+            />
+          </details>
+          <details className="rounded-xl border bg-card p-5">
+            <summary className="mb-5 cursor-pointer text-lg font-semibold">
+              Private review context
+            </summary>
+            <ReviewSnapshot
+              snapshot={data.request.snapshot}
+              previewBase={`/api/property-reviews/${id}/photos`}
+            />
+          </details>
         </div>
         <aside className="lg:sticky lg:top-8">
           <Card className="shadow-none">
@@ -41,8 +57,14 @@ export default async function Page({
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <p>
-                Approval makes this property eligible for booking APIs. Check
-                its listing details and booking settings carefully.
+                Approval makes this property eligible for guest browsing and
+                booking APIs. Check its listing details and booking settings
+                carefully.
+              </p>
+              <p>
+                {data.disclosure
+                  ? `Owner confirmed public display · ${data.disclosure.version}`
+                  : "Owner public-display confirmation is missing. Return this earlier submission for changes."}
               </p>
               <p>
                 {data.termsVersion
@@ -65,7 +87,10 @@ export default async function Page({
                   {
                     action: "approve",
                     label: "Approve and publish",
-                    disabled: !data.termsVersion || !data.readiness.ready,
+                    disabled:
+                      !data.termsVersion ||
+                      !data.readiness.ready ||
+                      !data.disclosure,
                   },
                 ]}
               />

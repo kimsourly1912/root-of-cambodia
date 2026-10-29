@@ -3,7 +3,7 @@ import Link from "next/link";
 import "./globals.css";
 export const metadata = {
   title: { default: "Root of Cambodia", template: "%s · Root of Cambodia" },
-  description: "Private owner workspace for Root of Cambodia.",
+  description: "Explore accommodation in Cambodia and manage your property.",
 };
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -19,18 +19,22 @@ export default function Layout({ children }: { children: ReactNode }) {
           Local preview · Email delivery is not connected. Drafts stay private.
         </div>
         <header className="border-b bg-white">
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-5 sm:px-8">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-5 sm:px-8">
             <Link href="/" className="text-lg font-semibold tracking-tight">
               Root of Cambodia<span className="ml-2 text-primary">↗</span>
             </Link>
-            <Link href="/owner" className="text-sm font-medium text-primary">
-              Owner workspace
-            </Link>
+            <nav
+              aria-label="Main navigation"
+              className="flex flex-wrap gap-5 text-sm font-medium text-primary"
+            >
+              <Link href="/stays">Explore stays</Link>
+              <Link href="/owner">Owner workspace</Link>
+            </nav>
           </div>
         </header>
         {children}
         <footer className="mx-auto max-w-6xl px-5 py-10 text-xs text-muted-foreground sm:px-8">
-          Root of Cambodia · Owner preview <span className="mx-2">/</span>{" "}
+          Root of Cambodia · Local preview <span className="mx-2">/</span>{" "}
           Payment at the property
         </footer>
       </body>

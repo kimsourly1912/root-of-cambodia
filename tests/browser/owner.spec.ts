@@ -992,7 +992,7 @@ test("sole pilot reviewer returns corrections and publishes only with configured
     };
     const created = await page.request.post("/api/owner/properties", {
       headers,
-      data: { ...fields, ownerName: "Local Owner" },
+      data: { ...fields, ownerName: "Local Owner", nameEn: "Guest stay " + info.project.name },
     });
     expect(created.status()).toBe(201);
     const property = (await created.json()) as { id: string };
@@ -1041,6 +1041,9 @@ test("sole pilot reviewer returns corrections and publishes only with configured
     await page.getByRole("button", { name: "Upload photo", exact: true }).click();
     await expect(page.getByRole("status")).toHaveText("Photo saved privately.");
     await page.goto(base + "/review");
+    await expect(page.getByRole("button", { name: "Submit saved draft", exact: true })).toBeDisabled();
+    await expect(page.getByText("Guest listing preview", {exact:true})).toBeVisible();
+    await page.getByLabel("I understand these listing details and processed photos will be visible publicly after approval.", {exact:true}).check();
     await expect(page.getByRole("button", { name: "Submit saved draft", exact: true })).toBeEnabled();
     const readiness = (await (await page.request.get(api)).json()).readiness;
     expect(readiness).toMatchObject({ ready: true, missing: [] });
@@ -1061,7 +1064,15 @@ test("sole pilot reviewer returns corrections and publishes only with configured
       data: { ...contact, revision: 2 },
     })).status()).toBe(200);
     await page.reload();
+    await page.getByLabel("I understand these listing details and processed photos will be visible publicly after approval.", {exact:true}).check();
     await expect(page.getByRole("button", { name: "Submit saved draft", exact: true })).toBeEnabled();
+    const infoApi="/api"+base+"/information", savedInfo=await (await page.request.get(infoApi)).json();
+    expect((await page.request.patch(infoApi,{headers:{...headers,"Idempotency-Key":"stale-public-preview"},data:{...savedInfo,description:savedInfo.description+"\nUpdated public description."}})).status()).toBe(200);
+    await page.getByRole("button",{name:"Submit saved draft",exact:true}).click();
+    await expect(page.locator("main").getByRole("alert")).toContainText("latest guest listing preview");
+    await page.getByRole("button",{name:"Reload latest status",exact:true}).click();
+    await expect(page.getByLabel("I understand these listing details and processed photos will be visible publicly after approval.",{exact:true})).not.toBeChecked();
+    await page.getByLabel("I understand these listing details and processed photos will be visible publicly after approval.",{exact:true}).check();
     let firstKey = "",
       firstBody = "",
       retryKey = "",
@@ -1098,6 +1109,7 @@ test("sole pilot reviewer returns corrections and publishes only with configured
     expect(retryKey).toBe(firstKey);
     expect(retryBody).toBe(firstBody);
     await page.getByRole("button", { name: "Withdraw to edit" }).click();
+    await page.getByLabel("I understand these listing details and processed photos will be visible publicly after approval.", {exact:true}).check();
     await expect(
       page.getByRole("button", { name: "Submit saved draft" }),
     ).toBeEnabled();
@@ -1145,6 +1157,7 @@ test("sole pilot reviewer returns corrections and publishes only with configured
     await expect(
       page.getByText("Please add arrival directions.", { exact: true }),
     ).toBeVisible();
+    await page.getByLabel("I understand these listing details and processed photos will be visible publicly after approval.", {exact:true}).check();
     await page.getByRole("button", { name: "Submit saved draft" }).click();
     await expect(
       page.getByRole("heading", { name: "Awaiting review" }),
@@ -1193,7 +1206,48 @@ test("sole pilot reviewer returns corrections and publishes only with configured
     };
     expect(result.publication).toBe("published");
     expect(result.latest.approvedTermsVersion).toBe("browser-approved-v1");
+    const visitorContext=await browser.newContext({...devices[info.project.name.startsWith("mobile")?"Pixel 7":"Desktop Chrome"],baseURL:"http://127.0.0.1:8787"});
+    try {
+      const visitor=await visitorContext.newPage();
+      await visitor.goto("/stays");
+      await visitor.getByLabel("Property name",{exact:true}).fill("Guest stay "+info.project.name);
+      await visitor.getByLabel("Province",{exact:true}).fill("kampot");
+      await visitor.getByRole("button",{name:"Search stays",exact:true}).click();
+      await visitor.getByRole("link",{name:new RegExp("Guest stay "+info.project.name)}).click();
+      await expect(visitor).toHaveURL(new RegExp("/stays/"+property.id+"$"));
+      await expect(visitor.getByText("Updated public description.",{exact:false})).toBeVisible();
+      const image=visitor.getByRole("img",{name:/Property photo 1 of/});
+      await expect(image).toBeVisible();
+      await expect.poll(()=>image.evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBeTruthy();
+      const publicResponse=await visitor.request.get("/api/stays/"+property.id);
+      expect(publicResponse.status()).toBe(200);expect(publicResponse.headers()["cache-control"]).toBe("no-store");expect(publicResponse.headers()["set-cookie"]).toBeUndefined();
+      const publicData=await publicResponse.json();
+      const html=await visitor.content();
+      for(const excluded of ["River lane, Kampot","reception@example.invalid",'"address"','"contactEmail"','"arrivalInstructions"','"latitude"','"previewHash"',"private/properties/"]){expect(JSON.stringify(publicData)).not.toContain(excluded);expect(html).not.toContain(excluded);}
+      expect(await visitor.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
+      expect((await visitor.request.get("/api"+base+"/logistics")).status()).toBe(401);
+      expect((await visitor.request.get("/api/stays/"+property.id+"/photos/"+publicData.photos[0].id+"/original")).status()).toBe(404);
+    } finally { await visitorContext.close(); }
   } finally {
     await reviewerContext.close();
   }
+});
+
+test("signed-out visitors can search, clear and recover from invalid or unavailable stay links",async({page},info)=>{
+  await page.goto("/stays");
+  await expect(page.getByRole("heading",{name:"Stays in Cambodia",exact:true})).toBeVisible();
+  const query = "Missing-"+info.project.name+"-"+crypto.randomUUID();
+  await page.getByLabel("Property name",{exact:true}).fill(query);
+  await page.getByRole("button",{name:"Search stays",exact:true}).click();
+  await expect(page).toHaveURL((url) => url.searchParams.get("q") === query);
+  await expect(page.getByRole("heading",{name:"No stays found",exact:true}),
+    "Empty search response: "+await page.locator("main").innerText()).toBeVisible();
+  await page.getByRole("link",{name:"Clear search",exact:true}).click();
+  await expect(page).toHaveURL(/\/stays$/);
+  await page.goto("/stays?q="+"x".repeat(101));
+  await expect(page.locator("main").getByRole("alert")).toContainText("Check the search details");
+  await page.goto("/stays/not-a-public-property");
+  await expect(page.getByRole("heading",{name:"Stay unavailable",exact:true})).toBeVisible();
+  await page.getByRole("link",{name:"Explore other stays",exact:true}).click();
+  await expect(page).toHaveURL(/\/stays$/);
 });

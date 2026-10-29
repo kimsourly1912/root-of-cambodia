@@ -4,11 +4,11 @@
 
 **Responsible role:** project owner (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
+**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
 **Sources:** [docs/archive/2026-10/Root-of-Cambodia-Product-Plan.md](../archive/2026-10/Root-of-Cambodia-Product-Plan.md), [docs/archive/2026-10/Root-of-Cambodia-Build-Specification.md](../archive/2026-10/Root-of-Cambodia-Build-Specification.md), [docs/archive/2026-10/Root-of-Cambodia-Backend-Foundation-Review.md](../archive/2026-10/Root-of-Cambodia-Backend-Foundation-Review.md), [docs/archive/2026-10/Root-of-Cambodia-Property-Photos-Review.md](../archive/2026-10/Root-of-Cambodia-Property-Photos-Review.md).
 
-This log preserves open policy and operational choices. Options describe decisions to make, not recommendations silently accepted through documentation cleanup. The project owner is the decision owner until a real delegate is assigned. Entries below remain **open** except the explicitly recorded D05 reviewer assignment and minimum checklist. Record an explicit outcome, approval evidence/date and affected canonical contract when resolved.
+This log preserves open policy and operational choices. Options describe decisions to make, not recommendations silently accepted through documentation cleanup. The project owner is the decision owner until a real delegate is assigned. Entries below remain **open** except the explicitly recorded D05 reviewer assignment, minimum checklist and first public-browsing boundary. Record an explicit outcome, approval evidence/date and affected canonical contract when resolved.
 
 | ID | Decision / options to assess | Consequence / blocking feature |
 | --- | --- | --- |
@@ -16,7 +16,7 @@ This log preserves open policy and operational choices. Options describe decisio
 | D02 | Adult/child age definitions, infant treatment, party distribution and pilot request/stay limits | Aggregate capacity enforcement exists; does not settle classification, infants or commercial limits |
 | D03 | Physical-unit assignment/continuity versus quantity-only inventory; validate with pilot owners | Nightly quantities cannot guarantee one particular physical room remains free throughout a stay |
 | D04 | External reservation contact/guest fields, negotiated prices and consent evidence | Current owner-only catalog-priced anonymous allocation is narrower than a full external booking workflow |
-| D05 | Additional-property review policy, high-impact edits, published/paused editing and public photo/cover variants | Sole pilot reviewer and [minimum publication checklist](publication-checklist-proposal.md) accepted on 29 October 2026. New submission/approval requires the minimum; further editing rules and public discovery remain open. Technical `unconfigured` terms are not publishable |
+| D05 | Additional-property review policy, high-impact edits, published/paused editing/re-consent and future public photo variants/caching | Sole pilot reviewer, [minimum checklist](publication-checklist-proposal.md) and [first browsing boundary](guest-browsing-proposal.md) accepted on 29 October 2026. Processed-only photos/first-photo cover and explicit owner acknowledgement are selected; broader editing/live-release policy remains open. Technical `unconfigured` terms are not publishable |
 | D06 | Audited support/admin powers, stronger admin authentication, escalation and suspended-owner handling | Blocks privileged support/suspension workflows; upcoming stays must remain resolvable without implicit impersonation |
 | D07 | Sending provider/domain, account/budget ownership, auth-mail prompt delivery/recovery, email-change policy, resend/abuse controls and reminder timing/templates | Blocks nonlocal auth and real notifications; assess quotas, cost, provider idempotency and bounce/complaint evidence |
 | D08 | Local/staging/production resource owners, pilot audience/properties, spend cap and operator | Blocks resource provisioning, nonlocal verification and deployment |
@@ -51,4 +51,8 @@ After the proposal in merged PR #20, the project owner replied “Yes please con
 
 ## Guest browsing proposal — 29 October 2026
 
-After PR #21 merged, the owner requested the next step. A [concrete browsing proposal](guest-browsing-proposal.md) recommends a read-only anonymous catalog/detail slice, a public/private field allowlist, processed-only gallery delivery with the first photo as cover, and explicit versioned owner authorization before public eligibility. These new D05/public-disclosure choices remain proposed, not approved by “Ok next.” D17 booking-state disclosure/snapshot timing, existing-published re-consent/editing and live release remain open. No private fields or media are exposed by this planning work.
+After PR #21 merged, the owner requested the next step. A [concrete browsing proposal](guest-browsing-proposal.md) recommends a read-only anonymous catalog/detail slice, a public/private field allowlist, processed-only gallery delivery with the first photo as cover, and explicit versioned owner authorization before public eligibility. At that stage the new D05/public-disclosure choices remained proposed; “Ok next” alone did not approve them. Subsequent acceptance is recorded below. D17 booking-state disclosure/snapshot timing, existing-published re-consent/editing and live release remain open. No private fields or media are exposed by this planning work.
+
+## Public browsing decision — 29 October 2026
+
+After the concrete field/media/owner-control proposal and an explicit agreement question, the project owner instructed “Merged and continue.” This accepts [the first browsing scope](guest-browsing-proposal.md): anonymous read-only list/detail, the public allowlist, province-only location, processed ready gallery photos/first-photo cover, private originals/logistics and versioned owner public-display acknowledgement tied to submitted content. It authorizes the focused local implementation/tests and completion of PR #22's merge after its passing CI. Earlier approvals are not retroactive public authorization. D17 Pending/Confirmed/later booking logistics and snapshot rules, published re-consent/editing/pause controls, legal terms and remote provisioning/migration/spend/deployment remain separate.

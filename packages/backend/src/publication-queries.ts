@@ -1,6 +1,18 @@
 import { verified, type Actor } from "./operations";
 import { DomainError } from "./errors";
 import { readPublicationReadiness } from "./publication-readiness";
+import {
+  publicDisclosurePreview,
+  type PublicDisclosure,
+} from "./public-listing";
+export async function requestDisclosure(db: D1Database, requestId: string) {
+  return db
+    .prepare(
+      "SELECT policy_version AS version,preview_hash AS previewHash,confirmed_at AS confirmedAt FROM public_listing_disclosure WHERE request_id=?",
+    )
+    .bind(requestId)
+    .first<PublicDisclosure & { confirmedAt: number }>();
+}
 export type ReviewSnapshot = {
   property: {
     id: string;
@@ -92,8 +104,9 @@ export const snapshotSQL = `SELECT json_object(
   'maxPriceCents',(SELECT max(unit_cents) FROM nightly_rate WHERE room_type_id=r.id)))
   FROM (SELECT * FROM room_type WHERE property_id=p.id ORDER BY id LIMIT 101) r)),
  'galleryRevision',g.revision,
- 'photos',json((SELECT json_group_array(json_object('id',m.id,'state',m.state,'width',m.width,'height',m.height))
-  FROM json_each(coalesce(g.ids_json,'[]')) j JOIN property_media m ON m.id=j.value AND m.property_id=p.id))
+ 'photos',json((SELECT json_group_array(json_object('id',ordered.id,'state',ordered.state,'width',ordered.width,'height',ordered.height))
+  FROM (SELECT m.id,m.state,m.width,m.height FROM json_each(coalesce(g.ids_json,'[]')) j
+   JOIN property_media m ON m.id=j.value AND m.property_id=p.id ORDER BY CAST(j.key AS INTEGER)) ordered))
  ) FROM property p JOIN place l ON l.id=p.id JOIN owner_profile o ON o.user_id=p.owner_id
  LEFT JOIN property_information i ON i.property_id=p.id LEFT JOIN property_logistics d ON d.property_id=p.id
  LEFT JOIN property_media_gallery g ON g.property_id=p.id WHERE p.id=? AND p.owner_id=?`;
@@ -211,6 +224,12 @@ export async function ownerPublication(
       .first());
   const events = latest ? await reviewEvents(db, latest.id) : [];
   const readiness = await readPublicationReadiness(db, propertyId, actor.id);
+  const publicPreview = draft
+    ? await publicDisclosurePreview(draft)
+    : latest
+      ? await publicDisclosurePreview(latest.snapshot)
+      : null;
+  const disclosure = latest ? await requestDisclosure(db, latest.id) : null;
   await verified(db, actor);
   // Ownership is also checked by each scoped read; recheck after composing them.
   if (
@@ -229,6 +248,8 @@ export async function ownerPublication(
     reviewerConfigured,
     termsConfigured: !!config?.termsVersion,
     readiness,
+    publicPreview,
+    disclosure,
   };
 }
 export type OwnerPublication = Awaited<ReturnType<typeof ownerPublication>>;
@@ -278,6 +299,8 @@ export async function reviewDetails(db: D1Database, actor: Actor, id: string) {
     request.propertyId,
     request.ownerId,
   );
+  const publicPreview = await publicDisclosurePreview(request.snapshot);
+  const disclosure = await requestDisclosure(db, id);
   await requireReviewer(db, actor);
   return {
     request,
@@ -285,6 +308,8 @@ export async function reviewDetails(db: D1Database, actor: Actor, id: string) {
     termsVersion: config.termsVersion,
     configRevision: config.revision,
     readiness,
+    publicPreview,
+    disclosure,
   };
 }
 export async function reviewPhotoAsset(

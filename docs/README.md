@@ -4,7 +4,7 @@
 
 **Responsible role:** maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
+**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
 **Sources:** [docs/status.md](status.md), [docs/product/scope.md](product/scope.md), [docs/architecture/overview.md](architecture/overview.md), [docs/archive/README.md](archive/README.md).
 
@@ -30,15 +30,18 @@ Report material disagreement. Do not silently rewrite approved policy to match a
 - [Product scope](product/scope.md)
 - [Open decisions](product/open-decisions.md)
 - [Accepted publication checklist](product/publication-checklist-proposal.md): approved D05 minimum and remaining boundaries
-- [Proposed guest-browsing slice](product/guest-browsing-proposal.md): public field/media boundary and owner acknowledgement awaiting agreement
+- [Accepted guest-browsing slice](product/guest-browsing-proposal.md): public field/media boundary and explicit owner acknowledgement
 - [Architecture overview and module map](architecture/overview.md)
 - [Database and operation invariants](architecture/database.md)
 - [ADR 0001: Modular monolith](architecture/decisions/0001-modular-monolith.md)
 - [ADR 0002: Atomic booking operations](architecture/decisions/0002-atomic-booking-operations.md)
 - [ADR 0003: pnpm workspace](architecture/decisions/0003-pnpm-workspace.md)
 - [ADR 0004: Private media lifecycle](architecture/decisions/0004-private-media-lifecycle.md)
+- [ADR 0005: Public listing boundary](architecture/decisions/0005-public-listing-boundary.md)
 
 ## Feature contracts
+
+- [Guest browsing](features/guest-browsing.md): anonymous allowlisted stays, confirmation-bound approval and routed processed media
 
 - [Private owner supply](features/owner-supply.md): drafts/rooms/calendar/information/photos; actual fields/routes/revisions/retry boundaries
 - [Pilot publication review](features/publication-review.md): single reviewer, submission snapshots, corrections, terms gate and retries

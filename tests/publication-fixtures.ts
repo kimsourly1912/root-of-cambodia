@@ -5,6 +5,18 @@ import { createRoomType } from "@root-of-cambodia/backend/room-types";
 import { saveRoomCalendar } from "@root-of-cambodia/backend/calendar";
 import { preparePhoto } from "@root-of-cambodia/backend/media";
 import { completeMedia } from "@root-of-cambodia/backend/media-persistence";
+import { readSnapshot } from "@root-of-cambodia/backend/publication-queries";
+import { publicDisclosurePreview } from "@root-of-cambodia/backend/public-listing";
+export async function disclosureFor(
+  db: D1Database,
+  propertyId: string,
+  ownerId: string,
+) {
+  const { version, previewHash } = await publicDisclosurePreview(
+    (await readSnapshot(db, propertyId, ownerId)).data,
+  );
+  return { version, previewHash };
+}
 
 // Synthetic metadata fixture for publication rules. Actual bytes/Images/R2 and
 // HTTP upload are covered by media tests and the browser supply journey.
