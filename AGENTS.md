@@ -11,8 +11,9 @@ Inspect source/config/tests and report material conflicts before changing behavi
 ## Project and boundaries
 
 The current app is a local private owner-supply foundation with booking APIs.
-Accommodation is request-to-book and pay-at-property. Public discovery,
-publication/admin, complete guest/arrival flows and live providers are unfinished.
+Accommodation is request-to-book and pay-at-property. Public discovery, broad
+admin/support, complete guest/arrival flows and live providers are unfinished.
+A configured single-reviewer publication flow is local pilot scope.
 
 Use the root packageManager/Node pins and committed pnpm lockfile.
 

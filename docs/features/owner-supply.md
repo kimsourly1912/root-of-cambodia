@@ -1,10 +1,10 @@
 # Private owner supply contract
 
-**Status:** implemented private drafts; publication and general partner onboarding planned.
+**Status:** implemented private drafts and a narrow [pilot publication review](publication-review.md); general partner onboarding remains planned.
 
 **Responsible role:** owner-supply maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026; candidate based on [b653b57](https://github.com/kimsourly1912/root-of-cambodia/commit/b653b57b711e0d03aebb8e119f9df10e0c31f8b3), with the private location/contact slice verified on feat/private-property-logistics.
+**Last source verification:** 29 October 2026; publication candidate based on merged main [484989d](https://github.com/kimsourly1912/root-of-cambodia/commit/484989df749689f797aa125ccf590e7eba0b0cb6).
 
 **Sources:** [apps/web/app/owner/](../../apps/web/app/owner), [apps/web/app/api/owner/properties/](../../apps/web/app/api/owner/properties), [packages/backend/src/property-drafts.ts](../../packages/backend/src/property-drafts.ts), [packages/backend/src/room-types.ts](../../packages/backend/src/room-types.ts), [packages/backend/src/calendar.ts](../../packages/backend/src/calendar.ts), [packages/backend/src/property-information.ts](../../packages/backend/src/property-information.ts), [packages/backend/src/media.ts](../../packages/backend/src/media.ts).
 
@@ -12,7 +12,7 @@
 
 A verified account can create and manage its own private property drafts, room types, dated rates/stock, information, photos and private location/contact/arrival details. One account may be guest and owner; the first draft creates an owner profile without renaming an existing profile. Exact owner/property/room relationships are checked on reads, early service entry, receipt replay and inside atomic writes.
 
-These editing operations are for drafts; published/review/paused editing is not added by this UI. A saved draft does not publish, become bookable, verify the business, submit a partner application or approve platform terms. Its technical `unconfigured` terms version is not publication-ready. General partner/contact submission, live maps/geocoding, review/publication/admin and guest/owner booking screens remain planned. Private draft contact/arrival fields are implemented; guest disclosure remains undecided.
+These editing operations are for drafts; published/review/paused editing is not added by this UI. A saved draft does not publish, become bookable, verify the business, submit a partner application or approve platform terms. Its technical `unconfigured` terms version is not publication-ready. General partner/contact submission, live maps/geocoding, broader admin/support and guest/owner booking screens remain planned. [Pilot publication review](publication-review.md) now supports owner submission/withdrawal and the configured reviewer’s corrections/approval. Private draft contact/arrival fields are implemented; guest disclosure remains undecided.
 
 ## Identity and access surface
 
@@ -43,9 +43,9 @@ Latitude/longitude must be finite numbers in [-90, 90]/[-180, 180], supplied tog
 
 Service/query/persistence modules are [property-logistics.ts](../../packages/backend/src/property-logistics.ts), [property-logistics-queries.ts](../../packages/backend/src/property-logistics-queries.ts) and [property-logistics-persistence.ts](../../packages/backend/src/property-logistics-persistence.ts). Additive [migration 0010](../../packages/backend/migrations/0010_property_logistics.sql) stores an independently versioned extension and immutable attributable events. A first save checks expected absence; updates check the current positive revision. Data, revision/event and receipt commit atomically with current verified ownership/draft checks. Existing booking settings/revisions, snapshots, rates, reserved stock and outbox records do not change.
 
-Coordinates are owner-entered and not geocoded or verified. Contact methods are informational and unverified; they do not change the sign-in email or trigger messages. Details remain private to the owner: no guest/public read endpoint or booking disclosure is added. Arrival notes do not enable check-in, settle arrival/no-show/late-cancellation policy or change accepted terms.
+Coordinates are owner-entered and not geocoded or verified. Contact methods are informational and unverified; they do not change the sign-in email or trigger messages. Details remain private to the owner and, while submitted, the explicitly configured pilot publication reviewer: no guest/public read endpoint or booking disclosure is added. Arrival notes do not enable check-in, settle arrival/no-show/late-cancellation policy or change accepted terms.
 
-The form supports save/reopen/clear, blank drafts, exact same-key/body recovery after a lost response and refresh/review after a stale conflict. Pending attempts stay only in the open tab. The shared adapter still enforces Origin/JSON bounds/private caching; failures include invalid_property_logistics (422) and existing 401/403/404/409/413/503 codes. Publication readiness/review and guest snapshot/disclosure policy (D05/D17) remain separate.
+The form supports save/reopen/clear, blank drafts, exact same-key/body recovery after a lost response and refresh/review after a stale conflict. Pending attempts stay only in the open tab. The shared adapter still enforces Origin/JSON bounds/private caching; failures include invalid_property_logistics (422) and existing 401/403/404/409/413/503 codes. The [review contract](publication-review.md) defines submission access and terms gating; required publication fields and guest snapshot/disclosure policy (D05/D17) remain open.
 
 ## Implemented HTTP surface
 

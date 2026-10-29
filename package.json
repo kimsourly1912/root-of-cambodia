@@ -20,7 +20,8 @@
     "test:jobs": "vitest run --project backend tests/jobs.test.ts",
     "test:worker": "vitest run --project worker-http",
     "test": "vitest run",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "reviewer:local": "node scripts/configure-reviewer-local.ts"
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "1.4.9",

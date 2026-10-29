@@ -4,7 +4,7 @@
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026; candidate based on [b653b57](https://github.com/kimsourly1912/root-of-cambodia/commit/b653b57b711e0d03aebb8e119f9df10e0c31f8b3) (dependency PR #17) plus the private owner-detail slice described below.
+**Last source verification:** 29 October 2026; publication candidate based on merged main [484989d](https://github.com/kimsourly1912/root-of-cambodia/commit/484989df749689f797aa125ccf590e7eba0b0cb6).
 
 **Sources:** [.github/workflows/verify.yml](../.github/workflows/verify.yml), [apps/web/app/](../apps/web/app), [apps/jobs/src/index.ts](../apps/jobs/src/index.ts), [apps/web/src/runtime.ts](../apps/web/src/runtime.ts), [apps/jobs/src/runtime.ts](../apps/jobs/src/runtime.ts).
 
@@ -12,7 +12,7 @@ This is the single current delivery/evidence page. Feature docs define contracts
 
 ## Baseline and evidence
 
-The documentation foundation is merged in [PR #16](https://github.com/kimsourly1912/root-of-cambodia/pull/16), main commit [ed7035c6c267232d94537d94b5fc91806e4715b6](https://github.com/kimsourly1912/root-of-cambodia/commit/ed7035c6c267232d94537d94b5fc91806e4715b6), tree bd2146dd5bcb1261af61812997feaf34fd3cd440. Its [CI run 40862202635](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40862202635) passed. The dependency patch is [PR #17](https://github.com/kimsourly1912/root-of-cambodia/pull/17), head b653b57b711e0d03aebb8e119f9df10e0c31f8b3. Its [CI run 40867423899](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40867423899) passed. Current owner work is based on that patch; neither PR is recorded as merged by this candidate.
+The documentation foundation is merged in [PR #16](https://github.com/kimsourly1912/root-of-cambodia/pull/16), main commit [ed7035c6c267232d94537d94b5fc91806e4715b6](https://github.com/kimsourly1912/root-of-cambodia/commit/ed7035c6c267232d94537d94b5fc91806e4715b6), tree bd2146dd5bcb1261af61812997feaf34fd3cd440. Its [CI run 40862202635](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40862202635) passed. The dependency patch is [PR #17](https://github.com/kimsourly1912/root-of-cambodia/pull/17), head b653b57b711e0d03aebb8e119f9df10e0c31f8b3. Its [CI run 40867423899](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40867423899) passed. PR #17 is now merged at ae98c8af4e066fa2be1bacf882105ff682332726. The owner-detail [PR #18](https://github.com/kimsourly1912/root-of-cambodia/pull/18) is merged at 484989df749689f797aa125ccf590e7eba0b0cb6; its [CI run 40869589613](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40869589613) passed 140 Vitest tests and 14 desktop/phone browser checks. Main has the identical tested owner-detail tree f44d82723b3d76e12e014c52b4144068b0442781. This candidate starts from that merged main.
 
 ### Dependency base (PR #17)
 
@@ -49,7 +49,8 @@ Historical audit/photo evidence remains in the [archive](archive/README.md), wit
 | Notifications | Implemented local substitute | Outbox, queues, lease fencing/backoff and capture; real sending/reminders/operations remain incomplete |
 | Discovery/destinations | Planned | No public search/catalog/destination journey in active app |
 | Guest and owner booking screens | Planned | Backend routes are not a complete booking/list/management UI |
-| Publication/partner/admin/support | Planned | No general partner/contact submission, publication moderation or support dashboard |
+| Publication review | Implemented local pilot subset | Owner submit/withdraw, configured sole reviewer, correction notes, immutable snapshots and terms-gated approval; [contract](features/publication-review.md) |
+| Partner/admin/support | Planned | No general partner/contact submission, broad account/moderation or support dashboard |
 | Other-category reservations/payments | Deferred | Accommodation-first, pay-at-property v1 remains accepted policy |
 | Language/design | Partial | Khmer names/fonts and some labels; predominantly English working UI, not full Khmer localization |
 
@@ -57,13 +58,13 @@ Implementation-plan steps 1–5 and the later pnpm amendment are recorded as loc
 
 ## Current private owner-detail slice
 
-Branch feat/private-property-logistics adds the Location & contact tab and private GET/PATCH /api/owner/properties/:id/logistics. Owners can save/reopen/clear optional paired coordinates, informational contact name/phone/email and arrival notes. It uses the existing verified-owner, independent revision, atomic history/receipt and same-attempt recovery patterns. Migration 0010 is additive; earlier migrations and booking/stock/quote/provider behavior are unchanged.
+Merged PR #18 added the Location & contact tab and private GET/PATCH /api/owner/properties/:id/logistics. Owners can save/reopen/clear optional paired coordinates, informational contact name/phone/email and arrival notes. It uses the existing verified-owner, independent revision, atomic history/receipt and same-attempt recovery patterns. Migration 0010 is additive; earlier migrations and booking/stock/quote/provider behavior are unchanged.
 
 Fresh Linux/pinned-toolchain local checks include frozen install, local initialization/binding generation, strict types, both Worker builds and 140 Vitest tests across 17 files. Nine new native scenarios cover absent/cleared details, permissions/replay, competing saves, uncertain commit recovery, commit-time revocation/state/absence races, audit rollback/SQL guards, validation, unchanged booking data and populated upgrades. The legacy upgrade snapshot check accounts for two new empty extension tables.
 
 A new Playwright journey covers save/reopen/clear, paired-coordinate validation, lost-response same-key/body recovery, stale tabs, private/Origin refusal and phone-width overflow, in both existing browser projects. Local matching-browser installation remains blocked as above; this candidate's PR CI is authoritative for browser outcomes. No new local browser pass or manual visual/accessibility review is claimed.
 
-All details stay owner-private and do not change sign-in email, enable arrival/check-in, choose a map provider, publish a listing or define guest disclosure. Next policy work remains D05/D17 publication/disclosure and D01 arrival. See the [feature contract](features/owner-supply.md#private-location-contact-and-arrival-details).
+All details stay owner-private and do not change sign-in email, enable arrival/check-in, choose a map provider, publish a listing or define guest disclosure. The current candidate adds the bounded review procedure below; required publication fields/disclosure and arrival remain open. See the [feature contract](features/owner-supply.md#private-location-contact-and-arrival-details).
 
 ## Environment scope
 
@@ -75,20 +76,27 @@ All details stay owner-private and do not change sign-in email, enable arrival/c
 
 Earlier Windows network/browser-override notes remain historical environment evidence; they do not invalidate the matching-browser CI pass or establish today's PC setup. External Cloudflare account/deployed traffic/secrets were not inspected.
 
+## Current publication candidate
+
+The project owner authorized merging PRs #17/#18 and starting the recommended next slice. Branch feat/pilot-publication-review adds owner submission/withdrawal, a private oldest-first reviewer queue, correction notes/resubmission and explicit terms-gated approval. The project owner is the sole pilot reviewer; a trusted local command assigns the deliberately chosen verified app user ID. There is no self-service grant, first-user admin shortcut or inferred app identity. Migration 0011 is additive and earlier SQL/booking operation roles/receipts remain unchanged.
+
+Submission freezes saved draft editing. Snapshots/events/receipts are atomic and immutable; current verification/ownership/reviewer assignment/config revision and submitted data are fenced at commit. Approval sets an explicitly configured approved booking-terms version and publishes the property. Empty terms configuration blocks approval. Preparation reminders remain guidance while D05 required fields are open. Review-photo access is private and processed-only. No guest contact/public discovery/media workflow, support impersonation, arrival action or provider/deployment change is added.
+
+Fresh Linux/pinned-toolchain checks passed frozen installation, all 11 local migrations, binding generation, strict types, both Worker builds, 153 Vitest tests across 18 files (including 13 new native review scenarios and added built-Worker HTTP assertions), zero reported audit advisories and 738 repository links/anchors. Matching-head CI and browser outcomes are recorded in the candidate PR. The earlier PR counts above remain historical evidence for their own commits. Local matching-browser download is unavailable as documented; matching-browser PR CI supplies browser execution evidence. No manual visual/accessibility or live-pilot acceptance is claimed.
+
 ## Current work and authorization
 
-Documentation consolidation is completed/merged. Current authorized engineering work includes the isolated dependency patch and this separate private owner-detail slice. The owner slice adds only private draft behavior and migration 0010; deployment configuration, repository settings and existing booking rules remain unchanged. No merge or deployment is performed by it. Remaining business decisions stay explicit in the [decision log](product/open-decisions.md).
+Documentation and dependency/private owner-detail work are merged. The user explicitly authorized both merges and starting the recommended publication slice on 29 October 2026. The narrow reviewer responsibility is recorded in [D05](product/open-decisions.md#pilot-reviewer-decision--29-october-2026). Application account assignment and approved legal terms have not been guessed. No deployment, remote migration, repository-setting mutation or broader support/admin assignment is authorized or performed by this candidate.
 
 ## Follow-ups requiring separate scope or decisions
 
 | Priority | Follow-up | Boundary |
 | --- | --- | --- |
-| Dependency patch under review | A01: scoped override removes affected glob@10.3.3 from the active [lockfile](../pnpm-lock.yaml) | Fresh local audit/types/builds/runtime tests pass; matching-browser CI remains the review gate; remove override when a verified parent resolves a patched version itself |
-| Governance | A04: required verification/review policy and real reviewer assignment | Audit observed unprotected main/no rulesets; current settings not reread or changed; D18 approval needed |
+| Publication pilot | Select verified local reviewer account and approve actual booking terms/version | Local setup supports explicit assignment; approval fails closed without terms; D05 required checklist and D15 legal/privacy remain open |
+| Governance | A04: required verification/review policy and real code reviewer assignment | Existing settings not changed; D18 approval needed |
 | Before public exposure | A02/A03: provider/environment path and action/upload/storage abuse budgets | Preserve local fail-closed guards; D07/D08/D11 before nonlocal work |
-| Policy/recovery | Arrival, publication/support, retention/erasure and recovery ownership | [Open decisions](product/open-decisions.md), especially D01/D05/D06/D09/D10 |
-| Engineering proposals | Narrow imports/contracts, reusable mutation-attempt handling, durable guest attempt recovery | No source moves/helper extraction/boundary tooling in this phase |
+| Policy/recovery | Arrival, support, retention/erasure and recovery ownership | [Open decisions](product/open-decisions.md), especially D01/D06/D09/D10/D17 |
 | Pilot quality | Khmer copy, accessibility, slow-device/performance and real-service validation | No full accessibility, cross-engine/device or capacity certification |
 | Small source follow-up | Diagnostics success status can differ from creation response; photo UI has a stray replacement character | Audit A11/A10; unchanged here; separate focused code/copy fix |
 
-Next: review dependency PR #17 and the owner-detail PR, then settle the publication checklist and reviewer procedure before implementing submission/approval. Publication requirements, review/support powers and guest disclosure still need explicit product decisions; this status page does not decide them.
+Next: review the publication candidate and validate the local owner → reviewer → corrections → approval journey with explicitly approved terms. Then settle the publication checklist before public discovery work. These source changes do not establish public-pilot readiness.

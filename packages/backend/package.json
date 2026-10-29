@@ -36,7 +36,10 @@
     "./media-persistence": "./src/media-persistence.ts",
     "./property-logistics": "./src/property-logistics.ts",
     "./property-logistics-queries": "./src/property-logistics-queries.ts",
-    "./property-logistics-persistence": "./src/property-logistics-persistence.ts"
+    "./property-logistics-persistence": "./src/property-logistics-persistence.ts",
+    "./publication": "./src/publication.ts",
+    "./publication-queries": "./src/publication-queries.ts",
+    "./publication-persistence": "./src/publication-persistence.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -39,6 +39,7 @@ Report material disagreement. Do not silently rewrite approved policy to match a
 ## Feature contracts
 
 - [Private owner supply](features/owner-supply.md): drafts/rooms/calendar/information/photos; actual fields/routes/revisions/retry boundaries
+- [Pilot publication review](features/publication-review.md): single reviewer, submission snapshots, corrections, terms gate and retries
 - [Bookings and stock](features/bookings.md): quotes/snapshots/actions/external allocation; arrival gate; planned UI
 - [Notifications and diagnostics](features/notifications.md): recipient/outbox/lease/provider acceptance and privacy
 

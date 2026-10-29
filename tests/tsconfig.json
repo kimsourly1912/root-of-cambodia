@@ -1,7 +1,10 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["node", "@cloudflare/vitest-plugin/types"]
+    "types": [
+      "node",
+      "@cloudflare/vitest-plugin/types"
+    ]
   },
   "include": [
     "**/*.ts",
@@ -9,6 +12,7 @@
     "../apps/jobs/worker-configuration.d.ts",
     "../packages/backend/worker-configuration.d.ts",
     "../vitest*.ts",
-    "../playwright.config.ts"
+    "../playwright.config.ts",
+    "../scripts/configure-reviewer-local.ts"
   ]
 }

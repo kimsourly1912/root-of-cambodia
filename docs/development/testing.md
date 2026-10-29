@@ -37,6 +37,7 @@ For changed semantics, verify the relevant source/migration contracts and add fo
 | Authorization | Missing/unverified sessions, wrong owner/parent, access revoked before replay and between early read and commit |
 | Schema | Fresh migrations and populated upgrade with preserved history/snapshots/receipts; rejected preflight without damage |
 | Draft/calendar/information | Expected absence/null revisions, stale/concurrent saves, audit failure rollback, exact cents, reserved-counter preservation |
+| Publication review | Configured reviewer only, immutable snapshots, correction/terms gates, competing actions, uncertain response recovery, commit-time revocation and snapshot changes, private previews and additive populated upgrades |
 | Media | Declaration/signature/decoder/bounds, private access, partial R2 failure, retries, removal during processing, late writes, cleanup failures and retained tombstones |
 | Notifications | Duplicate/missed publish, expired/replaced lease, late worker success/failure, provider success with lost acknowledgement, unavailable recipient recovery |
 | UI | Empty/loading/validation, uncertain retry, stale tab, save/reopen, private route access and desktop/phone layout |

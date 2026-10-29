@@ -1,3 +1,4 @@
+import { canReview } from "@root-of-cambodia/backend/publication-queries";
 import Link from "next/link";
 import { ownerSession, ownerRead } from "@/src/owner-session";
 import { ownerProperties } from "@root-of-cambodia/backend/property-queries";
@@ -13,6 +14,7 @@ export default async function Page({
   const result = await ownerRead(() =>
     ownerProperties(db, actor, typeof cursor === "string" ? cursor : ""),
   );
+  const reviewer = await ownerRead(() => canReview(db, actor));
   return (
     <>
       <div className="mb-8 flex flex-wrap items-start justify-between gap-5">
@@ -28,9 +30,16 @@ export default async function Page({
             cannot receive bookings.
           </p>
         </div>
-        <Button asChild>
-          <Link href="/owner/properties/new">+ New property draft</Link>
-        </Button>
+        <div className="flex flex-wrap gap-4">
+          {reviewer && (
+            <Button variant="outline" asChild>
+              <Link href="/review">Publication reviews</Link>
+            </Button>
+          )}
+          <Button asChild>
+            <Link href="/owner/properties/new">+ New property draft</Link>
+          </Button>
+        </div>
       </div>
       {result.items.length ? (
         <div className="grid gap-4 sm:grid-cols-2">
@@ -107,8 +116,8 @@ export default async function Page({
         )}
       </div>
       <p className="mt-8 text-xs text-muted-foreground">
-        Open a property to set up rooms, prices and availability. Photos and
-        publication review will follow later.
+        Open a property to prepare its details, rooms, prices and photos, then
+        submit it for publication review.
       </p>
     </>
   );

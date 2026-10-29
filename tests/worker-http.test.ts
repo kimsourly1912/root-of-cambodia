@@ -500,6 +500,30 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
       .prepare("UPDATE user SET emailVerified=1 WHERE id=?")
       .bind(guest.id)
       .run();
+    // Publication adapters reuse the real session/Origin/private-response boundary.
+    const draftFields={ownerName:"Owner",nameKm:"ផ្ទះ",nameEn:"Review house",province:"Kampot",checkinTime:"14:00",checkoutTime:"11:00",policyText:"Quiet hours"};
+    const draftResponse=await post("/api/owner/properties",draftFields,owner.cookie,"review-draft");
+    assert.equal(draftResponse.status,201);
+    const draft=await draftResponse.json() as {id:string};
+    const reviewPath="/api/owner/properties/"+draft.id+"/review";
+    assert.equal((await post(reviewPath,{action:"submit",propertyRevision:1},owner.cookie,"review-submit")).status,422);
+    assert.equal((await server.fetch(baseURL+"/api/property-reviews",{headers:{Cookie:owner.cookie}})).status,404);
+    assert.equal((await post("/__test/pilot-reviewer",{userId:owner.id,termsVersion:"forged"},owner.cookie)).status,404);
+    await db.prepare("INSERT INTO pilot_publication_config VALUES(1,?,NULL,1)").bind(other.id).run();
+    assert.equal((await post(reviewPath,{action:"submit",propertyRevision:1},owner.cookie,"review-submit","https://untrusted.invalid")).status,403);
+    const submitted=await post(reviewPath,{action:"submit",propertyRevision:1},owner.cookie,"review-submit");
+    assert.equal(submitted.status,200);assert.ok(submitted.headers.get("cache-control")?.includes("no-store"));
+    const pending=await submitted.json() as {id:string;status:string};
+    const queue=await server.fetch(baseURL+"/api/property-reviews",{headers:{Cookie:other.cookie}});
+    assert.equal(queue.status,200);assert.ok(queue.headers.get("cache-control")?.includes("no-store"));
+    assert.equal((await post("/api/property-reviews/"+pending.id,{action:"approve",revision:1,configRevision:1},other.cookie,"review-approve")).status,422);
+    const details=await server.fetch(baseURL+"/api/property-reviews/"+pending.id,{headers:{Cookie:other.cookie}});
+    assert.equal(details.status,200);
+    const photo=await server.fetch(baseURL+"/api/property-reviews/"+pending.id+"/photos/missing",{headers:{Cookie:other.cookie}});
+    assert.equal(photo.status,404);assert.equal(photo.headers.get("x-content-type-options"),"nosniff");
+    const returned=await post("/api/property-reviews/"+pending.id,{action:"return_changes",revision:1,configRevision:1,reason:"Please add directions."},other.cookie,"review-return");
+    assert.equal(returned.status,200);
+    assert.equal((await returned.json() as {status:string}).status,"returned");
     await db.prepare("DROP TABLE nightly_rate").run();
     const unavailable = await post("/api/booking-quotes", input, guest.cookie);
     assert.equal(unavailable.status, 503);
