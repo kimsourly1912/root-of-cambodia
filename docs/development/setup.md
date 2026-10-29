@@ -16,7 +16,7 @@ Keep the committed pnpm lockfile, isolated install layout, release-age policy, n
 
 ## Full local verification sequence
 
-The commands below reproduce the checked-in CI order. They install dependencies, write local state, generate files and apply local migrations; run them only within the current task's authorization. This documentation-only phase explicitly prohibits executing them.
+The commands below reproduce the checked-in CI order. They install dependencies, write local state, generate files and apply local migrations; run them only within the current task's authorization. A documentation-only task that explicitly excludes these operations must not execute them.
 
 ~~~sh
 corepack enable
