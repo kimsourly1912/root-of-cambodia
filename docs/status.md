@@ -4,7 +4,7 @@
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026; publication candidate based on merged main [484989d](https://github.com/kimsourly1912/root-of-cambodia/commit/484989df749689f797aa125ccf590e7eba0b0cb6).
+**Last source verification:** 29 October 2026; follow-up based on merged main [d53544c](https://github.com/kimsourly1912/root-of-cambodia/commit/d53544cbee11def8e2522a33075235ba0abe73e0).
 
 **Sources:** [.github/workflows/verify.yml](../.github/workflows/verify.yml), [apps/web/app/](../apps/web/app), [apps/jobs/src/index.ts](../apps/jobs/src/index.ts), [apps/web/src/runtime.ts](../apps/web/src/runtime.ts), [apps/jobs/src/runtime.ts](../apps/jobs/src/runtime.ts).
 
@@ -12,7 +12,7 @@ This is the single current delivery/evidence page. Feature docs define contracts
 
 ## Baseline and evidence
 
-The documentation foundation is merged in [PR #16](https://github.com/kimsourly1912/root-of-cambodia/pull/16), main commit [ed7035c6c267232d94537d94b5fc91806e4715b6](https://github.com/kimsourly1912/root-of-cambodia/commit/ed7035c6c267232d94537d94b5fc91806e4715b6), tree bd2146dd5bcb1261af61812997feaf34fd3cd440. Its [CI run 40862202635](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40862202635) passed. The dependency patch is [PR #17](https://github.com/kimsourly1912/root-of-cambodia/pull/17), head b653b57b711e0d03aebb8e119f9df10e0c31f8b3. Its [CI run 40867423899](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40867423899) passed. PR #17 is now merged at ae98c8af4e066fa2be1bacf882105ff682332726. The owner-detail [PR #18](https://github.com/kimsourly1912/root-of-cambodia/pull/18) is merged at 484989df749689f797aa125ccf590e7eba0b0cb6; its [CI run 40869589613](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40869589613) passed 140 Vitest tests and 14 desktop/phone browser checks. Main has the identical tested owner-detail tree f44d82723b3d76e12e014c52b4144068b0442781. This candidate starts from that merged main.
+The documentation foundation is merged in [PR #16](https://github.com/kimsourly1912/root-of-cambodia/pull/16), main commit [ed7035c6c267232d94537d94b5fc91806e4715b6](https://github.com/kimsourly1912/root-of-cambodia/commit/ed7035c6c267232d94537d94b5fc91806e4715b6), tree bd2146dd5bcb1261af61812997feaf34fd3cd440. Its [CI run 40862202635](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40862202635) passed. The dependency patch is [PR #17](https://github.com/kimsourly1912/root-of-cambodia/pull/17), head b653b57b711e0d03aebb8e119f9df10e0c31f8b3. Its [CI run 40867423899](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40867423899) passed. PR #17 is now merged at ae98c8af4e066fa2be1bacf882105ff682332726. The owner-detail [PR #18](https://github.com/kimsourly1912/root-of-cambodia/pull/18) is merged at 484989df749689f797aa125ccf590e7eba0b0cb6; its [CI run 40869589613](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40869589613) passed 140 Vitest tests and 14 desktop/phone browser checks. PR #18 merged with the identical tested owner-detail tree f44d82723b3d76e12e014c52b4144068b0442781. Publication review was built on that baseline; its later merge is recorded below.
 
 ### Dependency base (PR #17)
 
@@ -30,9 +30,9 @@ Fresh verification on 29 October 2026 used Linux, Node 24.22.1 and pnpm 12.15.0 
 | Local initialization and binding generation | Passed; all existing migrations applied locally; no SQL files changed |
 | Strict backend/web/jobs/test types | Passed |
 | Next.js/OpenNext Worker and jobs dry-run builds | Passed; no deployment |
-| Vitest | Passed for the dependency base; current owner-candidate totals below |
+| Vitest | Passed for the dependency base; historical owner/publication totals below |
 | Local Playwright browser installation | Blocked: matching Chromium 156.0.8078.4 download returned an invalid/truncated ZIP; no executable override or version downgrade |
-| Browser execution / PR CI | Dependency PR #17 CI passed matching-browser desktop/phone checks; no local browser pass claimed; owner candidate has its own CI result |
+| Browser execution / PR CI | Dependency PR #17 CI passed matching-browser desktop/phone checks; no local browser pass claimed; owner/publication changes have their own CI results |
 
 These are local-emulator results, not staging/live verification. Zero audit findings is the registry audit result at this time, not a security certification. The independent historical proof was not dependency-audited or changed; its older lockfile is outside this fix. glob 10.x still has an upstream deprecation notice; removing the override requires a separately verified parent/adapter update that no longer pins an affected copy.
 
@@ -62,9 +62,9 @@ Merged PR #18 added the Location & contact tab and private GET/PATCH /api/owner/
 
 Fresh Linux/pinned-toolchain local checks include frozen install, local initialization/binding generation, strict types, both Worker builds and 140 Vitest tests across 17 files. Nine new native scenarios cover absent/cleared details, permissions/replay, competing saves, uncertain commit recovery, commit-time revocation/state/absence races, audit rollback/SQL guards, validation, unchanged booking data and populated upgrades. The legacy upgrade snapshot check accounts for two new empty extension tables.
 
-A new Playwright journey covers save/reopen/clear, paired-coordinate validation, lost-response same-key/body recovery, stale tabs, private/Origin refusal and phone-width overflow, in both existing browser projects. Local matching-browser installation remains blocked as above; this candidate's PR CI is authoritative for browser outcomes. No new local browser pass or manual visual/accessibility review is claimed.
+A new Playwright journey covers save/reopen/clear, paired-coordinate validation, lost-response same-key/body recovery, stale tabs, private/Origin refusal and phone-width overflow, in both existing browser projects. Local matching-browser installation remains blocked as above; PR #18's CI supplies that slice's browser outcomes. No new local browser pass or manual visual/accessibility review is claimed.
 
-All details stay owner-private and do not change sign-in email, enable arrival/check-in, choose a map provider, publish a listing or define guest disclosure. The current candidate adds the bounded review procedure below; required publication fields/disclosure and arrival remain open. See the [feature contract](features/owner-supply.md#private-location-contact-and-arrival-details).
+All details stay owner-private and do not change sign-in email, enable arrival/check-in, choose a map provider, publish a listing or define guest disclosure. The later merged publication work adds the bounded review procedure below; required publication fields/disclosure and arrival remain open. See the [feature contract](features/owner-supply.md#private-location-contact-and-arrival-details).
 
 ## Environment scope
 
@@ -76,17 +76,33 @@ All details stay owner-private and do not change sign-in email, enable arrival/c
 
 Earlier Windows network/browser-override notes remain historical environment evidence; they do not invalidate the matching-browser CI pass or establish today's PC setup. External Cloudflare account/deployed traffic/secrets were not inspected.
 
-## Current publication candidate
+## Merged publication workflow
 
-The project owner authorized merging PRs #17/#18 and starting the recommended next slice. Branch feat/pilot-publication-review adds owner submission/withdrawal, a private oldest-first reviewer queue, correction notes/resubmission and explicit terms-gated approval. The project owner is the sole pilot reviewer; a trusted local command assigns the deliberately chosen verified app user ID. There is no self-service grant, first-user admin shortcut or inferred app identity. Migration 0011 is additive and earlier SQL/booking operation roles/receipts remain unchanged.
+The project owner authorized merging PRs #17/#18 and starting the recommended next slice. Merged branch feat/pilot-publication-review added owner submission/withdrawal, a private oldest-first reviewer queue, correction notes/resubmission and explicit terms-gated approval. The project owner is the sole pilot reviewer; a trusted local command assigns the deliberately chosen verified app user ID. There is no self-service grant, first-user admin shortcut or inferred app identity. Migration 0011 is additive and earlier SQL/booking operation roles/receipts remain unchanged.
+
+[PR #19](https://github.com/kimsourly1912/root-of-cambodia/pull/19) is now merged at d53544cbee11def8e2522a33075235ba0abe73e0. Its tree 95d0f058c67ce04b5f875d1c97b5c5fb15c938e7 exactly matches tested head 50dd627ff03a767e83cb17e6fdea00302c72a116. [CI run 40878754892](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40878754892), job 123464299762, passed frozen installation, local initialization/bindings/types, both builds, 153 Vitest tests and all 16 matching-Chromium desktop/phone checks. This is historical CI evidence for the merged source tree, not a fresh local browser run or live-service verification.
 
 Submission freezes saved draft editing. Snapshots/events/receipts are atomic and immutable; current verification/ownership/reviewer assignment/config revision and submitted data are fenced at commit. Approval sets an explicitly configured approved booking-terms version and publishes the property. Empty terms configuration blocks approval. Preparation reminders remain guidance while D05 required fields are open. Review-photo access is private and processed-only. No guest contact/public discovery/media workflow, support impersonation, arrival action or provider/deployment change is added.
 
-Fresh Linux/pinned-toolchain checks passed frozen installation, all 11 local migrations, binding generation, strict types, both Worker builds, 153 Vitest tests across 18 files (including 13 new native review scenarios and added built-Worker HTTP assertions), zero reported audit advisories and 738 repository links/anchors. Matching-head CI and browser outcomes are recorded in the candidate PR. The earlier PR counts above remain historical evidence for their own commits. Local matching-browser download is unavailable as documented; matching-browser PR CI supplies browser execution evidence. No manual visual/accessibility or live-pilot acceptance is claimed.
+For PR #19, Linux/pinned-toolchain checks passed frozen installation, all 11 local migrations, binding generation, strict types, both Worker builds, 153 Vitest tests across 18 files (including 13 new native review scenarios and added built-Worker HTTP assertions), zero reported audit advisories and 738 repository links/anchors. Matching-head CI and browser outcomes are recorded in merged PR #19 and its run above. The earlier PR counts above remain historical evidence for their own commits. Local matching-browser download is unavailable as documented; matching-browser PR CI supplies browser execution evidence. No manual visual/accessibility or live-pilot acceptance is claimed.
 
 ## Current work and authorization
 
-Documentation and dependency/private owner-detail work are merged. The user explicitly authorized both merges and starting the recommended publication slice on 29 October 2026. The narrow reviewer responsibility is recorded in [D05](product/open-decisions.md#pilot-reviewer-decision--29-october-2026). Application account assignment and approved legal terms have not been guessed. No deployment, remote migration, repository-setting mutation or broader support/admin assignment is authorized or performed by this candidate.
+Documentation, dependency/private owner-detail work and publication review are merged. The current request authorizes checking main and continuing the next step; branch codex/publication-followup starts from the verified current main above. It corrects audit A10's unfinished-photo label and A11's JSON creation diagnostic status, repairs the migration-table formatting and prepares a [minimum publication-checklist proposal](product/publication-checklist-proposal.md). The proposal remains unapproved and unenforced. The narrow reviewer responsibility is recorded in [D05](product/open-decisions.md#pilot-reviewer-decision--29-october-2026). Application account assignment and approved legal terms have not been guessed. No deployment, remote migration, repository-setting mutation or broader support/admin assignment is authorized or performed by this follow-up.
+
+Fresh follow-up verification on Linux, Node 24.22.1 and pnpm 12.15.0:
+
+| Check | Actual result |
+| --- | --- |
+| corepack pnpm install --frozen-lockfile | Passed; pins/lockfile unchanged |
+| corepack pnpm init:local; corepack pnpm types:bindings | Passed; existing 11 migrations applied to fresh local state, no SQL changed |
+| corepack pnpm typecheck | Passed across backend/web/jobs/tests |
+| corepack pnpm build:worker; corepack pnpm build:jobs | Passed; actual web bundle and jobs dry run, no deployment |
+| corepack pnpm test | 154 tests passed across 18 files; includes retained publication cases and a built-Worker check matching the 201 response to its correlated completion log |
+| Changed-document links/anchors; git diff --check | 113 local links/anchors passed; whitespace passed |
+| corepack pnpm exec playwright install chromium | Blocked; matching Chromium 156.0.8078.4 archive was invalid/truncated, so no fresh local browser pass claimed |
+
+The new diagnostics test covers 200, 201 and status-free scheduled completion; the existing privacy/sink-failure regressions remain. Historical PR #19 browser evidence above applies to its baseline tree. Follow-up PR CI must be checked separately for the new branch. No fresh audit, manual visual/accessibility, staging or production verification is claimed by these checks.
 
 ## Follow-ups requiring separate scope or decisions
 
@@ -97,6 +113,6 @@ Documentation and dependency/private owner-detail work are merged. The user expl
 | Before public exposure | A02/A03: provider/environment path and action/upload/storage abuse budgets | Preserve local fail-closed guards; D07/D08/D11 before nonlocal work |
 | Policy/recovery | Arrival, support, retention/erasure and recovery ownership | [Open decisions](product/open-decisions.md), especially D01/D06/D09/D10/D17 |
 | Pilot quality | Khmer copy, accessibility, slow-device/performance and real-service validation | No full accessibility, cross-engine/device or capacity certification |
-| Small source follow-up | Diagnostics success status can differ from creation response; photo UI has a stray replacement character | Audit A11/A10; unchanged here; separate focused code/copy fix |
+| Publication minimum | Agree on the [proposed completeness checklist](product/publication-checklist-proposal.md) before mandatory validation | D05 remains open; current preparation reminders do not block incomplete listings |
 
-Next: review the publication candidate and validate the local owner → reviewer → corrections → approval journey with explicitly approved terms. Then settle the publication checklist before public discovery work. These source changes do not establish public-pilot readiness.
+Next: agree on the proposed D05 checklist, then implement its owner guidance and server/atomic enforcement as a separate focused slice. Deliberate reviewer-account selection and actual approved terms remain necessary for local pilot publication. Public discovery, staged services and public-pilot readiness remain later work.

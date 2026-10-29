@@ -71,7 +71,7 @@ export async function endpoint(
       }),
       { headers, status: successStatus },
     );
-    context.completed();
+    context.completed(successStatus);
     return response;
   } catch (error) {
     const failure = context.failure(error);

@@ -78,6 +78,23 @@ test("diagnostics allowlist output and replace untrusted codes, details and corr
   );
 });
 
+test("completion records preserve HTTP success status without adding HTTP fields to scheduled jobs", () => {
+  const records: DiagnosticRecord[] = [];
+  const sink = (record: DiagnosticRecord) => records.push(record);
+  const http = diagnostics("http", sink);
+  http.completed();
+  http.completed(201);
+  diagnostics("jobs_scheduled", sink).completed();
+  assert.deepEqual(
+    records.map(({ code, status }) => ({ code, status })),
+    [
+      { code: "request_completed", status: 200 },
+      { code: "request_completed", status: 201 },
+      { code: "maintenance_completed", status: undefined },
+    ],
+  );
+});
+
 test("a failing diagnostic sink cannot change safe failures, completion or delivery handling", () => {
   const context = diagnostics("jobs_queue", () => {
     throw new Error("logging unavailable");

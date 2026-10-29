@@ -289,7 +289,7 @@ export function PropertyPhotos({
               <div className="space-y-3 p-4">
                 <p className="text-sm font-medium">
                   Photo {index + 1}
-                  {photo.state === "pending" ? " � Unfinished" : ""}
+                  {photo.state === "pending" ? " · Unfinished" : ""}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <Button

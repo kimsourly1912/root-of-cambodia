@@ -42,3 +42,5 @@ Online payment/deposit/refund and other-category reservations may be reopened on
 ## Pilot reviewer decision — 29 October 2026
 
 The project owner accepted the recommendation to act as sole pilot publication reviewer and authorized the next implementation slice after merging PRs #17/#18. This partially resolves D05 reviewer responsibility only. Configure an explicit verified app account through the trusted local command; no account ID or legal terms version was guessed. D05 required fields/first-property checklist and future publication rules, D06 support powers, D15 terms/privacy approval and D18 repository governance remain open. This is not a general admin assignment or deployment authorization.
+
+Following the merge of PR #19, a [concrete minimum-checklist proposal](publication-checklist-proposal.md) is prepared for the project owner's agreement. It remains proposed and does not turn current preparation reminders into mandatory product rules.

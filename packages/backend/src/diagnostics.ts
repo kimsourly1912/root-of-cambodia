@@ -80,11 +80,11 @@ export function diagnostics(
       });
       return failure;
     },
-    completed() {
+    completed(status: 200 | 201 = 200) {
       emit({
         event: "completed",
         code: source === "http" ? "request_completed" : "maintenance_completed",
-        ...(source === "http" ? { status: 200 } : {}),
+        ...(source === "http" ? { status } : {}),
       });
     },
     notification(

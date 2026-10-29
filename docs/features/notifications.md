@@ -43,7 +43,7 @@ Application HTTP adapters add a server-generated X-Request-Id on success/error. 
 
 The allowlisted diagnostic sink emits version/source/correlationId/event/code and optional safe reason/status/opaque reference. It omits raw errors/stacks/SQL/URLs/query/body/cookies/tokens/keys/lease tokens/guest contact/actor and booking IDs/provider IDs. Queue correlation uses a namespaced SHA-256 digest plus fresh per-invocation reference. Best-effort sink failure cannot change operation success. Scheduled exceptions use fixed safe messages, not raw provider/database failures.
 
-Operational metadata still needs access/retention/volume review; library/platform logs need staging inspection. Audit A11 noted that creation success diagnostics can report 200 although the response is 201; this documentation phase does not change that behavior.
+JSON endpoint completion diagnostics use the actual configured success status (200 or 201); media reads retain 200 and scheduled completion records omit HTTP status. Operational metadata still needs access/retention/volume review; library/platform logs need staging inspection.
 
 ## Verification and open operations
 
