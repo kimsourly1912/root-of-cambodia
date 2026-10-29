@@ -239,6 +239,10 @@ test("safeguards upgrade retains every populated row, old schema object and orig
     delete afterDraftMigration.property_media;
     delete afterDraftMigration.property_media_gallery;
     delete afterDraftMigration.property_media_event;
+    assert.deepEqual(afterDraftMigration.property_logistics, []);
+    assert.deepEqual(afterDraftMigration.property_logistics_event, []);
+    delete afterDraftMigration.property_logistics;
+    delete afterDraftMigration.property_logistics_event;
     assert.deepEqual(afterDraftMigration, before);
     assert.deepEqual(
       await transition(db, owner, "accept-then-cancel", cancelled.id, "accept"),

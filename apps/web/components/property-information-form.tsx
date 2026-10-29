@@ -298,7 +298,7 @@ export function PropertyInformationForm({
           </CardContent>
         </Card>
         <p className="px-1 text-xs text-muted-foreground">
-          Photos, map location and publication review will be added separately.
+          Use Photos and Location &amp; contact to prepare more of your draft. Publication review follows separately.
         </p>
       </aside>
     </form>

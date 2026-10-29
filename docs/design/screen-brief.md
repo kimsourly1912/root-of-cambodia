@@ -4,7 +4,7 @@
 
 **Responsible role:** product/design owner (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
+**Last source verification:** 29 October 2026; candidate based on [b653b57](https://github.com/kimsourly1912/root-of-cambodia/commit/b653b57b711e0d03aebb8e119f9df10e0c31f8b3), with the private location/contact slice verified on feat/private-property-logistics.
 
 **Sources:** [apps/web/components/](../../apps/web/components), [apps/web/app/owner/](../../apps/web/app/owner), [apps/web/app/layout.tsx](../../apps/web/app/layout.tsx), [docs/archive/2026-10/Claude-Mockup-Brief.md](../archive/2026-10/Claude-Mockup-Brief.md).
 
@@ -12,7 +12,7 @@ Use [product scope](../product/scope.md) for policy, [feature contracts](../READ
 
 ## Existing UI and visual direction
 
-Existing owner/auth screens use local shadcn/Radix primitives (Button, Card, Input, Label, Textarea), Tailwind tokens and bundled Noto Sans Khmer. Reuse these and existing layouts/forms before introducing another component system/dependency. Owner routes include draft basics, rooms, weekly prices/stock, information and private photos. Current working copy is mostly English; full Khmer-first delivery is a goal.
+Existing owner/auth screens use local shadcn/Radix primitives (Button, Card, Input, Label, Textarea), Tailwind tokens and bundled Noto Sans Khmer. Reuse these and existing layouts/forms before introducing another component system/dependency. Owner routes include draft basics, rooms, weekly prices/stock, information, private photos and Location & contact (optional coordinates, informational contact methods and arrival notes). Current working copy is mostly English; full Khmer-first delivery is a goal.
 
 Design defaults, not new product rules: light warm-neutral surfaces, white cards, charcoal text and restrained deep green; hospitality photography, useful spacing and clear price/date hierarchy. Avoid decorative temple/flag overload. Guest flows are mobile-first; owner/admin should be efficient on desktop and usable on phones.
 

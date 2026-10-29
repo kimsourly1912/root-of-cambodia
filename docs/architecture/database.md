@@ -4,7 +4,7 @@
 
 **Responsible role:** backend maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
+**Last source verification:** 29 October 2026; candidate based on [b653b57](https://github.com/kimsourly1912/root-of-cambodia/commit/b653b57b711e0d03aebb8e119f9df10e0c31f8b3), with the private location/contact slice verified on feat/private-property-logistics.
 
 **Sources:** [packages/backend/migrations/](../../packages/backend/migrations), [packages/backend/src/operations.ts](../../packages/backend/src/operations.ts), [packages/backend/src/booking-persistence.ts](../../packages/backend/src/booking-persistence.ts), [packages/backend/src/schema.ts](../../packages/backend/src/schema.ts), [tests/migrations.test.ts](../../tests/migrations.test.ts), [tests/safeguards.test.ts](../../tests/safeguards.test.ts).
 
@@ -23,6 +23,7 @@
 | [0007](../../packages/backend/migrations/0007_room_calendar_history.sql) | Immutable per-night calendar history |
 | [0008](../../packages/backend/migrations/0008_property_information.sql) | Versioned information extension and attributable events |
 | [0009](../../packages/backend/migrations/0009_property_media.sql) | Media journal, gallery versions, removal tombstones and events |
+| [0010](../../packages/backend/migrations/0010_property_logistics.sql) | Independently versioned private coordinates/contact/arrival instructions and attributable events |
 
 Add a new ordered migration; do not rewrite an applied one. Verify both fresh application and populated upgrades using the configured migration loader/tracker. A failed preflight needs a reviewed repair plan, never deletion of a populated database to force success. The proof schema is independent and is not an application upgrade path.
 
@@ -30,7 +31,7 @@ Add a new ordered migration; do not rewrite an applied one. Verify both fresh ap
 
 Auth users have sessions and optional owner profiles. A place has a property with one owner; properties have room types; each room/date has at most one stock and one rate row. A booking belongs to a property and, for online requests, a guest. Stable booking lines identify room type/quantity/party/capacity; night and charge rows make up the immutable quote. Allocations reference booked room nights and retain one-time release evidence. Attributable booking events create recipient outbox records; delivery attempts belong to those records.
 
-Private property information and media/gallery records extend owned properties. Property/room/calendar/information/media events keep attributable versions; they do not all store historical field contents. Do not promise recovery of old descriptions from a revision-only event.
+Private property information, location/contact/arrival details and media/gallery records extend owned properties. Property/room/calendar/information/logistics/media events keep attributable versions; they do not all store historical field contents. Do not promise recovery of old descriptions from a revision-only event.
 
 ## Invariants and atomic saves
 
