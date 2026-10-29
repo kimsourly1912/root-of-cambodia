@@ -28,6 +28,7 @@ export const ERROR_CODES = [
   "review_conflict",
   "reviewer_not_configured",
   "publication_terms_not_configured",
+  "publication_incomplete",
   "unfinished_photos",
   "inventory_unavailable",
   "not_found",

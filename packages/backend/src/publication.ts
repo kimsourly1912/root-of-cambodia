@@ -10,6 +10,7 @@ import {
 } from "./publication-queries";
 import { commitPublicationAction } from "./publication-persistence";
 import { mediaKeys } from "./media-queries";
+import { requirePublicationReadiness } from "./publication-readiness";
 const revision = (value: unknown) =>
   Number.isSafeInteger(value) && Number(value) > 0;
 function fields(input: Record<string, unknown>, allowed: string[]) {
@@ -56,6 +57,7 @@ export async function ownerReviewAction(
           throw new DomainError("request_size_limit", 422);
         if (snapshot.data.photos.some((photo) => photo.state !== "ready"))
           throw new DomainError("unfinished_photos", 422);
+        await requirePublicationReadiness(db, propertyId, actor.id);
         return {
           action: "submit",
           propertyId,
@@ -144,6 +146,14 @@ export async function decideReview(
         throw new DomainError("review_conflict", 409);
       if (action === "approve" && !config.termsVersion)
         throw new DomainError("publication_terms_not_configured", 422);
+      if (action === "approve") {
+        const request = await requestRecord(db, requestId);
+        await requirePublicationReadiness(
+          db,
+          request.propertyId,
+          request.ownerId,
+        );
+      }
       return {
         action: action as "approve" | "return_changes",
         requestId,

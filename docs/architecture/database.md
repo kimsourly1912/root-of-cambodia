@@ -54,6 +54,8 @@ Constraints protect relationships/numbers; bounded triggers validate transitions
 
 [operations.ts](../../packages/backend/src/operations.ts) scopes a key to a principal (`user:<id>` or system), with role and normalized operation payload in the fingerprint. The same key with another kind/payload conflicts; it is not a separate key namespace per endpoint. Keys accept 1–128 ASCII letters/digits/colon/underscore/hyphen.
 
+Publication submit/approval additionally repeat the shared minimum-content/calendar predicates inside the guarded state write using database time. This needs no schema change; existing receipts are replayed before new eligibility checks and existing published listings are not automatically unpublished.
+
 Publication review uses a separate actor/key namespace because the preserved booking operation role vocabulary excludes reviewer. See the [review contract](../features/publication-review.md#state-snapshot-and-atomicity).
 
 Successful receipts are stored atomically. Services recheck access before replay. A matching receipt describes that operation's original result, even after a later cancellation or catalog change. Refresh the current authorized record afterward. Quote preparation is deferred until no matching receipt exists.

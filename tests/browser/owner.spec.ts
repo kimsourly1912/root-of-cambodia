@@ -5,6 +5,7 @@ import {
   type Page,
   type APIRequestContext,
 } from "@playwright/test";
+import photoFixtures from "../photo-fixtures.json" with { type: "json" };
 test.beforeEach(async ({ page }, info) => {
   await page.context().setExtraHTTPHeaders({
     "X-Test-Client": info.project.name + ":" + info.title,
@@ -955,6 +956,9 @@ test("sole pilot reviewer returns corrections and publishes only with configured
   page,
   browser,
 }, info) => {
+  // This journey now prepares real listing content and a processed photo before
+  // exercising both authenticated owner/reviewer workflows.
+  test.setTimeout(90_000);
   const reviewerContext = await browser.newContext({
     ...devices[
       info.project.name.startsWith("mobile") ? "Pixel 7" : "Desktop Chrome"
@@ -1001,6 +1005,63 @@ test("sole pilot reviewer returns corrections and publishes only with configured
     await expect(
       page.getByRole("heading", { name: "Publication review", exact: true }),
     ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Publication checklist", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Submit saved draft", exact: true })).toBeDisabled();
+    const incomplete = await page.request.post(api, {
+      headers: { ...headers, "Idempotency-Key": "incomplete-direct" },
+      data: { action: "submit", propertyRevision: 1 },
+    });
+    expect(incomplete.status()).toBe(422);
+    expect(await incomplete.json()).toEqual({ error: "publication_incomplete" });
+    await page.getByRole("link", { name: "Add a description", exact: true }).click();
+    await page.getByLabel("Property description", { exact: true }).fill("ស្នាក់នៅជិតទន្លេ. A quiet riverside stay.");
+    await page.getByLabel(/Property address/).fill("River lane, Kampot");
+    await page.getByRole("button", { name: "Save property information", exact: true }).click();
+    await expect(page.getByRole("status")).toContainText("saved");
+    await page.goto(base + "/review");
+    await page.getByRole("link", { name: "Add a contact method", exact: true }).click();
+    await page.getByLabel("Contact email", { exact: true }).fill("reception@example.invalid");
+    await page.getByRole("button", { name: "Save location and contact", exact: true }).click();
+    await expect(page.getByRole("status")).toContainText("saved");
+    const roomsApi = "/api" + base + "/rooms";
+    const roomResponse = await page.request.post(roomsApi, {
+      headers: { ...headers, "Idempotency-Key": "review-room" },
+      data: { name: "Garden room", adultCapacity: 2, childCapacity: 0, totalCapacity: 2 },
+    });
+    expect(roomResponse.status()).toBe(201);
+    const room = await roomResponse.json() as { id: string };
+    const night = new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10);
+    expect((await page.request.patch(roomsApi + "/" + room.id + "/calendar", {
+      headers: { ...headers, "Idempotency-Key": "review-calendar" },
+      data: { roomRevision: 1, nights: [{ night, capacity: 1, blocked: 0, unitCents: 3500, inventoryRevision: null, rateRevision: null }] },
+    })).status()).toBe(200);
+    await page.goto(base + "/review");
+    await page.getByRole("link", { name: "Add a property photo", exact: true }).click();
+    await page.getByLabel("Photo file").setInputFiles({ name: "stay.jpg", mimeType: "image/jpeg", buffer: Buffer.from(photoFixtures.jpeg, "base64") });
+    await page.getByRole("button", { name: "Upload photo", exact: true }).click();
+    await expect(page.getByRole("status")).toHaveText("Photo saved privately.");
+    await page.goto(base + "/review");
+    await expect(page.getByRole("button", { name: "Submit saved draft", exact: true })).toBeEnabled();
+    const readiness = (await (await page.request.get(api)).json()).readiness;
+    expect(readiness).toMatchObject({ ready: true, missing: [] });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+    // Another tab clears a required field after this page's readiness read.
+    const logisticsApi = "/api" + base + "/logistics";
+    const contact = await (await page.request.get(logisticsApi)).json();
+    expect((await page.request.patch(logisticsApi, {
+      headers: { ...headers, "Idempotency-Key": "review-stale-contact" },
+      data: { ...contact, contactEmail: "" },
+    })).status()).toBe(200);
+    await page.getByRole("button", { name: "Submit saved draft", exact: true }).click();
+    await expect(page.locator("main").getByRole("alert")).toContainText("no longer meets the publication checklist");
+    await page.getByRole("button", { name: "Reload latest status", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Submit saved draft", exact: true })).toBeDisabled();
+    expect((await page.request.patch(logisticsApi, {
+      headers: { ...headers, "Idempotency-Key": "review-restore-contact" },
+      data: { ...contact, revision: 2 },
+    })).status()).toBe(200);
+    await page.reload();
+    await expect(page.getByRole("button", { name: "Submit saved draft", exact: true })).toBeEnabled();
     let firstKey = "",
       firstBody = "",
       retryKey = "",
@@ -1062,6 +1123,8 @@ test("sole pilot reviewer returns corrections and publishes only with configured
       }),
     ).toBeVisible();
     await reviewerPage.goto("/review/" + first.id);
+    await expect(reviewerPage.getByRole("heading", { name: "Publication checklist", exact: true })).toBeVisible();
+    await expect(reviewerPage.getByRole("link", { name: "Add a contact method", exact: true })).toHaveCount(0);
     await expect(
       reviewerPage.getByRole("button", { name: "Approve and publish" }),
     ).toBeDisabled();

@@ -44,7 +44,7 @@ Package exports currently expose low-level modules too. These are conceptual bou
 | Rooms/calendar | `room-types.ts`, `room-queries.ts`, `room-persistence.ts`; `calendar.ts`, `calendar-dates.ts`, `calendar-queries.ts`, `calendar-persistence.ts` |
 | Property information/media | `property-information*.ts`; `media.ts`, `media-queries.ts`, `media-persistence.ts` |
 | Private location/contact/arrival | property-logistics.ts, property-logistics-queries.ts, property-logistics-persistence.ts; no public disclosure or arrival action |
-| Pilot publication review | publication.ts, publication-queries.ts, publication-persistence.ts; configured single reviewer and explicit terms gate |
+| Pilot publication review | publication.ts, publication-queries.ts, publication-persistence.ts, publication-readiness.ts; configured single reviewer, shared completeness predicates and explicit terms gate |
 | Booking/quotes | `bookings.ts`, `quotes.ts`, `quote-queries.ts`, `booking-persistence.ts` |
 | Inventory | `inventory.ts`, `inventory-persistence.ts` |
 | Delivery/diagnostics | `jobs.ts`, `outbox.ts`, `diagnostics.ts`, `errors.ts` |

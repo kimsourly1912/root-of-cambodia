@@ -1,5 +1,6 @@
 import { verified, type Actor } from "./operations";
 import { DomainError } from "./errors";
+import { readPublicationReadiness } from "./publication-readiness";
 export type ReviewSnapshot = {
   property: {
     id: string;
@@ -209,6 +210,7 @@ export async function ownerPublication(
       .bind(config.reviewerId)
       .first());
   const events = latest ? await reviewEvents(db, latest.id) : [];
+  const readiness = await readPublicationReadiness(db, propertyId, actor.id);
   await verified(db, actor);
   // Ownership is also checked by each scoped read; recheck after composing them.
   if (
@@ -226,6 +228,7 @@ export async function ownerPublication(
     events,
     reviewerConfigured,
     termsConfigured: !!config?.termsVersion,
+    readiness,
   };
 }
 export type OwnerPublication = Awaited<ReturnType<typeof ownerPublication>>;
@@ -270,12 +273,18 @@ export async function reviewDetails(db: D1Database, actor: Actor, id: string) {
   if (request.status !== "pending" || place?.publication !== "review")
     throw new DomainError("not_found", 404);
   const events = await reviewEvents(db, id);
+  const readiness = await readPublicationReadiness(
+    db,
+    request.propertyId,
+    request.ownerId,
+  );
   await requireReviewer(db, actor);
   return {
     request,
     events,
     termsVersion: config.termsVersion,
     configRevision: config.revision,
+    readiness,
   };
 }
 export async function reviewPhotoAsset(

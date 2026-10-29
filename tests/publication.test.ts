@@ -35,6 +35,7 @@ import { preparePhoto } from "@root-of-cambodia/backend/media";
 import { completeMedia } from "@root-of-cambodia/backend/media-persistence";
 import { mediaKeys } from "@root-of-cambodia/backend/media-queries";
 import { readBooking } from "@root-of-cambodia/backend/access";
+import { readyPublicationFixture } from "./publication-fixtures";
 const fields = {
   ownerName: "Owner",
   nameKm: "ផ្ទះ",
@@ -50,10 +51,12 @@ async function configure(db: D1Database, terms: string | null = null) {
     .bind(terms)
     .run();
 }
-async function setup(db: D1Database, configured = true) {
+async function setup(db: D1Database, configured = true, photo = true) {
   await catalog(db);
   if (configured) await configure(db);
-  return (await createPropertyDraft(db, owner, "draft", fields)).id;
+  const id = (await createPropertyDraft(db, owner, "draft", fields)).id;
+  await readyPublicationFixture(db, owner, id, photo);
+  return id;
 }
 const submit = (
   db: D1Database,
@@ -160,7 +163,7 @@ test("submission snapshots saved details, freezes editing and retains the origin
       description: "By the river",
       address: "Kampot",
       facilities: ["Parking"],
-      revision: null,
+      revision: 1,
     });
     await savePropertyLogistics(db, owner, "contact", id, {
       latitude: 10,
@@ -169,7 +172,7 @@ test("submission snapshots saved details, freezes editing and retains the origin
       contactPhone: "123",
       contactEmail: "",
       arrivalInstructions: "Turn left",
-      revision: null,
+      revision: 1,
     });
     const snapshot = (await readSnapshot(db, id, owner.id)).data;
     const receipt = await submit(db, id);
@@ -397,7 +400,7 @@ test("submission compares the full snapshot and guards ownership, verification a
             description: "Changed",
             address: "",
             facilities: [],
-            revision: null,
+            revision: 1,
           });
         else if (change === "room")
           await createRoomType(db, owner, "winner", id, {
@@ -550,7 +553,7 @@ test("pending photo uploads block submission and review previews stay private an
   const p = await database();
   try {
     const db = p.db,
-      id = await setup(db);
+      id = await setup(db, true, false);
     const photo = await preparePhoto(db, owner, "photo", id, {
       contentType: "image/jpeg",
       byteSize: 4,
@@ -760,6 +763,7 @@ test("review queue pagination is stable, bounded and hides withdrawn requests", 
     const ids: string[] = [];
     for (let i = 0; i < 21; i++) {
       const draft = await createPropertyDraft(db, owner, "draft-" + i, fields);
+      await readyPublicationFixture(db, owner, draft.id);
       ids.push((await submit(db, draft.id, "submit-" + i)).id);
     }
     const first = await reviewQueue(db, other);
