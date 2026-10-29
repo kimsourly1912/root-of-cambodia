@@ -112,7 +112,7 @@ export async function decideReview(
   fields(input, ["action", "revision", "configRevision", "reason"]);
   const action = input.action;
   if (
-    !["approve", "return_changes"].includes(String(action)) ||
+    (action !== "approve" && action !== "return_changes") ||
     !revision(input.revision) ||
     !revision(input.configRevision) ||
     (input.reason !== undefined && typeof input.reason !== "string")

@@ -655,6 +655,16 @@ test("history failure rolls back submission and immutable receipts, snapshots an
       }),
       /invalid_review/,
     );
+    for (const action of [["approve"], ["return_changes"], null, {}, 1])
+      await assert.rejects(
+        decideReview(db, other, "invalid-action", pending.id, {
+          action,
+          revision: 1,
+          configRevision: 1,
+          reason: "Fix",
+        }),
+        /invalid_review/,
+      );
     await assert.rejects(reviewQueue(db, other, "-1"), /invalid_request/);
   } finally {
     await p.dispose();
