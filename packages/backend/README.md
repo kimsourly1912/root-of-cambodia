@@ -11,3 +11,5 @@ Use root pnpm commands. The app and jobs configurations reference this workspace
 See the [service-boundary review](../../docs/Root-of-Cambodia-Service-Boundaries.md) and [workspace review](../../docs/Root-of-Cambodia-Workspace-Review.md).
 
 The [step 5 contract](../../docs/Root-of-Cambodia-Diagnostics-Delivery-Review.md) documents stable public errors, diagnostic-only guard categories, correlation privacy, and provider acceptance versus inbox delivery. Logging is best-effort and cannot alter operation results.
+
+The first step 6 slice adds `property-drafts.ts` (normalization/access), `property-queries.ts` (private scoped reads) and `property-persistence.ts` (named atomic draft saves). Migration 0005 adds attributable append-only draft events. Existing booking/inventory modules, operations.ts and migrations 0001–0004 remain unchanged. See the [owner-draft review](../../docs/Root-of-Cambodia-Owner-Drafts-Review.md).

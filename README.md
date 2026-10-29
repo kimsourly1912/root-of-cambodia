@@ -6,9 +6,9 @@ Guests request stays and pay at the property. Owners manage their own property i
 
 ## Current status
 
-The active application uses [apps/web](apps/web/README.md), [apps/jobs](apps/jobs/README.md) and [packages/backend](packages/backend/README.md), with reviewed migrations, verified sessions, atomic booking/inventory operations and notification recovery contracts. The product interface and live infrastructure are not built or deployed. See the [backend review report](docs/Root-of-Cambodia-Backend-Foundation-Review.md) for tests, scope and remaining decisions.
+The active application uses [apps/web](apps/web/README.md), [apps/jobs](apps/jobs/README.md) and [packages/backend](packages/backend/README.md), with reviewed migrations, verified sessions, atomic booking/inventory operations and notification recovery contracts. The first owner interface supports verified access and private property drafts. The broader product journeys and live infrastructure remain unfinished. See the [backend review report](docs/Root-of-Cambodia-Backend-Foundation-Review.md) for tests, scope and remaining decisions.
 
-Current local validation: **77 Vitest tests passed** — 72 D1/runtime cases, three workspace checks and two built-Worker journeys. All 12 original website HTTP checks remain, with added request/log correlation and privacy checks. Delivery results now distinguish provider acceptance from inbox delivery and detect superseded leases. Separate typechecks and both builds passed. See the [step 5 review](docs/Root-of-Cambodia-Diagnostics-Delivery-Review.md). These are synthetic local results, not production verification.
+Current local validation: **84 Vitest tests** — 79 D1/runtime cases, three workspace checks and two built-Worker journeys — plus **four Playwright browser checks**. All prior 77 Vitest tests are retained. The [owner-draft review](docs/Root-of-Cambodia-Owner-Drafts-Review.md) records the boundaries, fresh verification and browser-version limits. All 12 original website HTTP checks remain, with added request/log correlation and privacy checks. Delivery results now distinguish provider acceptance from inbox delivery and detect superseded leases. Separate typechecks and both builds passed. See the [step 5 review](docs/Root-of-Cambodia-Diagnostics-Delivery-Review.md). These are synthetic local results, not production verification.
 
 Run active application commands from the repository root with Node 24.22.1 and **pnpm 12.15.0** (the packageManager pin):
 
@@ -45,6 +45,7 @@ Overall architecture is approved: one modular Next.js application, one backgroun
 - [Approved booking/database design](docs/Root-of-Cambodia-Booking-Database-Design.md)
 - [Architecture implementation plan](docs/Root-of-Cambodia-Implementation-Plan.md)
 - [Approved step 4 workspace plan](docs/Root-of-Cambodia-Workspace-Plan.md)
+- [Owner access and private property drafts](docs/Root-of-Cambodia-Owner-Drafts-Review.md)
 - [pnpm workspace and verification](docs/Root-of-Cambodia-Pnpm-Workspace-Review.md)
 - [Diagnostics and delivery contracts](docs/Root-of-Cambodia-Diagnostics-Delivery-Review.md)
 - [Workspace/jobs verification](docs/Root-of-Cambodia-Workspace-Review.md)
@@ -86,4 +87,4 @@ The fixture captures email locally and uses synthetic data. Local secrets, runti
 
 ## Next work
 
-The application architecture and detailed booking/database direction are approved. Implementation-plan steps 1–5 are complete locally; PR #8 is merged. Step 6 is next: complete owner/supply and guest journeys. The diagnostics/delivery implementation remains a separate reviewable PR. Resolve arrival/occupancy/support policies and implement complete product flows before staging and pilot verification. Use the Claude brief for a Phase 1 guest prototype; the technical plan provides implementation constraints but does not specify enough screen behavior by itself. Complete staging and configured-service checks before a pilot. Operational decisions still open are listed in the build specification.
+The application architecture and detailed booking/database direction are approved. Implementation-plan steps 1–5 are complete locally; PR #8 is merged. Step 6 is in progress: verified owner access and private property drafts are its first slice. Rooms/rates/calendar, review/publication and guest/owner booking screens remain. PR #9 is merged; the pnpm conversion and owner-draft slice remain separate reviewable changes. Resolve arrival/occupancy/support policies and implement complete product flows before staging and pilot verification. Use the Claude brief for a Phase 1 guest prototype; the technical plan provides implementation constraints but does not specify enough screen behavior by itself. Complete staging and configured-service checks before a pilot. Operational decisions still open are listed in the build specification.

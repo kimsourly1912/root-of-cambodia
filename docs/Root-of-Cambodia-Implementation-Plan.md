@@ -1,7 +1,7 @@
 # Root of Cambodia — Architecture Implementation Plan
 
 Date: 28 October 2026
-Status: Steps 1 (Vitest alignment), 2 (database safeguards), 3 (service/persistence separation), 4 (workspace/jobs boundaries) and 5 (diagnostics/delivery contracts) are completed locally; see the [alignment report](Root-of-Cambodia-Vitest-Alignment.md), [safeguards review](Root-of-Cambodia-Database-Safeguards.md) and [service-boundary review](Root-of-Cambodia-Service-Boundaries.md). Remaining steps are delivery work under the approved application and booking/database designs. The workspace/tooling choice was subsequently approved and implemented; see the [workspace review](Root-of-Cambodia-Workspace-Review.md).
+Status: Step 6 is in progress with verified owner access and private property draft create/edit/reopen; see the [owner-draft review](Root-of-Cambodia-Owner-Drafts-Review.md). Steps 1 (Vitest alignment), 2 (database safeguards), 3 (service/persistence separation), 4 (workspace/jobs boundaries) and 5 (diagnostics/delivery contracts) are completed locally; see the [alignment report](Root-of-Cambodia-Vitest-Alignment.md), [safeguards review](Root-of-Cambodia-Database-Safeguards.md) and [service-boundary review](Root-of-Cambodia-Service-Boundaries.md). Remaining steps are delivery work under the approved application and booking/database designs. The workspace/tooling choice was subsequently approved and implemented; see the [workspace review](Root-of-Cambodia-Workspace-Review.md).
 
 ## 1. Where we are
 
@@ -23,7 +23,7 @@ The existing application foundation is useful but does not yet match every appro
 | 3. Separate business and database code — completed locally | Make the code easier to understand safely | Extract named persistence functions and authorized query functions; keep routes and jobs thin; preserve one booking/inventory transaction | Existing behavior and concurrency/rollback checks remain unchanged and pass |
 | 4. Establish shared code and jobs boundaries — completed locally | Let the website and jobs reuse the same rules | Implement a reviewed workspace/layout change; shared backend cannot import Next.js runtime; jobs cannot duplicate lifecycle SQL | Next.js/OpenNext build, built-Worker checks and jobs-entrypoint integration pass with the new import/binding paths |
 | 5. Add clear diagnostics and delivery contracts — completed locally | Make failures understandable and recoverable | Stable safe error codes, sanitized correlation records, stale-lease regressions; provider acceptance distinguished from inbox delivery | Retry/uncertain-outcome cases remain correct; no private data/tokens in logs; provider-specific behavior remains explicitly unverified until configured |
-| 6. Build complete product journeys | Make the foundation usable by owners and guests | Owner setup, rooms/rates/calendar, guest quote/request, owner response and booking detail screens in product order | Browser journeys, accessibility and authorization tests; unresolved policy flows stay blocked |
+| 6. Build complete product journeys — in progress | Make the foundation usable by owners and guests | Owner setup, rooms/rates/calendar, guest quote/request, owner response and booking detail screens in product order | Browser journeys, accessibility and authorization tests; unresolved policy flows stay blocked |
 | 7. Verify real integrations | Check the connected system in a safe environment | Separately authorized staging: D1, HTTPS auth, email, Cron/Queues, monitoring, load and restore drills | Staging evidence and an explicit pilot checklist; local tests alone are insufficient |
 
 Step 1 moves the existing tests before adding new behavior. This addresses the known runner deviation promptly. Step 2 introduces new regressions under the aligned setup rather than expanding the old Node test suite. Work does not require every future product policy to be settled; only the affected flow waits for its missing policy.
@@ -32,7 +32,7 @@ Implementation changes should be reviewable PRs with a concrete purpose, relevan
 
 ## 3. Workspace layout — approved and implemented locally
 
-PR #7 is merged. The owner approved the [step 4 workspace plan](Root-of-Cambodia-Workspace-Plan.md) in conversation on 28 October 2026. apps/web, apps/jobs and packages/backend now use native npm workspaces and one root application lockfile. Shared source initially retains its tested filenames; no future modules/contracts/UI packages were created.
+PR #7 is merged. The owner approved the [step 4 workspace plan](Root-of-Cambodia-Workspace-Plan.md) in conversation on 28 October 2026. Step 4 first introduced apps/web, apps/jobs and packages/backend using npm workspaces. The subsequent owner decision moved the active workspace to pnpm and one root pnpm lockfile. Shared source initially retains its tested filenames; no future modules/contracts/UI packages were created.
 
 | Approved location | Responsibility |
 | --- | --- |
@@ -52,7 +52,7 @@ application/ was retained through steps 1–3 and migrated in step 4 after expli
 
 ## 4. Testing and package tooling
 
-The owner subsequently requested pnpm explicitly. The active workspace now uses pnpm 12.15.0, pnpm-workspace.yaml, workspace:* links and one root pnpm-lock.yaml. This supersedes the earlier npm choice described below, not the application architecture. The [pnpm migration review](Root-of-Cambodia-Pnpm-Workspace-Review.md) records artifact preservation and fresh checks. Step 6 begins after this separate tooling change.
+The owner subsequently requested pnpm explicitly. The active workspace now uses pnpm 12.15.0, pnpm-workspace.yaml, workspace:* links and one root pnpm-lock.yaml. This supersedes the earlier npm choice described below, not the application architecture. The [pnpm migration review](Root-of-Cambodia-Pnpm-Workspace-Review.md) records artifact preservation and fresh checks. Step 6 now begins with the separately reviewable owner-access/private-draft slice described above.
 
 Vitest is the approved runner direction. Cloudflare integration supplies the environment for D1/runtime tests; the Wrangler harness supplies the environment for actual built-application HTTP checks. A harness can be orchestrated in Node without replacing Vitest as the runner. Browser journeys use Playwright.
 
@@ -69,6 +69,8 @@ Bring material deviations back for agreement: a new database/framework, a differ
 Open product decisions remain open: arrival/no-show/late cancellation, infants/age bands, physical-room continuity, external booking details, audited admin support, suspension, provider/domain, reminders, retention and recovery targets. Do not silently encode these while refactoring.
 
 ## 6. Current evidence
+
+The first step 6 slice implements verified owner access and private property draft create/edit/reopen. Field validation, own-resource queries, atomic draft saves, append-only events and optimistic revisions preserve the established service/persistence boundaries. Fresh local checks pass 84 Vitest tests and four desktop/mobile browser checks, generated bindings, strict types and both builds. The [owner-draft review](Root-of-Cambodia-Owner-Drafts-Review.md) records version/evidence limits. The rest of step 6 remains open; no publication, merge or deployment is implied.
 
 Step 5 has fresh local evidence: 77 tests pass across eleven files (72 native D1/runtime cases, three workspace checks and two built-Worker journeys). All 69 prior tests remain. Stable public error codes/bodies are retained, with server-generated X-Request-Id and allowlisted diagnostic records. Notification outcomes distinguish provider acceptance, retry and a superseded lease; inbox delivery stays unknown. Native/built tests cover stale workers, uncertain receipts and diagnostic privacy. Typechecks and both builds pass. Migrations, booking/inventory SQL and dependencies remain unchanged. See the [diagnostics/delivery review](Root-of-Cambodia-Diagnostics-Delivery-Review.md). Step 6 complete product journeys is next; no deployment or merge was performed.
 

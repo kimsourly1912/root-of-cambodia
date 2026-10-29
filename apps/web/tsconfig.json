@@ -9,7 +9,10 @@
         "name": "next"
       }
     ],
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": [
     "next-env.d.ts",

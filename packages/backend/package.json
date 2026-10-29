@@ -17,7 +17,10 @@
     "./operations": "./src/operations.ts",
     "./booking-persistence": "./src/booking-persistence.ts",
     "./quotes": "./src/quotes.ts",
-    "./diagnostics": "./src/diagnostics.ts"
+    "./diagnostics": "./src/diagnostics.ts",
+    "./property-drafts": "./src/property-drafts.ts",
+    "./property-queries": "./src/property-queries.ts",
+    "./property-persistence": "./src/property-persistence.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

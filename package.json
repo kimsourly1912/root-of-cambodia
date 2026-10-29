@@ -19,7 +19,8 @@
     "test:backend": "vitest run --project backend",
     "test:jobs": "vitest run --project backend tests/jobs.test.ts",
     "test:worker": "vitest run --project worker-http",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:browser": "playwright test"
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "1.4.9",
@@ -32,6 +33,7 @@
     "vitest": "5.0.5",
     "wrangler": "4.154.0",
     "@root-of-cambodia/backend": "workspace:*",
-    "better-auth": "1.7.14"
+    "better-auth": "1.7.14",
+    "@playwright/test": "1.64.1"
   }
 }
