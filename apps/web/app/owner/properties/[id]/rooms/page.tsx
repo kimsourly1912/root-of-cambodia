@@ -95,7 +95,7 @@ export default async function Page({
             <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
               {cursor
                 ? "Return to the first page to see your saved room types."
-                : "Start with a name and guest limits. Prices and dated availability will follow later."}
+                : "Start with a name and guest limits. Configure prices and dated availability from a saved room type."}
             </p>
             {data.property.publication === "draft" && !cursor && (
               <Button asChild className="mt-6">

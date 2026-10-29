@@ -342,8 +342,8 @@ export function PropertyForm({
           </CardContent>
         </Card>
         <p className="px-1 text-xs text-muted-foreground">
-          Use Room types to continue setup. Prices, availability and publication
-          review will be added separately.
+          Use Room types to set up rooms, prices and availability. Photos and
+          publication review will follow later.
         </p>
       </aside>
     </form>

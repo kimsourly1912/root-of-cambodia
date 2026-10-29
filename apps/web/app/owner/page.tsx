@@ -107,7 +107,7 @@ export default async function Page({
         )}
       </div>
       <p className="mt-8 text-xs text-muted-foreground">
-        Open a property to set up room types. Prices, availability, photos and
+        Open a property to set up rooms, prices and availability. Photos and
         publication review will follow later.
       </p>
     </>
