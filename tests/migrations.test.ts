@@ -229,6 +229,10 @@ test("safeguards upgrade retains every populated row, old schema object and orig
     delete afterDraftMigration.room_type_event;
     assert.deepEqual(afterDraftMigration.room_calendar_event, []);
     delete afterDraftMigration.room_calendar_event;
+    assert.deepEqual(afterDraftMigration.property_information, []);
+    delete afterDraftMigration.property_information;
+    assert.deepEqual(afterDraftMigration.property_information_event, []);
+    delete afterDraftMigration.property_information_event;
     assert.deepEqual(afterDraftMigration, before);
     assert.deepEqual(
       await transition(db, owner, "accept-then-cancel", cancelled.id, "accept"),
@@ -453,6 +457,125 @@ test("calendar upgrade retains populated stock, rates, room/property history and
     );
     assert.deepEqual(
       await request(db, input, "calendar-upgrade-booking"),
+      booking,
+    );
+    assert.deepEqual(
+      (await db.prepare("PRAGMA foreign_key_check").all()).results,
+      [],
+    );
+  } finally {
+    await p.dispose();
+  }
+});
+
+test("information upgrade preserves populated calendars, prior history and original retry receipts", async () => {
+  const p = await database({ migrate: false });
+  try {
+    const db = p.db;
+    await migrate(db, [
+      ...legacyMigrations,
+      ...safeguards,
+      "0005_property_drafts.sql",
+      "0006_room_type_history.sql",
+      "0007_room_calendar_history.sql",
+    ]);
+    const { input } = await catalog(db);
+    const booking = await request(db, input, "information-upgrade-booking");
+    const { createPropertyDraft } =
+      await import("@root-of-cambodia/backend/property-drafts");
+    const { createRoomType } =
+      await import("@root-of-cambodia/backend/room-types");
+    const { saveRoomCalendar } =
+      await import("@root-of-cambodia/backend/calendar");
+    const propertyFields = {
+      ownerName: "Owner",
+      nameKm: "ផ្ទះ",
+      nameEn: "Draft",
+      province: "Kampot",
+      checkinTime: "14:00",
+      checkoutTime: "11:00",
+      policyText: "Quiet hours.",
+    };
+    const property = await createPropertyDraft(
+      db,
+      owner,
+      "information-upgrade-property",
+      propertyFields,
+    );
+    const roomFields = {
+      name: "Twin",
+      adultCapacity: 2,
+      childCapacity: 1,
+      totalCapacity: 3,
+    };
+    const room = await createRoomType(
+      db,
+      owner,
+      "information-upgrade-room",
+      property.id,
+      roomFields,
+    );
+    const calendarFields = {
+      roomRevision: 1,
+      nights: [
+        {
+          night: "2027-01-03",
+          capacity: 2,
+          blocked: 0,
+          unitCents: 1999,
+          inventoryRevision: null,
+          rateRevision: null,
+        },
+      ],
+    };
+    const calendar = await saveRoomCalendar(
+      db,
+      owner,
+      "information-upgrade-calendar",
+      property.id,
+      room.id,
+      calendarFields,
+    );
+    const before = await snapshot(db);
+    await migrate(db, ["0008_property_information.sql"]);
+    const after = await snapshot(db);
+    assert.deepEqual(after.property_information, []);
+    assert.deepEqual(after.property_information_event, []);
+    delete after.property_information;
+    delete after.property_information_event;
+    assert.deepEqual(after, before);
+    assert.deepEqual(
+      await createPropertyDraft(
+        db,
+        owner,
+        "information-upgrade-property",
+        propertyFields,
+      ),
+      property,
+    );
+    assert.deepEqual(
+      await createRoomType(
+        db,
+        owner,
+        "information-upgrade-room",
+        property.id,
+        roomFields,
+      ),
+      room,
+    );
+    assert.deepEqual(
+      await saveRoomCalendar(
+        db,
+        owner,
+        "information-upgrade-calendar",
+        property.id,
+        room.id,
+        calendarFields,
+      ),
+      calendar,
+    );
+    assert.deepEqual(
+      await request(db, input, "information-upgrade-booking"),
       booking,
     );
     assert.deepEqual(

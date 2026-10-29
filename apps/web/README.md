@@ -1,6 +1,6 @@
 # Root of Cambodia web application
 
-The Next.js application now lives in apps/web and imports the private packages/backend workspace; the historical compatibility proof remains in ../../proofs/foundation. Next.js full stack, Better Auth, D1 and Drizzle are retained. The first shadcn/ui/Tailwind interface now provides verified owner access and private property/room setup and a dated pricing/availability calendar. Payment remains at the property.
+The Next.js application now lives in apps/web and imports the private packages/backend workspace; the historical compatibility proof remains in ../../proofs/foundation. Next.js full stack, Better Auth, D1 and Drizzle are retained. The shadcn/ui/Tailwind interface provides verified owner access, private property/room setup, a dated pricing/availability calendar and private property information. Payment remains at the property.
 
 ## Local validation
 
@@ -64,6 +64,14 @@ Calendar validation, scoped queries and named atomic persistence are separate. M
 
 Only private setup is edited through this new flow. It does not publish a property or change the existing owner-only external-reservation/inventory APIs. Publication policy/readiness, live services and unresolved booking policies remain separate.
 
+## Private property information
+
+Open a saved property and choose Information to edit its description, address and ordered facility list. Fields can remain blank while drafting. List one facility per line; blank lines are ignored, entries are trimmed and order is retained. These are owner-written listing descriptions, not verified facility claims, automated fees or booking policies. Address text is not checked against a map.
+
+Information uses its own revision and optional extension row, preserving booking-setting revisions. An absent row has revision null; later saves require the current positive revision. The service rejects unsupported fields, invalid facility lists and bounded/control-character violations. Migration 0008 guards identity/version/list shape and records attributable append-only events. Data, audit and retry receipt commit in one D1 batch. No public information endpoint or publication action is added.
+
+The [information review](../../docs/Root-of-Cambodia-Property-Information-Review.md) records 114 Vitest tests, ten browser checks and limitations. PR #13 is still open; this slice is reviewed on a separate branch above it.
+
 ## Service and persistence boundaries
 
 bookings.ts, quotes.ts and inventory.ts coordinate validation and permissions. access.ts keeps the authorized Drizzle booking read and scoped resource checks; quote-queries.ts holds internal catalog reads. booking-persistence.ts exposes commitRequest, commitBookingTransition and expireRequest. inventory-persistence.ts exposes editInventoryNight. Each save owns the complete atomic batch through the existing operations.ts primitive; never commit its individual table writes separately.
@@ -77,7 +85,7 @@ Services authorize before receipt replay. Submission prepares a fresh quote lazi
 Migration 0004 adds database guards for command/status consistency, the supported pre-check-in cancellation cutoff, non-null business identities, coherent Cambodia schedules and stable operation receipts. It checks existing records first and rejects incompatible data without rewriting history. Use the migration runner atomically; a failed preflight needs a reviewed repair plan. See the [safeguards review](../../docs/Root-of-Cambodia-Database-Safeguards.md) for fresh/populated upgrade evidence, exact command mapping and limits.
 
 - SQL migrations are authoritative, including composite FKs, CHECK constraints, delete restrictions and triggers. schema.ts provides Drizzle read projections; do not replace migrations with drizzle-kit push.
-- 0001 creates identity/catalog/inventory/rates; 0002 creates booking operations/history/outbox; 0003 adds delivery recovery diagnostics/indexes; 0004 adds booking/identity/receipt safeguards; 0005 adds private draft history; 0006 adds room-type history; 0007 adds calendar history. These do not upgrade the disposable proof database.
+- 0001 creates identity/catalog/inventory/rates; 0002 creates booking operations/history/outbox; 0003 adds delivery recovery diagnostics/indexes; 0004 adds booking/identity/receipt safeguards; 0005 adds private draft history; 0006 adds room-type history; 0007 adds calendar history; 0008 adds private property information/history. These do not upgrade the disposable proof database.
 - Quotes use server-side settings, nightly rates and itemized per-stay mandatory charges. Submission recalculates the quote/hash and rechecks revisions, availability and complete coverage inside one D1 batch.
 - Internal building state is sealed to pending/confirmed before commit and is excluded from public reads.
 - Stable lines retain quantities, adult/child counts, capacity limits, room names and occupied-night prices. Headers retain property/guest names, guest email, dates, UTC check-in/out, timezone, arrival/departure times, USD total, policy text/version, terms version and cancellation wording.
@@ -103,6 +111,8 @@ All application endpoints require verified cookie sessions. Mutations require th
 | PATCH /api/owner/properties/:id/rooms/:roomId | Same room fields plus expected revision and Idempotency-Key; 200 receipt |
 | GET /api/owner/properties/:id/rooms/:roomId/calendar | Owned room's seven-night window; optional ISO start (default Cambodia today) |
 | PATCH /api/owner/properties/:id/rooms/:roomId/calendar | roomRevision, selected nights with inventory/rate revisions and Idempotency-Key; one atomic private-draft save; 200 receipt |
+| GET /api/owner/properties/:id/information | Own description, address, ordered facilities and nullable information revision |
+| PATCH /api/owner/properties/:id/information | description, address, facilities[], expected revision (null if absent) and Idempotency-Key; verified owner/private draft; atomic 200 receipt |
 | POST /api/booking-quotes | propertyId, checkin, checkout, termsVersion, lines; returns hash, nightly prices, charges and policy |
 | POST /api/bookings | Selection + quoteHash + Idempotency-Key; returns Pending, never confirmation |
 | GET /api/bookings/:id | Own guest booking or booking for a currently owned property |
