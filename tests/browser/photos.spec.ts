@@ -147,9 +147,11 @@ test("owner uploads, retries a lost response, reorders, handles stale tabs and r
   await stale
     .getByRole("button", { name: "Remove photo 1", exact: true })
     .click();
-  await expect(stale.getByRole("alert")).toContainText(
-    "changed in another tab",
-  );
+  await expect(
+    stale
+      .getByRole("alert")
+      .filter({ hasText: "The photos changed in another tab" }),
+  ).toBeVisible();
   await stale.close();
   await page
     .getByRole("button", { name: "Remove photo 2", exact: true })
