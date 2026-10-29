@@ -26,6 +26,7 @@
 | [0010](../../packages/backend/migrations/0010_property_logistics.sql) | Independently versioned private coordinates/contact/arrival instructions and attributable events |
 | [0011](../../packages/backend/migrations/0011_property_publication_review.sql) | Single reviewer configuration, immutable review requests/events and separately sealed owner/reviewer command receipts |
 | [0012](../../packages/backend/migrations/0012_public_listing_disclosure.sql) | Immutable owner-attributed public-display version/digest, new submission seal/approval guards and latest-review index; no backfill of earlier approvals |
+| [0013](../../packages/backend/migrations/0013_guest_booking_journey.sql) | Immutable configured terms documents and account-bound request reviews; UI-path submission fencing; no old-data backfill |
 
 Add a new ordered migration; do not rewrite an applied one. Verify both fresh application and populated upgrades using the configured migration loader/tracker. A failed preflight needs a reviewed repair plan, never deletion of a populated database to force success. The proof schema is independent and is not an application upgrade path.
 

@@ -2,6 +2,10 @@
 export const ERROR_CODES = [
   "arrival_policy_decision_required",
   "booking_conflict",
+  "booking_terms_unavailable",
+  "booking_terms_required",
+  "guest_name_required",
+  "lead_time_required",
   "duplicate_room_type",
   "forbidden",
   "idempotency_conflict",

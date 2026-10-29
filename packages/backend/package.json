@@ -42,7 +42,8 @@
     "./publication-persistence": "./src/publication-persistence.ts",
     "./publication-readiness": "./src/publication-readiness.ts",
     "./public-listing": "./src/public-listing.ts",
-    "./catalog-queries": "./src/catalog-queries.ts"
+    "./catalog-queries": "./src/catalog-queries.ts",
+    "./guest-bookings": "./src/guest-bookings.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

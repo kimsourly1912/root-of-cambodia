@@ -69,4 +69,6 @@ Local, staging and production need distinct resources/secrets/data. Current runt
 
 - [0005: Public listing boundary](decisions/0005-public-listing-boundary.md): accepted allowlist, explicit owner display acknowledgement and routed processed-only reads; originals stay private.
 
+- [0006: Booking journey and private disclosure](decisions/0006-booking-journey.md): accepted D17 and staged guest/owner screens; server-saved request recovery, immutable configured terms and later acceptance-time logistics copy.
+
 The [database contract](database.md), [features](../README.md#feature-contracts), [contributing standard](../development/contributing.md) and [open decisions](../product/open-decisions.md) provide detail.

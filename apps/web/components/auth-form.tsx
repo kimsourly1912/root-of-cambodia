@@ -2,6 +2,7 @@
 import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { guestReturn } from "@/src/return-path";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,7 +20,11 @@ export type AuthMode =
   | "forgot-password"
   | "reset-password";
 const copy = {
-  "sign-in": ["Welcome back", "Sign in to your owner workspace.", "Sign in"],
+  "sign-in": [
+    "Welcome back",
+    "Sign in to manage your bookings and properties.",
+    "Sign in",
+  ],
   "sign-up": [
     "Create your account",
     "Use an email you can access. You’ll verify it before signing in.",
@@ -45,12 +50,17 @@ export function AuthForm({
   mode,
   token,
   verified = false,
+  next: requestedNext,
 }: {
   mode: AuthMode;
   token?: string;
   verified?: boolean;
+  next?: string;
 }) {
   const router = useRouter();
+  const next = guestReturn(requestedNext);
+  const suffix = next === "/owner" ? "" : "?next=" + encodeURIComponent(next);
+  const authHref = (path: string) => path + suffix;
   const busy = useRef(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -65,8 +75,11 @@ export function AuthForm({
     const values = new FormData(event.currentTarget);
     const email = String(values.get("email") ?? "").trim();
     const password = String(values.get("password") ?? "");
-    const callbackURL = new URL("/sign-in?verified=1", window.location.origin)
-      .href;
+    const callbackURL = new URL(
+      "/sign-in?verified=1" +
+        (suffix ? "&next=" + encodeURIComponent(next) : ""),
+      window.location.origin,
+    ).href;
     const requests = {
       "sign-in": ["sign-in/email", { email, password }],
       "sign-up": [
@@ -83,7 +96,10 @@ export function AuthForm({
         "request-password-reset",
         {
           email,
-          redirectTo: new URL("/reset-password", window.location.origin).href,
+          redirectTo: new URL(
+            authHref("/reset-password"),
+            window.location.origin,
+          ).href,
         },
       ],
       "reset-password": ["reset-password", { token, newPassword: password }],
@@ -108,7 +124,7 @@ export function AuthForm({
         return;
       }
       if (mode === "sign-in") {
-        router.replace("/owner");
+        router.replace(next);
         router.refresh();
       } else setDone(true);
     } catch {
@@ -122,7 +138,7 @@ export function AuthForm({
     <Card className="mx-auto w-full max-w-md shadow-sm">
       <CardHeader>
         <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">
-          Owner access
+          Account access
         </p>
         <CardTitle className="text-2xl">
           <h1>{title}</h1>
@@ -150,14 +166,14 @@ export function AuthForm({
             </p>
             <Link
               className="font-medium text-primary underline underline-offset-4"
-              href="/sign-in"
+              href={authHref("/sign-in")}
             >
               Back to sign in
             </Link>
             {mode === "sign-up" && (
               <p>
                 <Link
-                  href="/verify-email"
+                  href={authHref("/verify-email")}
                   className="text-sm text-primary underline"
                 >
                   Request a new verification link
@@ -228,7 +244,7 @@ export function AuthForm({
               <p role="alert">
                 Reset link missing.{" "}
                 <Link
-                  href="/forgot-password"
+                  href={authHref("/forgot-password")}
                   className="text-primary underline"
                 >
                   Request a new link
@@ -250,7 +266,7 @@ export function AuthForm({
                   New here?{" "}
                   <Link
                     className="font-medium text-primary underline"
-                    href="/sign-up"
+                    href={authHref("/sign-up")}
                   >
                     Create an account
                   </Link>
@@ -258,13 +274,16 @@ export function AuthForm({
                 <p>
                   <Link
                     className="text-primary underline"
-                    href="/forgot-password"
+                    href={authHref("/forgot-password")}
                   >
                     Forgot password?
                   </Link>
                 </p>
                 <p>
-                  <Link className="text-primary underline" href="/verify-email">
+                  <Link
+                    className="text-primary underline"
+                    href={authHref("/verify-email")}
+                  >
                     Resend verification email
                   </Link>
                 </p>
@@ -272,7 +291,7 @@ export function AuthForm({
             ) : (
               <Link
                 className="font-medium text-primary underline"
-                href="/sign-in"
+                href={authHref("/sign-in")}
               >
                 Back to sign in
               </Link>

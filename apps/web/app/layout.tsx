@@ -28,6 +28,7 @@ export default function Layout({ children }: { children: ReactNode }) {
               className="flex flex-wrap gap-5 text-sm font-medium text-primary"
             >
               <Link href="/stays">Explore stays</Link>
+              <Link href="/bookings">My bookings</Link>
               <Link href="/owner">Owner workspace</Link>
             </nav>
           </div>

@@ -76,6 +76,16 @@ export async function commitRequest(
             op,
           ),
       ];
+      if (source === "online" && key.startsWith("guest-request:")) {
+        statements.push(
+          assertion(
+            db,
+            op,
+            "EXISTS(SELECT 1 FROM guest_booking_attempt a JOIN operation o ON o.id=? AND o.principal='user:'||a.guest_id AND o.key='guest-request:'||a.id WHERE a.guest_id=? AND o.fingerprint=json_extract(a.input_json,'$._operationFingerprint'))",
+            [op, actor.id],
+          ),
+        );
+      }
       for (const [i, l] of q.lines.entries()) {
         const line = id + ":" + i;
         statements.push(

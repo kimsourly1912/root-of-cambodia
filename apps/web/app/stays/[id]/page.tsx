@@ -22,6 +22,12 @@ export default async function Page({
       >
         ← Explore stays
       </Link>
+      <Link
+        href={`/stays/${id}/request`}
+        className="mb-7 block w-fit rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground"
+      >
+        Request to book
+      </Link>
       <PublicStayDetails
         listing={listing}
         photoBase={`/api/stays/${id}/photos`}

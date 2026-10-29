@@ -96,3 +96,13 @@ pnpm reviewer:local --user-id <verified-app-user-id> --clear-terms
 ```
 
 Omitting the terms option preserves an existing configured version. --clear-terms revokes it; the two terms options are mutually exclusive. The command assigns one reviewer and increments configuration revisions for in-flight fencing. Synthetic test version IDs are not approved legal text. Configuration changes do not rewrite earlier approved requests or booking snapshots. Nonlocal resources/operators and public launch remain separately gated.
+
+## Local booking terms documents
+
+Guest request screens fail closed until the property’s selected terms version has an immutable approved text document, and matches the current pilot terms selection. A version ID by itself is not legal text. After explicit project-owner approval of the actual text/version, an operator can save it locally:
+
+```sh
+node scripts/configure-booking-terms-local.ts --version <approved-version> --file <approved-plain-text-file>
+```
+
+The command uses only local bindings/state, refuses a different body for an existing version and does not print the content. It does not approve the text or select the reviewer/property version. Use the existing explicit reviewer version configuration separately. No real terms document is created by this implementation; browser/native tests provision clearly synthetic text only. No nonlocal terms/provider/deployment path is authorized.

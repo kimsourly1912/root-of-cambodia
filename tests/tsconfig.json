@@ -13,6 +13,7 @@
     "../packages/backend/worker-configuration.d.ts",
     "../vitest*.ts",
     "../playwright.config.ts",
-    "../scripts/configure-reviewer-local.ts"
+    "../scripts/configure-reviewer-local.ts",
+    "../scripts/configure-booking-terms-local.ts"
   ]
 }
