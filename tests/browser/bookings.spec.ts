@@ -168,7 +168,7 @@ test("guest signs in to the chosen stay, reviews and recovers a lost submission 
     await post(reviewer, "/api/property-reviews/" + review.id, {
       action: "approve",
       revision: 1,
-      configRevision: state.configRevision ?? 1,
+      configRevision: (await (await reviewer.get("/api/property-reviews/"+review.id)).json()).configRevision,
     });
     const email = `guest-ui-${info.project.name}@example.invalid`;
     await account(page.request, email, false);
