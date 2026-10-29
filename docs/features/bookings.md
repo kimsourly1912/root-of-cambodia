@@ -35,7 +35,7 @@ The transaction snapshots property/guest names and guest email (online), dates, 
 | /api/external-reservations | POST selection + preview:true, or selection + quoteHash and Idempotency-Key | Preview 200 hash/totalCents; commit 200 id/status=confirmed |
 | /api/inventory | POST roomId/night/capacity/blocked/revision and Idempotency-Key | 200 id/status=updated receipt |
 
-[Route source](../../apps/web/app/api/) is authoritative. The old proposed 202 submission and /api/owner/bookings/... routes are not the current contract. There is no booking-list GET, public place/property API, publication/admin review endpoint or payment-status action.
+[Route source](../../apps/web/app/api/) is authoritative. The old proposed 202 submission and /api/owner/bookings/... routes are not the current contract. There is no booking-list GET, public place/property API, broad admin/support endpoint or payment-status action. The narrow [pilot publication review](publication-review.md) endpoints are implemented separately; they are not booking impersonation or general administrative powers.
 
 JSON routes use [http.ts](../../apps/web/src/http.ts): verified session, write Origin/application-json checks, streamed 32 KiB cap, private/no-store and Vary: Cookie. Errors are `{error: code}` with X-Request-Id header, not the old proposed message/field-error/request-ID body. Domain statuses include 401/403/404/409/413/422/503. Better Auth owns its own handler/limiter; common business-action 429 budgets are not implemented.
 

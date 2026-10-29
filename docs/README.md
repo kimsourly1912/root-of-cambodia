@@ -30,6 +30,7 @@ Report material disagreement. Do not silently rewrite approved policy to match a
 - [Product scope](product/scope.md)
 - [Open decisions](product/open-decisions.md)
 - [Accepted publication checklist](product/publication-checklist-proposal.md): approved D05 minimum and remaining boundaries
+- [Proposed guest-browsing slice](product/guest-browsing-proposal.md): public field/media boundary and owner acknowledgement awaiting agreement
 - [Architecture overview and module map](architecture/overview.md)
 - [Database and operation invariants](architecture/database.md)
 - [ADR 0001: Modular monolith](architecture/decisions/0001-modular-monolith.md)

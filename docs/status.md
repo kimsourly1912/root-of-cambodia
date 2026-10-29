@@ -4,7 +4,7 @@
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026; minimum-checklist candidate based on merged main [99e8350](https://github.com/kimsourly1912/root-of-cambodia/commit/99e8350afd1b0aeca035e8707d428d6865fdb8dc).
+**Last source verification:** 29 October 2026; guest-browsing planning based on merged main [d7e70bb](https://github.com/kimsourly1912/root-of-cambodia/commit/d7e70bbe9d0c0d18b34cfedaf4d143b0f59f89d2).
 
 **Sources:** [.github/workflows/verify.yml](../.github/workflows/verify.yml), [apps/web/app/](../apps/web/app), [apps/jobs/src/index.ts](../apps/jobs/src/index.ts), [apps/web/src/runtime.ts](../apps/web/src/runtime.ts), [apps/jobs/src/runtime.ts](../apps/jobs/src/runtime.ts).
 
@@ -82,7 +82,7 @@ The project owner authorized merging PRs #17/#18 and starting the recommended ne
 
 [PR #19](https://github.com/kimsourly1912/root-of-cambodia/pull/19) is now merged at d53544cbee11def8e2522a33075235ba0abe73e0. Its tree 95d0f058c67ce04b5f875d1c97b5c5fb15c938e7 exactly matches tested head 50dd627ff03a767e83cb17e6fdea00302c72a116. [CI run 40878754892](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40878754892), job 123464299762, passed frozen installation, local initialization/bindings/types, both builds, 153 Vitest tests and all 16 matching-Chromium desktop/phone checks. This is historical CI evidence for the merged source tree, not a fresh local browser run or live-service verification.
 
-Submission freezes saved draft editing. Snapshots/events/receipts are atomic and immutable; current verification/ownership/reviewer assignment/config revision and submitted data are fenced at commit. Approval sets an explicitly configured approved booking-terms version and publishes the property. Empty terms configuration blocks approval. That release retained preparation reminders; the subsequently approved minimum is implemented in the current candidate below. Review-photo access is private and processed-only. No guest contact/public discovery/media workflow, support impersonation, arrival action or provider/deployment change is added.
+Submission freezes saved draft editing. Snapshots/events/receipts are atomic and immutable; current verification/ownership/reviewer assignment/config revision and submitted data are fenced at commit. Approval sets an explicitly configured approved booking-terms version and publishes the property. Empty terms configuration blocks approval. That release retained preparation reminders; the subsequently approved minimum is implemented in merged PR #21 below. Review-photo access is private and processed-only. No guest contact/public discovery/media workflow, support impersonation, arrival action or provider/deployment change is added.
 
 For PR #19, Linux/pinned-toolchain checks passed frozen installation, all 11 local migrations, binding generation, strict types, both Worker builds, 153 Vitest tests across 18 files (including 13 new native review scenarios and added built-Worker HTTP assertions), zero reported audit advisories and 738 repository links/anchors. Matching-head CI and browser outcomes are recorded in merged PR #19 and its run above. The earlier PR counts above remain historical evidence for their own commits. Local matching-browser download is unavailable as documented; matching-browser PR CI supplies browser execution evidence. No manual visual/accessibility or live-pilot acceptance is claimed.
 
@@ -104,15 +104,15 @@ Historical PR #20 local verification on Linux, Node 24.22.1 and pnpm 12.15.0:
 
 The new diagnostics test covers 200, 201 and status-free scheduled completion; the existing privacy/sink-failure regressions remain. Historical PR #19 browser evidence above applies to its baseline tree. Matching-head PR #20 CI passed as recorded above; its browser evidence applies to that source tree. No fresh audit, manual visual/accessibility, staging or production verification is claimed by these checks.
 
-## Current work and authorization
+## Merged minimum checklist (PR #21)
 
-The project owner accepted the minimum checklist on 29 October 2026, replying “Yes please continue and approve” after PR #20. [D05 approval](product/open-decisions.md#minimum-publication-checklist--29-october-2026) and the [accepted checklist](product/publication-checklist-proposal.md) preserve the scope. Branch feat/publication-readiness starts from updated main 99e8350. This is implementation/testing, not staging or pilot readiness. Actual account identity/terms, guest disclosure, merge/deployment and wider publication policies are not inferred.
+The project owner accepted the minimum checklist on 29 October 2026, replying “Yes please continue and approve” after PR #20. [D05 approval](product/open-decisions.md#minimum-publication-checklist--29-october-2026) and the [accepted checklist](product/publication-checklist-proposal.md) preserve the scope. The implementation branch feat/publication-readiness started from main 99e8350. This is implementation/testing, not staging or pilot readiness. Actual account identity/terms, guest disclosure, merge/deployment and wider publication policies are not inferred.
 
-The candidate adds one shared checklist projection/predicate for owner/reviewer guidance, service validation and atomic submit/approval guards. Incomplete private drafts still save; new submission/approval requires the approved minimum. Calendar checks use D1 time and scheduled Cambodia check-in >=24 hours ahead, ignoring reserved/blocked counts for completeness. Return/withdraw still works when a pending request becomes incomplete; earlier successful receipts replay and published properties are not automatically unpublished. No SQL migration, dependency version/lockfile or runtime/provider configuration changes are introduced.
+The merged implementation adds one shared checklist projection/predicate for owner/reviewer guidance, service validation and atomic submit/approval guards. Incomplete private drafts still save; new submission/approval requires the approved minimum. Calendar checks use D1 time and scheduled Cambodia check-in >=24 hours ahead, ignoring reserved/blocked counts for completeness. Return/withdraw still works when a pending request becomes incomplete; earlier successful receipts replay and published properties are not automatically unpublished. No SQL migration, dependency version/lockfile or runtime/provider configuration changes are introduced.
 
 Owner drafts show missing-item links and disabled submission; reviewers see the same current checks and can return corrections when approval is blocked. A stale incomplete response asks for reload, while uncertain outcomes keep the same key/payload. Existing snapshots, booking operations and migration SQL remain unchanged. The historical built-Worker unknown-error fixture now renames its rate table rather than dropping referenced history; the same 503/privacy assertions remain.
 
-Fresh candidate checks on Linux, Node 24.22.1 and pnpm 12.15.0:
+Historical PR #21 local checks on Linux, Node 24.22.1 and pnpm 12.15.0:
 
 | Command/scenario | Actual outcome |
 | --- | --- |
@@ -123,11 +123,19 @@ Fresh candidate checks on Linux, Node 24.22.1 and pnpm 12.15.0:
 | Focused publication/checklist | 23 passed, retaining all earlier 13 publication cases with complete prerequisite fixtures |
 | corepack pnpm test:worker | Both built-Worker journeys passed, including direct incomplete refusal, private readiness and the retained 12 historical HTTP checks |
 | Documentation targets/anchors; git diff --check | Passed; exact link count and source tree in PR evidence |
-| Browser | Extended desktop/phone journey prepared; matching Chromium remains unavailable locally after the earlier truncated download; new-head PR CI is required for execution evidence |
+| Browser | Extended desktop/phone journey passed matching-head CI; local matching Chromium remained unavailable after the truncated download |
 
 New native coverage includes each missing requirement/optional fields, retained whitespace-only text (including tabs and Unicode spaces), matching future dates/active rooms/positive stock, exact 24-hour/leap-day/midnight eligibility, time and capacity races without snapshot changes, direct persistence bypass refusal with atomic rollback, retained legacy pending/receipts, fully reserved/blocked stock and unfinished uploads. Fixed-clock tests replace only the clock expression in isolated native SQL; no production clock or fixture route is added. Existing auth/revocation/concurrency/history/upgrade/booking tests remain.
 
-No fresh audit, local browser, manual visual/accessibility, real-device, staging or production pass is claimed. Candidate CI/run evidence belongs to its exact head and is recorded in the PR; earlier runs above remain historical baseline evidence.
+[PR #21](https://github.com/kimsourly1912/root-of-cambodia/pull/21) is now merged at d7e70bbe9d0c0d18b34cfedaf4d143b0f59f89d2. Its tree 67544375b806e01d9cb72e740789ff93eeccd1ff exactly matches final tested head 2a93230c8b08342c5f22ad457d2c8e7745a4ad4e. [Final CI run 40889799436](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40889799436), job 123503175268, passed frozen install, all 11 fresh local migrations, bindings/types, both Worker builds, full Vitest and matching-Chromium desktop/phone checks. This is historical evidence for that merged source tree, not a fresh run during the next planning phase. No fresh audit, local browser, manual visual/accessibility, real-device, staging or production pass is claimed.
+
+## Current work and authorization
+
+Following the merge of PR #21, the owner requested the next step. Branch docs/guest-browsing-plan starts from the confirmed updated main d7e70bb and prepares a [concrete first guest-browsing proposal](product/guest-browsing-proposal.md). The source review confirms that current review packets contain private address/contact/arrival fields, photos are served through private readers, and public list/detail routes are absent. The current scope is product/architecture planning before implementation of a new anonymous read boundary.
+
+The proposal recommends read-only stay browsing/detail pages, a public field allowlist, processed-only gallery delivery with the first photo as cover, explicit owner public-display acknowledgement and conservative handling of earlier approvals. It explains scope, alternatives, cost/maintenance implications, old-data boundaries and acceptance tests. These choices remain proposed; neither “Ok next” nor an existing publication approval silently authorizes public disclosure. Full guest booking-state logistics disclosure/snapshot rules remain D17.
+
+Only documentation changes in this phase: current merge/evidence status, the proposed slice and decision links, plus clarification that narrow publication review exists while broad admin/support does not. No application, dependency, schema, configuration, resource, repository-setting or data changes are made. Appropriate verification is source/scope inspection, Markdown links/anchors and whitespace. No install, initialization/migration, application build/test, deployment or new publication is performed or claimed by this planning phase.
 
 ## Follow-ups requiring separate scope or decisions
 
@@ -138,6 +146,6 @@ No fresh audit, local browser, manual visual/accessibility, real-device, staging
 | Before public exposure | A02/A03: provider/environment path and action/upload/storage abuse budgets | Preserve local fail-closed guards; D07/D08/D11 before nonlocal work |
 | Policy/recovery | Arrival, support, retention/erasure and recovery ownership | [Open decisions](product/open-decisions.md), especially D01/D06/D09/D10/D17 |
 | Pilot quality | Khmer copy, accessibility, slow-device/performance and real-service validation | No full accessibility, cross-engine/device or capacity certification |
-| Guest journey | Decide public photo delivery and guest address/contact/arrival disclosure before implementing those surfaces | D05/D17 remain open beyond the accepted minimum; no public field exposure is inferred |
+| Guest journey | Agree on the [first browsing proposal](product/guest-browsing-proposal.md) before implementation | D05/public display choices remain proposed; D17 booking-state disclosure is outside this first slice |
 
-Next: review this checklist implementation and its CI evidence. Plan the guest browsing/booking slice with explicit public-media and guest disclosure decisions before exposing private fields. Deliberate reviewer-account selection and actual approved terms remain necessary for local pilot publication. Staged services and public-pilot readiness remain later work.
+Next: the project owner agrees with or amends the public/private split, routed processed-photo delivery and explicit public-display acknowledgement. Then implement the focused local browsing slice. Booking request/detail screens and their private-logistics disclosure contract follow separately. Deliberate reviewer-account selection, actual approved terms and staged/live release gates remain open.
