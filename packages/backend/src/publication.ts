@@ -109,11 +109,12 @@ export async function decideReview(
 ) {
   await requireReviewer(db, actor);
   await requestRecord(db, requestId);
-  fields(input, ["action", "revision", "reason"]);
+  fields(input, ["action", "revision", "configRevision", "reason"]);
   const action = input.action;
   if (
     !["approve", "return_changes"].includes(String(action)) ||
     !revision(input.revision) ||
+    !revision(input.configRevision) ||
     (input.reason !== undefined && typeof input.reason !== "string")
   )
     throw new DomainError("invalid_review", 422);
@@ -134,10 +135,13 @@ export async function decideReview(
       action: String(action),
       requestId,
       revision: input.revision,
+      configRevision: input.configRevision,
       reason,
     },
     async () => {
       const config = await requireReviewer(db, actor);
+      if (config.revision !== input.configRevision)
+        throw new DomainError("review_conflict", 409);
       if (action === "approve" && !config.termsVersion)
         throw new DomainError("publication_terms_not_configured", 422);
       return {

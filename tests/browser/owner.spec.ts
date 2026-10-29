@@ -1,6 +1,7 @@
 import {
   test,
   expect,
+  devices,
   type Page,
   type APIRequestContext,
 } from "@playwright/test";
@@ -950,58 +951,186 @@ test("owner saves private location/contact/arrival details with same-attempt rec
   await expect(page.getByRole("heading", { name: "Property unavailable" })).toBeVisible();
 });
 
-test("sole pilot reviewer returns corrections and publishes only with configured terms; owner retries safely", async ({page},info)=>{
- const ownerEmail=`review-owner-${info.project.name}@example.invalid`,reviewerEmail=`reviewer-${info.project.name}@example.invalid`;
- await register(page,reviewerEmail);
- const session=await (await page.request.get("/api/auth/get-session")).json() as {user:{id:string}};
- const configure=async(termsVersion:string|null)=>expect((await page.request.post("/__test/pilot-reviewer",{data:{userId:session.user.id,termsVersion}})).status()).toBe(200);
- await configure(null);
- await page.getByRole("button",{name:"Sign out",exact:true}).click();
- await expect(page).toHaveURL(/\/sign-in$/);
- await register(page,ownerEmail);
- const headers={Origin:"http://127.0.0.1:8787","Idempotency-Key":"review-browser-draft"};
- const created=await page.request.post("/api/owner/properties",{headers,data:{...fields,ownerName:"Local Owner"}});
- expect(created.status()).toBe(201);const property=await created.json() as {id:string};
- const base=`/owner/properties/${property.id}`,api="/api"+base+"/review";
- expect((await page.request.get("/api/property-reviews")).status()).toBe(404);
- await page.goto(base+"/review");
- await expect(page.getByRole("heading",{name:"Publication review",exact:true})).toBeVisible();
- let firstKey="",firstBody="",retryKey="",retryBody="";
- await page.route("**"+api,async route=>{firstKey=route.request().headers()["idempotency-key"];firstBody=route.request().postData()??"";expect((await route.fetch()).status()).toBe(200);await route.abort("failed");},{times:1});
- await page.getByRole("button",{name:"Submit saved draft",exact:true}).click();
- await expect(page.getByRole("button",{name:"Retry same action"})).toBeVisible();
- await page.route("**"+api,async route=>{retryKey=route.request().headers()["idempotency-key"];retryBody=route.request().postData()??"";await route.continue();},{times:1});
- await page.getByRole("button",{name:"Retry same action"}).click();
- await expect(page.getByRole("heading",{name:"Awaiting review"})).toBeVisible();
- expect(retryKey).toBe(firstKey);expect(retryBody).toBe(firstBody);
- await page.getByRole("button",{name:"Withdraw to edit"}).click();
- await expect(page.getByRole("button",{name:"Submit saved draft"})).toBeEnabled();
- await page.getByRole("button",{name:"Submit saved draft"}).click();
- await expect(page.getByRole("heading",{name:"Awaiting review"})).toBeVisible();
- const first=(await (await page.request.get(api)).json() as {latest:{id:string}}).latest;
- await page.goto(base+"/logistics");await expect(page.getByLabel("Contact name",{exact:true})).toBeDisabled();
- await page.getByRole("button",{name:"Sign out",exact:true}).click();await expect(page).toHaveURL(/\/sign-in$/);await signIn(page,reviewerEmail);
- await page.getByRole("link",{name:"Publication reviews",exact:true}).click();
- await expect(page.getByRole("heading",{name:"Publication reviews",exact:true})).toBeVisible();
- await page.goto("/review/"+first.id);
- await expect(page.getByRole("button",{name:"Approve and publish"})).toBeDisabled();
- await page.getByRole("button",{name:"Return for changes"}).click();
- await expect(page.getByRole("alert")).toContainText("Add correction notes");
- await page.getByLabel("Correction notes or decision note").fill("Please add arrival directions.");
- await page.getByRole("button",{name:"Return for changes"}).click();await expect(page).toHaveURL(/\/review$/);
- await page.getByRole("button",{name:"Sign out",exact:true}).click();await expect(page).toHaveURL(/\/sign-in$/);await signIn(page,ownerEmail);
- await page.goto(base+"/review");await expect(page.getByText("Please add arrival directions.",{exact:true})).toBeVisible();
- await page.getByRole("button",{name:"Submit saved draft"}).click();await expect(page.getByRole("heading",{name:"Awaiting review"})).toBeVisible();
- const next=(await (await page.request.get(api)).json() as {latest:{id:string}}).latest;
- expect(next.id).not.toBe(first.id);
- await page.getByRole("button",{name:"Sign out",exact:true}).click();await expect(page).toHaveURL(/\/sign-in$/);await signIn(page,reviewerEmail);
- await configure("browser-approved-v1");await page.goto("/review/"+next.id);
- await expect(page.getByRole("button",{name:"Approve and publish"})).toBeEnabled();
- expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
- await page.getByRole("button",{name:"Approve and publish"}).click();await expect(page).toHaveURL(/\/review$/);
- await expect(page.getByText("No pending submissions on this page.",{exact:true})).toBeVisible();
- await page.getByRole("button",{name:"Sign out",exact:true}).click();await expect(page).toHaveURL(/\/sign-in$/);await signIn(page,ownerEmail);
- await page.goto(base+"/review");await expect(page.getByRole("heading",{name:"Published",exact:true})).toBeVisible();
- const result=await (await page.request.get(api)).json() as {publication:string;latest:{approvedTermsVersion:string}};
- expect(result.publication).toBe("published");expect(result.latest.approvedTermsVersion).toBe("browser-approved-v1");
+test("sole pilot reviewer returns corrections and publishes only with configured terms; owner retries safely", async ({
+  page,
+  browser,
+}, info) => {
+  const reviewerContext = await browser.newContext({
+    ...devices[
+      info.project.name.startsWith("mobile") ? "Pixel 7" : "Desktop Chrome"
+    ],
+    baseURL: "http://127.0.0.1:8787",
+    extraHTTPHeaders: {
+      "X-Test-Client": info.project.name + ":publication-reviewer",
+    },
+  });
+  try {
+    const reviewerPage = await reviewerContext.newPage();
+    const ownerEmail = `review-owner-${info.project.name}@example.invalid`,
+      reviewerEmail = `reviewer-${info.project.name}@example.invalid`;
+    await register(reviewerPage, reviewerEmail);
+    const session = (await (
+      await reviewerPage.request.get("/api/auth/get-session")
+    ).json()) as { user: { id: string } };
+    const configure = async (termsVersion: string | null) =>
+      expect(
+        (
+          await reviewerPage.request.post("/__test/pilot-reviewer", {
+            data: { userId: session.user.id, termsVersion },
+          })
+        ).status(),
+      ).toBe(200);
+    await configure(null);
+    await register(page, ownerEmail);
+    const headers = {
+      Origin: "http://127.0.0.1:8787",
+      "Idempotency-Key": "review-browser-draft",
+    };
+    const created = await page.request.post("/api/owner/properties", {
+      headers,
+      data: { ...fields, ownerName: "Local Owner" },
+    });
+    expect(created.status()).toBe(201);
+    const property = (await created.json()) as { id: string };
+    const base = `/owner/properties/${property.id}`,
+      api = "/api" + base + "/review";
+    expect((await page.request.get("/api/property-reviews")).status()).toBe(
+      404,
+    );
+    await page.goto(base + "/review");
+    await expect(
+      page.getByRole("heading", { name: "Publication review", exact: true }),
+    ).toBeVisible();
+    let firstKey = "",
+      firstBody = "",
+      retryKey = "",
+      retryBody = "";
+    await page.route(
+      "**" + api,
+      async (route) => {
+        firstKey = route.request().headers()["idempotency-key"];
+        firstBody = route.request().postData() ?? "";
+        expect((await route.fetch()).status()).toBe(200);
+        await route.abort("failed");
+      },
+      { times: 1 },
+    );
+    await page
+      .getByRole("button", { name: "Submit saved draft", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Retry same action" }),
+    ).toBeVisible();
+    await page.route(
+      "**" + api,
+      async (route) => {
+        retryKey = route.request().headers()["idempotency-key"];
+        retryBody = route.request().postData() ?? "";
+        await route.continue();
+      },
+      { times: 1 },
+    );
+    await page.getByRole("button", { name: "Retry same action" }).click();
+    await expect(
+      page.getByRole("heading", { name: "Awaiting review" }),
+    ).toBeVisible();
+    expect(retryKey).toBe(firstKey);
+    expect(retryBody).toBe(firstBody);
+    await page.getByRole("button", { name: "Withdraw to edit" }).click();
+    await expect(
+      page.getByRole("button", { name: "Submit saved draft" }),
+    ).toBeEnabled();
+    await page.getByRole("button", { name: "Submit saved draft" }).click();
+    await expect(
+      page.getByRole("heading", { name: "Awaiting review" }),
+    ).toBeVisible();
+    const first = (
+      (await (await page.request.get(api)).json()) as { latest: { id: string } }
+    ).latest;
+    await page.goto(base + "/logistics");
+    await expect(
+      page.getByLabel("Contact name", { exact: true }),
+    ).toBeDisabled();
+    await reviewerPage.goto("/owner");
+    await reviewerPage
+      .getByRole("link", { name: "Publication reviews", exact: true })
+      .click();
+    await expect(
+      reviewerPage.getByRole("heading", {
+        name: "Publication reviews",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await reviewerPage.goto("/review/" + first.id);
+    await expect(
+      reviewerPage.getByRole("button", { name: "Approve and publish" }),
+    ).toBeDisabled();
+    await reviewerPage
+      .getByRole("button", { name: "Return for changes" })
+      .click();
+    await expect(reviewerPage.getByRole("alert")).toContainText(
+      "Add correction notes",
+    );
+    await reviewerPage
+      .getByLabel("Correction notes or decision note")
+      .fill("Please add arrival directions.");
+    await reviewerPage
+      .getByRole("button", { name: "Return for changes" })
+      .click();
+    await expect(reviewerPage).toHaveURL(/\/review$/);
+    await page.goto(base + "/review");
+    await expect(
+      page.getByText("Please add arrival directions.", { exact: true }),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Submit saved draft" }).click();
+    await expect(
+      page.getByRole("heading", { name: "Awaiting review" }),
+    ).toBeVisible();
+    const next = (
+      (await (await page.request.get(api)).json()) as { latest: { id: string } }
+    ).latest;
+    expect(next.id).not.toBe(first.id);
+    await configure("browser-approved-v1");
+    await reviewerPage.goto("/review/" + next.id);
+    await expect(
+      reviewerPage.getByRole("button", { name: "Approve and publish" }),
+    ).toBeEnabled();
+    expect(
+      await reviewerPage.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    ).toBeTruthy();
+    await configure("browser-approved-v1");
+    await reviewerPage
+      .getByRole("button", { name: "Approve and publish" })
+      .click();
+    await expect(reviewerPage.getByRole("alert")).toContainText("changed");
+    await reviewerPage
+      .getByRole("button", { name: "Reload latest status" })
+      .click();
+    await expect(
+      reviewerPage.getByRole("button", { name: "Approve and publish" }),
+    ).toBeEnabled();
+    await reviewerPage
+      .getByRole("button", { name: "Approve and publish" })
+      .click();
+    await expect(reviewerPage).toHaveURL(/\/review$/);
+    await expect(
+      reviewerPage.getByText("No pending submissions on this page.", {
+        exact: true,
+      }),
+    ).toBeVisible();
+    await page.goto(base + "/review");
+    await expect(
+      page.getByRole("heading", { name: "Published", exact: true }),
+    ).toBeVisible();
+    const result = (await (await page.request.get(api)).json()) as {
+      publication: string;
+      latest: { approvedTermsVersion: string };
+    };
+    expect(result.publication).toBe("published");
+    expect(result.latest.approvedTermsVersion).toBe("browser-approved-v1");
+  } finally {
+    await reviewerContext.close();
+  }
 });

@@ -516,12 +516,12 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     const pending=await submitted.json() as {id:string;status:string};
     const queue=await server.fetch(baseURL+"/api/property-reviews",{headers:{Cookie:other.cookie}});
     assert.equal(queue.status,200);assert.ok(queue.headers.get("cache-control")?.includes("no-store"));
-    assert.equal((await post("/api/property-reviews/"+pending.id,{action:"approve",revision:1},other.cookie,"review-approve")).status,422);
+    assert.equal((await post("/api/property-reviews/"+pending.id,{action:"approve",revision:1,configRevision:1},other.cookie,"review-approve")).status,422);
     const details=await server.fetch(baseURL+"/api/property-reviews/"+pending.id,{headers:{Cookie:other.cookie}});
     assert.equal(details.status,200);
     const photo=await server.fetch(baseURL+"/api/property-reviews/"+pending.id+"/photos/missing",{headers:{Cookie:other.cookie}});
     assert.equal(photo.status,404);assert.equal(photo.headers.get("x-content-type-options"),"nosniff");
-    const returned=await post("/api/property-reviews/"+pending.id,{action:"return_changes",revision:1,reason:"Please add directions."},other.cookie,"review-return");
+    const returned=await post("/api/property-reviews/"+pending.id,{action:"return_changes",revision:1,configRevision:1,reason:"Please add directions."},other.cookie,"review-return");
     assert.equal(returned.status,200);
     assert.equal((await returned.json() as {status:string}).status,"returned");
     await db.prepare("DROP TABLE nightly_rate").run();

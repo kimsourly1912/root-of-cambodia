@@ -39,13 +39,13 @@ Review commands use their own owner/reviewer receipt table and actor/key namespa
 
 ## Access and HTTP contract
 
-All JSON routes use the existing verified session, Origin/JSON write checks, 32 KiB streamed body cap and private/no-store + Vary: Cookie adapter. Mutations require Idempotency-Key. Inputs reject unknown policy/role/state fields. Expected revisions are positive safe integers; correction notes are trimmed, at most 2,000 characters and reject unsupported controls. Approval notes are optional.
+All JSON routes use the existing verified session, Origin/JSON write checks, 32 KiB streamed body cap and private/no-store + Vary: Cookie adapter. Mutations require Idempotency-Key. Inputs reject unknown policy/role/state fields. Expected request/configuration revisions are positive safe integers; stale reviewer pages cannot silently approve a newly selected terms version; correction notes are trimmed, at most 2,000 characters and reject unsupported controls. Approval notes are optional.
 
 | Route | Methods and input | Authorized result |
 | --- | --- | --- |
 | /api/owner/properties/:id/review | GET; POST action=submit/propertyRevision or action=withdraw/requestId/revision | Current owned publication state, saved draft/latest submission/correction timeline and readiness flags; POST 200 id/status receipt |
 | /api/property-reviews | GET optional numeric cursor | Configured reviewer only; at most 20 pending requests, oldest first; nextCursor or null |
-| /api/property-reviews/:id | GET; POST action=return_changes or approve/revision/optional reason | Reviewer only; pending immutable snapshot/timeline and configured terms version; POST 200 id/status receipt |
+| /api/property-reviews/:id | GET; POST action=return_changes or approve/revision/configRevision/optional reason | Reviewer only; pending immutable snapshot/timeline and configured terms version; POST 200 id/status receipt |
 | /api/property-reviews/:id/photos/:photoId | GET | Submitting current owner or configured reviewer; pending snapshot member and ready media only; processed JPEG |
 
 Unconfigured/unassigned reviewers receive not_found; verification still requires a verified session. Definite conflicts return review_conflict (409), invalid inputs invalid_review (422), missing reviewer reviewer_not_configured (422), unfinished gallery uploads unfinished_photos (422). Technical snapshot bounds use request_size_limit (422). Existing 401/403/404/413/503 handling remains. Private original objects, storage keys/hashes, guest records and role-management are never returned.

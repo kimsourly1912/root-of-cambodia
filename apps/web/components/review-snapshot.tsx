@@ -22,7 +22,9 @@ export function ReviewSnapshot({
     <div className="min-w-0 space-y-6">
       <Card className="shadow-none">
         <CardHeader>
-          <CardTitle>Review guidance</CardTitle>
+          <CardTitle>
+            <h2>Review guidance</h2>
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <p>
@@ -38,7 +40,9 @@ export function ReviewSnapshot({
       </Card>
       <Card className="shadow-none">
         <CardHeader>
-          <CardTitle>Property details</CardTitle>
+          <CardTitle>
+            <h2>Property details</h2>
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 break-words text-sm">
           <h3 lang="km" className="text-xl font-semibold">
@@ -70,7 +74,9 @@ export function ReviewSnapshot({
       </Card>
       <Card className="shadow-none">
         <CardHeader>
-          <CardTitle>Information</CardTitle>
+          <CardTitle>
+            <h2>Information</h2>
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 break-words text-sm">
           <h3 className="font-semibold">Description</h3>
@@ -85,7 +91,9 @@ export function ReviewSnapshot({
       </Card>
       <Card className="shadow-none">
         <CardHeader>
-          <CardTitle>Location &amp; contact</CardTitle>
+          <CardTitle>
+            <h2>Location &amp; contact</h2>
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 break-words text-sm">
           <p>
@@ -108,7 +116,9 @@ export function ReviewSnapshot({
       </Card>
       <Card className="shadow-none">
         <CardHeader>
-          <CardTitle>Rooms, prices &amp; availability</CardTitle>
+          <CardTitle>
+            <h2>Rooms, prices &amp; availability</h2>
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5 text-sm">
           {!s.rooms.length && <p>No room types configured.</p>}
@@ -135,7 +145,9 @@ export function ReviewSnapshot({
       </Card>
       <Card className="shadow-none">
         <CardHeader>
-          <CardTitle>Photos</CardTitle>
+          <CardTitle>
+            <h2>Photos</h2>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {!s.photos.length && <p className="text-sm">No photos configured.</p>}

@@ -65,7 +65,7 @@ const submit = (
     action: "submit",
     propertyRevision,
   });
-const decide = (
+const decide = async (
   db: D1Database,
   id: string,
   action = "return_changes",
@@ -77,6 +77,7 @@ const decide = (
     action,
     revision,
     reason,
+    configRevision: (await reviewConfig(db))!.revision,
   });
 function beforeBatch(
   db: D1Database,
@@ -770,6 +771,54 @@ test("review queue pagination is stable, bounded and hides withdrawn requests", 
       revision: 1,
     });
     assert.equal((await reviewQueue(db, other)).items.length, 20);
+  } finally {
+    await p.dispose();
+  }
+});
+
+test("a changed terms configuration requires reloading the displayed reviewer decision before approval", async () => {
+  const p = await database();
+  try {
+    const db = p.db,
+      id = await setup(db);
+    const pending = await submit(db, id);
+    await db
+      .prepare(
+        "UPDATE pilot_publication_config SET terms_version='approved-v1',revision=revision+1",
+      )
+      .run();
+    const displayed = await reviewDetails(db, other, pending.id);
+    await db
+      .prepare(
+        "UPDATE pilot_publication_config SET terms_version='approved-v2',revision=revision+1",
+      )
+      .run();
+    await assert.rejects(
+      decideReview(db, other, "stale-terms", pending.id, {
+        action: "approve",
+        revision: 1,
+        configRevision: displayed.configRevision,
+      }),
+      /review_conflict/,
+    );
+    assert.equal(
+      await scalar(
+        db,
+        "SELECT count(*) n FROM property_review_command WHERE key='stale-terms'",
+      ),
+      0,
+    );
+    assert.equal((await ownerPublication(db, owner, id)).publication, "review");
+    const refreshed = await reviewDetails(db, other, pending.id);
+    await decideReview(db, other, "current-terms", pending.id, {
+      action: "approve",
+      revision: 1,
+      configRevision: refreshed.configRevision,
+    });
+    assert.equal(
+      (await ownerPublication(db, owner, id)).latest!.approvedTermsVersion,
+      "approved-v2",
+    );
   } finally {
     await p.dispose();
   }

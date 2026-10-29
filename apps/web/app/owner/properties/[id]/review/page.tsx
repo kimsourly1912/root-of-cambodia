@@ -54,11 +54,13 @@ export default async function Page({
           <Card className="shadow-none">
             <CardHeader>
               <CardTitle>
-                {data.publication === "published"
-                  ? "Published"
-                  : pending
-                    ? "Awaiting review"
-                    : "Prepare your submission"}
+                <h2>
+                  {data.publication === "published"
+                    ? "Published"
+                    : pending
+                      ? "Awaiting review"
+                      : "Prepare your submission"}
+                </h2>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
@@ -119,7 +121,9 @@ export default async function Page({
           {!!data.events.length && (
             <Card className="shadow-none">
               <CardHeader>
-                <CardTitle>Latest submission</CardTitle>
+                <CardTitle>
+                  <h2>Latest submission</h2>
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <ol className="space-y-4 text-sm">

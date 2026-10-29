@@ -275,6 +275,7 @@ export async function reviewDetails(db: D1Database, actor: Actor, id: string) {
     request,
     events,
     termsVersion: config.termsVersion,
+    configRevision: config.revision,
   };
 }
 export async function reviewPhotoAsset(

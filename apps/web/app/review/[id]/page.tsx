@@ -31,7 +31,9 @@ export default async function Page({
         <aside className="lg:sticky lg:top-8">
           <Card className="shadow-none">
             <CardHeader>
-              <CardTitle>Your decision</CardTitle>
+              <CardTitle>
+                <h2>Your decision</h2>
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm">
               <p>
@@ -48,6 +50,7 @@ export default async function Page({
                 url={`/api/property-reviews/${id}`}
                 body={{
                   revision: data.request.revision,
+                  configRevision: data.configRevision,
                 }}
                 reviewer
                 choices={[
