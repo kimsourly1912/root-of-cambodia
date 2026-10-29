@@ -225,6 +225,8 @@ test("safeguards upgrade retains every populated row, old schema object and orig
     const afterDraftMigration = await snapshot(db);
     assert.deepEqual(afterDraftMigration.property_draft_event, []);
     delete afterDraftMigration.property_draft_event;
+    assert.deepEqual(afterDraftMigration.room_type_event, []);
+    delete afterDraftMigration.room_type_event;
     assert.deepEqual(afterDraftMigration, before);
     assert.deepEqual(
       await transition(db, owner, "accept-then-cancel", cancelled.id, "accept"),
@@ -334,3 +336,46 @@ test.each(["null identity", "incoherent schedule"])(
     }
   },
 );
+
+test("room history upgrade preserves populated owner drafts, bookings and original receipts", async () => {
+  const p = await database({ migrate: false });
+  try {
+    const db = p.db;
+    await migrate(db, [
+      ...legacyMigrations,
+      ...safeguards,
+      "0005_property_drafts.sql",
+    ]);
+    const { input } = await catalog(db);
+    const booking = await request(db, input, "room-upgrade-booking");
+    const { createPropertyDraft } =
+      await import("@root-of-cambodia/backend/property-drafts");
+    const fields = {
+      ownerName: "Owner",
+      nameKm: "ផ្ទះ",
+      nameEn: "Draft",
+      province: "Kampot",
+      checkinTime: "14:00",
+      checkoutTime: "11:00",
+      policyText: "Quiet hours.",
+    };
+    const draft = await createPropertyDraft(db, owner, "upgrade-draft", fields);
+    const before = await snapshot(db);
+    await migrate(db, ["0006_room_type_history.sql"]);
+    const after = await snapshot(db);
+    assert.deepEqual(after.room_type_event, []);
+    delete after.room_type_event;
+    assert.deepEqual(after, before);
+    assert.deepEqual(
+      await createPropertyDraft(db, owner, "upgrade-draft", fields),
+      draft,
+    );
+    assert.deepEqual(await request(db, input, "room-upgrade-booking"), booking);
+    assert.deepEqual(
+      (await db.prepare("PRAGMA foreign_key_check").all()).results,
+      [],
+    );
+  } finally {
+    await p.dispose();
+  }
+});

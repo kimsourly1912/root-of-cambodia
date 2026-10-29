@@ -20,7 +20,10 @@
     "./diagnostics": "./src/diagnostics.ts",
     "./property-drafts": "./src/property-drafts.ts",
     "./property-queries": "./src/property-queries.ts",
-    "./property-persistence": "./src/property-persistence.ts"
+    "./property-persistence": "./src/property-persistence.ts",
+    "./room-types": "./src/room-types.ts",
+    "./room-queries": "./src/room-queries.ts",
+    "./room-persistence": "./src/room-persistence.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

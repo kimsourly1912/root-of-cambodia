@@ -1,7 +1,7 @@
 # Root of Cambodia — Architecture Implementation Plan
 
-Date: 28 October 2026
-Status: Step 6 is in progress with verified owner access and private property draft create/edit/reopen; see the [owner-draft review](Root-of-Cambodia-Owner-Drafts-Review.md). Steps 1 (Vitest alignment), 2 (database safeguards), 3 (service/persistence separation), 4 (workspace/jobs boundaries) and 5 (diagnostics/delivery contracts) are completed locally; see the [alignment report](Root-of-Cambodia-Vitest-Alignment.md), [safeguards review](Root-of-Cambodia-Database-Safeguards.md) and [service-boundary review](Root-of-Cambodia-Service-Boundaries.md). Remaining steps are delivery work under the approved application and booking/database designs. The workspace/tooling choice was subsequently approved and implemented; see the [workspace review](Root-of-Cambodia-Workspace-Review.md).
+Date: 28 October 2026; progress updated 29 October 2026
+Status: Step 6 is in progress with verified owner access, private property drafts and private room-type setup; see the [room-type review](Root-of-Cambodia-Room-Types-Review.md); see the [owner-draft review](Root-of-Cambodia-Owner-Drafts-Review.md). Steps 1 (Vitest alignment), 2 (database safeguards), 3 (service/persistence separation), 4 (workspace/jobs boundaries) and 5 (diagnostics/delivery contracts) are completed locally; see the [alignment report](Root-of-Cambodia-Vitest-Alignment.md), [safeguards review](Root-of-Cambodia-Database-Safeguards.md) and [service-boundary review](Root-of-Cambodia-Service-Boundaries.md). Remaining steps are delivery work under the approved application and booking/database designs. The workspace/tooling choice was subsequently approved and implemented; see the [workspace review](Root-of-Cambodia-Workspace-Review.md).
 
 ## 1. Where we are
 
@@ -69,6 +69,8 @@ Bring material deviations back for agreement: a new database/framework, a differ
 Open product decisions remain open: arrival/no-show/late cancellation, infants/age bands, physical-room continuity, external booking details, audited admin support, suspension, provider/domain, reminders, retention and recovery targets. Do not silently encode these while refactoring.
 
 ## 6. Current evidence
+
+On 29 October, PR #10 and PR #11 were merged into main with explicit authorization. The next room-type slice starts from that updated main on its own branch. It adds private room create/edit/reopen, exact-property authorization and append-only room events without creating availability or changing booking rules. Fresh checks pass 93 Vitest tests and six desktop/mobile browser checks, frozen installation, migrations, generated bindings, strict types and both builds. See the [room-type review](Root-of-Cambodia-Room-Types-Review.md). Prices/calendar, media, publication and booking screens remain step 6 work; staging remains separate.
 
 The first step 6 slice implements verified owner access and private property draft create/edit/reopen. Field validation, own-resource queries, atomic draft saves, append-only events and optimistic revisions preserve the established service/persistence boundaries. Fresh local checks pass 84 Vitest tests and four desktop/mobile browser checks, generated bindings, strict types and both builds. The [owner-draft review](Root-of-Cambodia-Owner-Drafts-Review.md) records version/evidence limits. The rest of step 6 remains open; no publication, merge or deployment is implied.
 

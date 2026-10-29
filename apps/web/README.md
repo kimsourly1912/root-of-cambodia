@@ -1,6 +1,6 @@
 # Root of Cambodia web application
 
-The Next.js application now lives in apps/web and imports the private packages/backend workspace; the historical compatibility proof remains in ../../proofs/foundation. Next.js full stack, Better Auth, D1 and Drizzle are retained. The first shadcn/ui/Tailwind interface now provides verified owner access and private property draft create/edit/reopen. Payment remains at the property.
+The Next.js application now lives in apps/web and imports the private packages/backend workspace; the historical compatibility proof remains in ../../proofs/foundation. Next.js full stack, Better Auth, D1 and Drizzle are retained. The first shadcn/ui/Tailwind interface now provides verified owner access and private property draft and room-type create/edit/reopen. Payment remains at the property.
 
 ## Local validation
 
@@ -48,6 +48,12 @@ The tests start the actual built Worker with isolated D1 and a test-only loopbac
 
 The five UI primitives in components/ui came from the official shadcn/ui New York registry, with local styling/touch-target changes; its [MIT notice](components/ui/LICENSE.md) is retained. Fonts are self-hosted through the pinned Fontsource package. UI packages and Playwright are new approved-stack additions; all 493 existing locked package artifacts retain their versions/integrities.
 
+## Private room-type setup
+
+Open a saved draft and choose Room types. Create/reopen/edit room names and the existing per-unit adult/child/total limits. A room type has no stock, dated availability or nightly prices until later setup steps. Only private drafts are editable through this flow; published-property editing and age/infant policies are not inferred.
+
+room-types.ts, room-queries.ts and room-persistence.ts retain the same service/scoped-read/atomic-save boundary. Migration 0006 adds attributable append-only room events. Existing room revision triggers, fingerprints and stored receipts are reused. See the [room-type review](../../docs/Root-of-Cambodia-Room-Types-Review.md) for 93 Vitest tests, six browser checks and evidence limits.
+
 ## Service and persistence boundaries
 
 bookings.ts, quotes.ts and inventory.ts coordinate validation and permissions. access.ts keeps the authorized Drizzle booking read and scoped resource checks; quote-queries.ts holds internal catalog reads. booking-persistence.ts exposes commitRequest, commitBookingTransition and expireRequest. inventory-persistence.ts exposes editInventoryNight. Each save owns the complete atomic batch through the existing operations.ts primitive; never commit its individual table writes separately.
@@ -61,7 +67,7 @@ Services authorize before receipt replay. Submission prepares a fresh quote lazi
 Migration 0004 adds database guards for command/status consistency, the supported pre-check-in cancellation cutoff, non-null business identities, coherent Cambodia schedules and stable operation receipts. It checks existing records first and rejects incompatible data without rewriting history. Use the migration runner atomically; a failed preflight needs a reviewed repair plan. See the [safeguards review](../../docs/Root-of-Cambodia-Database-Safeguards.md) for fresh/populated upgrade evidence, exact command mapping and limits.
 
 - SQL migrations are authoritative, including composite FKs, CHECK constraints, delete restrictions and triggers. schema.ts provides Drizzle read projections; do not replace migrations with drizzle-kit push.
-- 0001 creates identity/catalog/inventory/rates; 0002 creates booking operations/history/outbox; 0003 adds delivery recovery diagnostics/indexes; 0004 adds booking/identity/receipt safeguards; 0005 adds private draft history. These do not upgrade the disposable proof database.
+- 0001 creates identity/catalog/inventory/rates; 0002 creates booking operations/history/outbox; 0003 adds delivery recovery diagnostics/indexes; 0004 adds booking/identity/receipt safeguards; 0005 adds private draft history; 0006 adds room-type history. These do not upgrade the disposable proof database.
 - Quotes use server-side settings, nightly rates and itemized per-stay mandatory charges. Submission recalculates the quote/hash and rechecks revisions, availability and complete coverage inside one D1 batch.
 - Internal building state is sealed to pending/confirmed before commit and is excluded from public reads.
 - Stable lines retain quantities, adult/child counts, capacity limits, room names and occupied-night prices. Headers retain property/guest names, guest email, dates, UTC check-in/out, timezone, arrival/departure times, USD total, policy text/version, terms version and cancellation wording.
@@ -81,6 +87,10 @@ All application endpoints require verified cookie sessions. Mutations require th
 | POST /api/owner/properties | Own private draft; ownerName, nameKm, optional nameEn, province, checkinTime, checkoutTime, policyText and Idempotency-Key; 201 receipt |
 | GET /api/owner/properties/:id | Own property details only |
 | PATCH /api/owner/properties/:id | Same draft fields without ownerName, plus expected revision and Idempotency-Key; draft status only; 200 receipt |
+| GET /api/owner/properties/:id/rooms | Owned property's room types; up to 20 entries and optional cursor |
+| POST /api/owner/properties/:id/rooms | name, adultCapacity, childCapacity, totalCapacity and Idempotency-Key; verified owner/private draft; 201 receipt |
+| GET /api/owner/properties/:id/rooms/:roomId | Owned room belonging to this exact property |
+| PATCH /api/owner/properties/:id/rooms/:roomId | Same room fields plus expected revision and Idempotency-Key; 200 receipt |
 | POST /api/booking-quotes | propertyId, checkin, checkout, termsVersion, lines; returns hash, nightly prices, charges and policy |
 | POST /api/bookings | Selection + quoteHash + Idempotency-Key; returns Pending, never confirmation |
 | GET /api/bookings/:id | Own guest booking or booking for a currently owned property |
