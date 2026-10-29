@@ -233,6 +233,12 @@ test("safeguards upgrade retains every populated row, old schema object and orig
     delete afterDraftMigration.property_information;
     assert.deepEqual(afterDraftMigration.property_information_event, []);
     delete afterDraftMigration.property_information_event;
+    assert.deepEqual(afterDraftMigration.property_media, []);
+    assert.deepEqual(afterDraftMigration.property_media_gallery, []);
+    assert.deepEqual(afterDraftMigration.property_media_event, []);
+    delete afterDraftMigration.property_media;
+    delete afterDraftMigration.property_media_gallery;
+    delete afterDraftMigration.property_media_event;
     assert.deepEqual(afterDraftMigration, before);
     assert.deepEqual(
       await transition(db, owner, "accept-then-cancel", cancelled.id, "accept"),
@@ -358,7 +364,7 @@ test("room history upgrade preserves populated owner drafts, bookings and origin
       await import("@root-of-cambodia/backend/property-drafts");
     const fields = {
       ownerName: "Owner",
-      nameKm: "ផ្ទះ",
+      nameKm: "????",
       nameEn: "Draft",
       province: "Kampot",
       checkinTime: "14:00",
@@ -404,7 +410,7 @@ test("calendar upgrade retains populated stock, rates, room/property history and
       await import("@root-of-cambodia/backend/room-types");
     const propertyFields = {
       ownerName: "Owner",
-      nameKm: "ផ្ទះ",
+      nameKm: "????",
       nameEn: "Draft",
       province: "Kampot",
       checkinTime: "14:00",
@@ -489,7 +495,7 @@ test("information upgrade preserves populated calendars, prior history and origi
       await import("@root-of-cambodia/backend/calendar");
     const propertyFields = {
       ownerName: "Owner",
-      nameKm: "ផ្ទះ",
+      nameKm: "????",
       nameEn: "Draft",
       province: "Kampot",
       checkinTime: "14:00",

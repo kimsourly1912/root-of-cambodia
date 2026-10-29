@@ -5,6 +5,7 @@ import {
 } from "@root-of-cambodia/backend/diagnostics";
 import { JobsConfigurationError } from "@root-of-cambodia/backend/errors";
 import { localProvider, requireLocal } from "./runtime";
+import { cleanupRemovedPhotos } from "@root-of-cambodia/backend/media";
 
 export default {
   async scheduled(_controller, env) {
@@ -12,6 +13,7 @@ export default {
     try {
       requireLocal(env);
       await maintenance(env.DB, env.NOTIFICATIONS);
+      await cleanupRemovedPhotos(env.DB, env.MEDIA);
       context.completed();
     } catch (error) {
       const failure = context.failure(error);

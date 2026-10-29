@@ -14,6 +14,7 @@
   "vars": {
     "APP_MODE": "local",
   },
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "roc-media-local-only", "remote": false }],
   "queues": {
     "producers": [
       {

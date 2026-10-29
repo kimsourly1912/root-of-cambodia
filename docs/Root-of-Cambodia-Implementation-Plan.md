@@ -1,7 +1,7 @@
-# Root of Cambodia — Architecture Implementation Plan
+# Root of Cambodia - Architecture Implementation Plan
 
 Date: 28 October 2026; progress updated 29 October 2026
-Status: Steps 1–5 are completed locally. Step 6 is in progress with owner access, private property/room setup, pricing/availability and property information. The [information review](Root-of-Cambodia-Property-Information-Review.md) records current evidence and remaining scope. Earlier-step decisions and verification remain below. Staging and deployment remain separately authorized.
+Status: Steps 1-5 are completed locally. Step 6 is in progress with owner access, private property/room setup, pricing/availability and property information. The [information review](Root-of-Cambodia-Property-Information-Review.md) records current evidence and remaining scope. Earlier-step decisions and verification remain below. Staging and deployment remain separately authorized.
 
 ## 1. Where we are
 
@@ -18,19 +18,19 @@ The existing application foundation is useful but does not yet match every appro
 
 | Step | Plain-language goal | Planned work | Evidence needed before moving on |
 | --- | --- | --- | --- |
-| 1. Align the test tools — completed locally | Use the agreed test runner without losing our current checks | Validate compatible Vitest/Cloudflare tooling in the current application directory; preserve the baseline scenarios and actual built-Worker harness | All existing D1 scenarios and HTTP checks remain covered and pass; types and bundle checks appropriate to the change |
-| 2. Strengthen database safeguards — completed locally | Close the gaps found in source review | Add failing regressions, then subsequent migrations for supported cancellation cutoff, operation-kind/transition consistency, null identities and valid/coherent instants; improve migration discovery | Targeted regressions pass; fresh/populated upgrade checks retain snapshots, allocations, receipts, history and notifications |
-| 3. Separate business and database code — completed locally | Make the code easier to understand safely | Extract named persistence functions and authorized query functions; keep routes and jobs thin; preserve one booking/inventory transaction | Existing behavior and concurrency/rollback checks remain unchanged and pass |
-| 4. Establish shared code and jobs boundaries — completed locally | Let the website and jobs reuse the same rules | Implement a reviewed workspace/layout change; shared backend cannot import Next.js runtime; jobs cannot duplicate lifecycle SQL | Next.js/OpenNext build, built-Worker checks and jobs-entrypoint integration pass with the new import/binding paths |
-| 5. Add clear diagnostics and delivery contracts — completed locally | Make failures understandable and recoverable | Stable safe error codes, sanitized correlation records, stale-lease regressions; provider acceptance distinguished from inbox delivery | Retry/uncertain-outcome cases remain correct; no private data/tokens in logs; provider-specific behavior remains explicitly unverified until configured |
-| 6. Build complete product journeys — in progress | Make the foundation usable by owners and guests | Owner setup, rooms/rates/calendar, guest quote/request, owner response and booking detail screens in product order | Browser journeys, accessibility and authorization tests; unresolved policy flows stay blocked |
+| 1. Align the test tools - completed locally | Use the agreed test runner without losing our current checks | Validate compatible Vitest/Cloudflare tooling in the current application directory; preserve the baseline scenarios and actual built-Worker harness | All existing D1 scenarios and HTTP checks remain covered and pass; types and bundle checks appropriate to the change |
+| 2. Strengthen database safeguards - completed locally | Close the gaps found in source review | Add failing regressions, then subsequent migrations for supported cancellation cutoff, operation-kind/transition consistency, null identities and valid/coherent instants; improve migration discovery | Targeted regressions pass; fresh/populated upgrade checks retain snapshots, allocations, receipts, history and notifications |
+| 3. Separate business and database code - completed locally | Make the code easier to understand safely | Extract named persistence functions and authorized query functions; keep routes and jobs thin; preserve one booking/inventory transaction | Existing behavior and concurrency/rollback checks remain unchanged and pass |
+| 4. Establish shared code and jobs boundaries - completed locally | Let the website and jobs reuse the same rules | Implement a reviewed workspace/layout change; shared backend cannot import Next.js runtime; jobs cannot duplicate lifecycle SQL | Next.js/OpenNext build, built-Worker checks and jobs-entrypoint integration pass with the new import/binding paths |
+| 5. Add clear diagnostics and delivery contracts - completed locally | Make failures understandable and recoverable | Stable safe error codes, sanitized correlation records, stale-lease regressions; provider acceptance distinguished from inbox delivery | Retry/uncertain-outcome cases remain correct; no private data/tokens in logs; provider-specific behavior remains explicitly unverified until configured |
+| 6. Build complete product journeys - in progress | Make the foundation usable by owners and guests | Owner setup, rooms/rates/calendar, guest quote/request, owner response and booking detail screens in product order | Browser journeys, accessibility and authorization tests; unresolved policy flows stay blocked |
 | 7. Verify real integrations | Check the connected system in a safe environment | Separately authorized staging: D1, HTTPS auth, email, Cron/Queues, monitoring, load and restore drills | Staging evidence and an explicit pilot checklist; local tests alone are insufficient |
 
 Step 1 moves the existing tests before adding new behavior. This addresses the known runner deviation promptly. Step 2 introduces new regressions under the aligned setup rather than expanding the old Node test suite. Work does not require every future product policy to be settled; only the affected flow waits for its missing policy.
 
 Implementation changes should be reviewable PRs with a concrete purpose, relevant evidence and remaining limitations. Do not combine test-tool migration, schema hardening and a broad folder move in one change.
 
-## 3. Workspace layout — approved and implemented locally
+## 3. Workspace layout - approved and implemented locally
 
 PR #7 is merged. The owner approved the [step 4 workspace plan](Root-of-Cambodia-Workspace-Plan.md) in conversation on 28 October 2026. Step 4 first introduced apps/web, apps/jobs and packages/backend using npm workspaces. The subsequent owner decision moved the active workspace to pnpm and one root pnpm lockfile. Shared source initially retains its tested filenames; no future modules/contracts/UI packages were created.
 
@@ -48,7 +48,7 @@ Within a feature module, use clear service, query and persistence files only whe
 
 Keep web UI components in the web app while there is one web application. Do not create an additional UI package or independent network service without an actual reuse/operational need.
 
-application/ was retained through steps 1–3 and migrated in step 4 after explicit approval. Web/jobs import shared package subpaths. The framework-independent backend and all four migrations moved unchanged; Next.js tracing/transpilation, migration/test paths, generated bindings and local-state handoff were verified. See the [workspace review](Root-of-Cambodia-Workspace-Review.md).
+application/ was retained through steps 1-3 and migrated in step 4 after explicit approval. Web/jobs import shared package subpaths. The framework-independent backend and all four migrations moved unchanged; Next.js tracing/transpilation, migration/test paths, generated bindings and local-state handoff were verified. See the [workspace review](Root-of-Cambodia-Workspace-Review.md).
 
 ## 4. Testing and package tooling
 
@@ -69,6 +69,8 @@ Bring material deviations back for agreement: a new database/framework, a differ
 Open product decisions remain open: arrival/no-show/late cancellation, infants/age bands, physical-room continuity, external booking details, audited admin support, suspension, provider/domain, reminders, retention and recovery targets. Do not silently encode these while refactoring.
 
 ## 6. Current evidence
+
+PRs #13/#14 are merged at main `3dd6fb1ebcf52e2e0a33fe000dd2432cdf027ed7`. The private-photo slice starts there on `codex/private-property-photos`. Upload journalling, private processing/previews, ordering/removal and cleanup are implemented in source; Vitest/browser checks are authored. Required execution is blocked by local dependency-network access; no new application verification is claimed. See the [photo review](Root-of-Cambodia-Property-Photos-Review.md) for evidence, release decisions and the verification workflow. Step 6 remains in progress; staging, pilot, merge and deployment remain separate.
 
 The next information slice is based on still-open PR #13 and reviewed separately. It adds private descriptions, addresses and ordered facility lists with their own versioned atomic save/history, without changing booking-setting revisions. Fresh local checks pass 114 Vitest tests and ten desktop/mobile browser checks, frozen installation, populated/fresh migrations, bindings, strict types and both builds. See the [property-information review](Root-of-Cambodia-Property-Information-Review.md). Photos/media, map/contact/arrival information, publication requirements/review and booking screens remain; no merge or deployment is implied.
 

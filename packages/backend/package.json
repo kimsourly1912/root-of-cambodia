@@ -30,7 +30,10 @@
     "./calendar-persistence": "./src/calendar-persistence.ts",
     "./property-information": "./src/property-information.ts",
     "./property-information-queries": "./src/property-information-queries.ts",
-    "./property-information-persistence": "./src/property-information-persistence.ts"
+    "./property-information-persistence": "./src/property-information-persistence.ts",
+    "./media": "./src/media.ts",
+    "./media-queries": "./src/media-queries.ts",
+    "./media-persistence": "./src/media-persistence.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
