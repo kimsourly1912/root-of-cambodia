@@ -1068,7 +1068,7 @@ test("sole pilot reviewer returns corrections and publishes only with configured
     await reviewerPage
       .getByRole("button", { name: "Return for changes" })
       .click();
-    await expect(reviewerPage.getByRole("alert")).toContainText(
+    await expect(reviewerPage.locator("main").getByRole("alert")).toContainText(
       "Add correction notes",
     );
     await reviewerPage
@@ -1104,7 +1104,7 @@ test("sole pilot reviewer returns corrections and publishes only with configured
     await reviewerPage
       .getByRole("button", { name: "Approve and publish" })
       .click();
-    await expect(reviewerPage.getByRole("alert")).toContainText("changed");
+    await expect(reviewerPage.locator("main").getByRole("alert")).toContainText("changed");
     await reviewerPage
       .getByRole("button", { name: "Reload latest status" })
       .click();
