@@ -24,7 +24,6 @@
 | [0008](../../packages/backend/migrations/0008_property_information.sql) | Versioned information extension and attributable events |
 | [0009](../../packages/backend/migrations/0009_property_media.sql) | Media journal, gallery versions, removal tombstones and events |
 | [0010](../../packages/backend/migrations/0010_property_logistics.sql) | Independently versioned private coordinates/contact/arrival instructions and attributable events |
-
 | [0011](../../packages/backend/migrations/0011_property_publication_review.sql) | Single reviewer configuration, immutable review requests/events and separately sealed owner/reviewer command receipts |
 
 Add a new ordered migration; do not rewrite an applied one. Verify both fresh application and populated upgrades using the configured migration loader/tracker. A failed preflight needs a reviewed repair plan, never deletion of a populated database to force success. The proof schema is independent and is not an application upgrade path.

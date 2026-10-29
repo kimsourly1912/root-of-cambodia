@@ -504,6 +504,16 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     const draftFields={ownerName:"Owner",nameKm:"ផ្ទះ",nameEn:"Review house",province:"Kampot",checkinTime:"14:00",checkoutTime:"11:00",policyText:"Quiet hours"};
     const draftResponse=await post("/api/owner/properties",draftFields,owner.cookie,"review-draft");
     assert.equal(draftResponse.status,201);
+    await expect
+      .poll(() =>
+        diagnosticsFromWorker().some(
+          (record) =>
+            record.correlationId === draftResponse.headers.get("x-request-id") &&
+            record.event === "completed" &&
+            record.status === draftResponse.status,
+        ),
+      )
+      .toBe(true);
     const draft=await draftResponse.json() as {id:string};
     const reviewPath="/api/owner/properties/"+draft.id+"/review";
     assert.equal((await post(reviewPath,{action:"submit",propertyRevision:1},owner.cookie,"review-submit")).status,422);
