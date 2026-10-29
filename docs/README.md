@@ -31,6 +31,7 @@ Report material disagreement. Do not silently rewrite approved policy to match a
 - [Open decisions](product/open-decisions.md)
 - [Accepted publication checklist](product/publication-checklist-proposal.md): approved D05 minimum and remaining boundaries
 - [Accepted guest-browsing slice](product/guest-browsing-proposal.md): public field/media boundary and explicit owner acknowledgement
+- [Proposed booking journey](product/booking-journey-proposal.md): guest request/tracking, owner response and D17 private-logistics recommendation; agreement pending
 - [Architecture overview and module map](architecture/overview.md)
 - [Database and operation invariants](architecture/database.md)
 - [ADR 0001: Modular monolith](architecture/decisions/0001-modular-monolith.md)
