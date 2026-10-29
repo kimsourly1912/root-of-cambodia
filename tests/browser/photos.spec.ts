@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import photos from "../photo-fixtures.json";
+import photos from "../photo-fixtures.json" with { type: "json" };
 const origin = "http://127.0.0.1:8787",
   password = "LocalOnly-PhotoPassword-123!";
 async function account(page: Page, email: string) {
@@ -108,6 +108,22 @@ test("owner uploads, retries a lost response, reorders, handles stale tabs and r
       })
     ).status(),
   ).toBe(403);
+  expect(
+    (
+      await page.request.put(`${base}/${uploadId}`, {
+        headers: { Origin: origin, "Content-Type": "image/png" },
+        data: file.buffer,
+      })
+    ).status(),
+  ).toBe(422);
+  expect(
+    (
+      await page.request.put(`${base}/${uploadId}`, {
+        headers: { Origin: origin, "Content-Type": "image/jpeg" },
+        data: Buffer.concat([file.buffer, Buffer.from([0])]),
+      })
+    ).status(),
+  ).toBe(413);
   const otherId = await property(page, "second-property");
   expect(
     (
