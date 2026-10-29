@@ -4,7 +4,7 @@
 
 **Responsible role:** technical maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026; publication candidate based on merged main [484989d](https://github.com/kimsourly1912/root-of-cambodia/commit/484989df749689f797aa125ccf590e7eba0b0cb6).
+**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
 **Sources:** [apps/web/src/runtime.ts](../../apps/web/src/runtime.ts), [apps/jobs/src/index.ts](../../apps/jobs/src/index.ts), [packages/backend/package.json](../../packages/backend/package.json), [tests/workspace.test.ts](../../tests/workspace.test.ts).
 
@@ -28,7 +28,7 @@ Next.js/React/TypeScript, shadcn/Radix/Tailwind and bundled Khmer fonts remain s
 
 1. Routes/pages adapt transport/session/runtime and call a service or authorized read. Server-rendered pages may use those reads directly; they need not call their own HTTP API.
 2. Services coordinate validation, permissions, quotes and business rules. They must not split one booking write across independent commits.
-3. Query helpers own scoped projections and bounded reads; internal catalog helpers require an already verified service context.
+3. Query helpers own scoped projections and bounded reads; internal booking/catalog helpers require an already verified service context, while the separately allowlisted public catalog checks explicit publication/disclosure eligibility without a session.
 4. Named persistence owns a complete operation batch, write-time checks and receipt. Constraints/triggers protect bounded critical effects.
 5. Jobs calls the same lifecycle/delivery services. Providers run after business commit; email failure does not roll back a booking.
 6. Backend must not import Next.js, React or either app. Browser code must not import bindings, persistence or secrets. Use explicit existing types and boundary interfaces where useful.
@@ -45,6 +45,7 @@ Package exports currently expose low-level modules too. These are conceptual bou
 | Property information/media | `property-information*.ts`; `media.ts`, `media-queries.ts`, `media-persistence.ts` |
 | Private location/contact/arrival | property-logistics.ts, property-logistics-queries.ts, property-logistics-persistence.ts; no public disclosure or arrival action |
 | Pilot publication review | publication.ts, publication-queries.ts, publication-persistence.ts, publication-readiness.ts; configured single reviewer, shared completeness predicates and explicit terms gate |
+| Guest browsing | public-listing.ts and catalog-queries.ts; explicit public projection, display-version/digest binding, current eligibility and processed-only media |
 | Booking/quotes | `bookings.ts`, `quotes.ts`, `quote-queries.ts`, `booking-persistence.ts` |
 | Inventory | `inventory.ts`, `inventory-persistence.ts` |
 | Delivery/diagnostics | `jobs.ts`, `outbox.ts`, `diagnostics.ts`, `errors.ts` |
@@ -65,5 +66,7 @@ Local, staging and production need distinct resources/secrets/data. Current runt
 - [0002: Atomic booking persistence](decisions/0002-atomic-booking-operations.md): accepted detailed design.
 - [0003: pnpm workspace](decisions/0003-pnpm-workspace.md): accepted tooling amendment superseding active npm guidance.
 - [0004: Private media lifecycle](decisions/0004-private-media-lifecycle.md): records implemented engineering pattern within approved R2/Images direction; retention/public delivery remain open.
+
+- [0005: Public listing boundary](decisions/0005-public-listing-boundary.md): accepted allowlist, explicit owner display acknowledgement and routed processed-only reads; originals stay private.
 
 The [database contract](database.md), [features](../README.md#feature-contracts), [contributing standard](../development/contributing.md) and [open decisions](../product/open-decisions.md) provide detail.

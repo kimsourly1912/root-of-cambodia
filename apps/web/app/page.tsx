@@ -21,6 +21,9 @@ export default function Home() {
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Button asChild size="lg">
+            <Link href="/stays">Explore stays →</Link>
+          </Button>
+          <Button asChild size="lg">
             <Link href="/owner">Open owner workspace →</Link>
           </Button>
           <Button asChild variant="outline" size="lg">

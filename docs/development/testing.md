@@ -4,7 +4,7 @@
 
 **Responsible role:** test maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
+**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
 **Sources:** [vitest.config.ts](../../vitest.config.ts), [vitest.backend.config.ts](../../vitest.backend.config.ts), [vitest.worker.config.ts](../../vitest.worker.config.ts), [vitest.tooling.config.ts](../../vitest.tooling.config.ts), [playwright.config.ts](../../playwright.config.ts), [tests/browser/server.ts](../../tests/browser/server.ts), [.github/workflows/verify.yml](../../.github/workflows/verify.yml).
 
@@ -37,6 +37,7 @@ For changed semantics, verify the relevant source/migration contracts and add fo
 | Authorization | Missing/unverified sessions, wrong owner/parent, access revoked before replay and between early read and commit |
 | Schema | Fresh migrations and populated upgrade with preserved history/snapshots/receipts; rejected preflight without damage |
 | Draft/calendar/information | Expected absence/null revisions, stale/concurrent saves, audit failure rollback, exact cents, reserved-counter preservation |
+| Public browsing | Missing/stale confirmation, exact public keys and private HTML/JSON absence, approved photo order, literal search/pagination, paused/ownership/revocation/storage races, old unconfirmed upgrade, read-only/cache/error transport and signed-out desktop/phone navigation |
 | Publication review | Required/optional listing content, current-time calendar setup, commit-time clock/capacity changes, direct persistence refusal, retained pending/receipt compatibility, configured reviewer only, immutable snapshots, correction/terms gates, competing actions, uncertain response recovery, commit-time revocation and snapshot changes, private previews and additive populated upgrades |
 | Media | Declaration/signature/decoder/bounds, private access, partial R2 failure, retries, removal during processing, late writes, cleanup failures and retained tombstones |
 | Notifications | Duplicate/missed publish, expired/replaced lease, late worker success/failure, provider success with lost acknowledgement, unavailable recipient recovery |

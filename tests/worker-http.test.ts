@@ -5,6 +5,8 @@ import { createTestHarness } from "wrangler";
 import type { DiagnosticRecord } from "@root-of-cambodia/backend/diagnostics";
 import { catalog, scalar } from "./fixtures";
 import { readyPublicationFixture } from "./publication-fixtures";
+import photoFixtures from "./photo-fixtures.json" with { type: "json" };
+import { mediaKeys } from "@root-of-cambodia/backend/media-queries";
 const baseURL = "http://127.0.0.1:8787";
 const server = createTestHarness({
   workers: [
@@ -529,9 +531,12 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     const guidanceBody = await guidance.json() as {readiness:{ready:boolean;missing:string[]}};
     assert.equal(guidanceBody.readiness.ready,false);
     assert.ok(guidanceBody.readiness.missing.includes("description"));
-    await readyPublicationFixture(db,{id:owner.id},draft.id);
-    assert.equal((await post(reviewPath,{action:"submit",propertyRevision:1},owner.cookie,"review-submit","https://untrusted.invalid")).status,403);
-    const submitted=await post(reviewPath,{action:"submit",propertyRevision:1},owner.cookie,"review-submit");
+    const publicSupply=await readyPublicationFixture(db,{id:owner.id},draft.id);
+    assert.equal((await post(reviewPath,{action:"submit",propertyRevision:1},owner.cookie,"no-disclosure")).status,422);
+    const previewState=await (await server.fetch(baseURL+reviewPath,{headers:{Cookie:owner.cookie}})).json() as {publicPreview:{version:string;previewHash:string}};
+    const submitBody={action:"submit",propertyRevision:1,publicDisclosure:{version:previewState.publicPreview.version,previewHash:previewState.publicPreview.previewHash}};
+    assert.equal((await post(reviewPath,submitBody,owner.cookie,"review-submit","https://untrusted.invalid")).status,403);
+    const submitted=await post(reviewPath,submitBody,owner.cookie,"review-submit");
     assert.equal(submitted.status,200);assert.ok(submitted.headers.get("cache-control")?.includes("no-store"));
     const pending=await submitted.json() as {id:string;status:string};
     const queue=await server.fetch(baseURL+"/api/property-reviews",{headers:{Cookie:other.cookie}});
@@ -544,6 +549,40 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     const returned=await post("/api/property-reviews/"+pending.id,{action:"return_changes",revision:1,configRevision:1,reason:"Please add directions."},other.cookie,"review-return");
     assert.equal(returned.status,200);
     assert.equal((await returned.json() as {status:string}).status,"returned");
+    assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id)).status,404);
+    await db.prepare("UPDATE pilot_publication_config SET terms_version='http-approved-v1',revision=revision+1").run();
+    const resubmitted=await post(reviewPath,submitBody,owner.cookie,"public-resubmit");
+    assert.equal(resubmitted.status,200);
+    const publicRequest=await resubmitted.json() as {id:string};
+    const approved=await post("/api/property-reviews/"+publicRequest.id,{action:"approve",revision:1,configRevision:2},other.cookie,"public-approve");
+    assert.equal(approved.status,200);
+    const publicResponse=await server.fetch(baseURL+"/api/stays/"+draft.id);
+    assert.equal(publicResponse.status,200);assert.equal(publicResponse.headers.get("cache-control"),"no-store");assert.equal(publicResponse.headers.get("set-cookie"),null);
+    const publicBody=await publicResponse.json() as {id:string;photos:{id:string}[]};
+    assert.equal(publicBody.id,draft.id);assert.equal(publicBody.photos[0].id,publicSupply.photoId);
+    const publicJSON=JSON.stringify(publicBody);
+    for(const excluded of ["River lane, Kampot","stay@example.invalid",'"ownerId"','"address"','"latitude"','"arrivalInstructions"','"previewHash"','"unitCents"',"private/properties/"])assert.ok(!publicJSON.includes(excluded),excluded);
+    const listResponse=await server.fetch(baseURL+"/api/stays?q=review&province=kampot");
+    assert.equal(listResponse.status,200);
+    assert.deepEqual((await listResponse.json() as {items:{id:string}[]}).items.map((item)=>item.id),[draft.id]);
+    assert.equal((await server.fetch(baseURL+"/api/stays?q=a&q=b")).status,422);
+    assert.equal((await server.fetch(baseURL+"/api/stays?ownerId="+owner.id)).status,422);
+    assert.equal((await post("/api/stays",{})).status,405);
+    const publicHTML=await (await server.fetch(baseURL+"/stays/"+draft.id)).text();
+    assert.ok(publicHTML.includes("Review house"));
+    for(const excluded of ["River lane, Kampot","stay@example.invalid","private/properties/",'"previewHash"'])assert.ok(!publicHTML.includes(excluded),excluded);
+    const keys=mediaKeys({id:publicSupply.photoId!,property_id:draft.id});
+    const media=(await worker.getEnv()).MEDIA;
+    await media.put(keys.original,"PRIVATE_ORIGINAL_BYTES");
+    await media.put(keys.preview,Buffer.from(photoFixtures.jpeg,"base64"));
+    const publicPhoto=await server.fetch(baseURL+"/api/stays/"+draft.id+"/photos/"+publicSupply.photoId);
+    assert.equal(publicPhoto.status,200);assert.equal(publicPhoto.headers.get("content-type"),"image/jpeg");assert.equal(publicPhoto.headers.get("cache-control"),"no-store");assert.equal(publicPhoto.headers.get("x-content-type-options"),"nosniff");
+    assert.deepEqual(Buffer.from(await publicPhoto.arrayBuffer()),Buffer.from(photoFixtures.jpeg,"base64"));
+    assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id+"/photos/not-a-member")).status,404);
+    assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id+"/photos/"+publicSupply.photoId+"/original")).status,404);
+    await db.prepare("UPDATE place SET publication='paused' WHERE id=?").bind(draft.id).run();
+    assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id)).status,404);
+    assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id+"/photos/"+publicSupply.photoId)).status,404);
     // Keep newly populated calendar-history references intact while making the
     // application's expected table unavailable for this isolated failure test.
     await db.prepare("ALTER TABLE nightly_rate RENAME TO fault_unavailable_rates").run();
@@ -553,6 +592,11 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
       error: "temporarily_unavailable_retry_same_key",
     });
     assert.ok(unavailable.headers.get("cache-control")?.includes("no-store"));
+    await db.prepare("ALTER TABLE public_listing_disclosure RENAME TO fault_unavailable_disclosure").run();
+    const publicUnavailable=await server.fetch(baseURL+"/api/stays");
+    assert.equal(publicUnavailable.status,503);
+    assert.deepEqual(await publicUnavailable.json(),{error:"temporarily_unavailable_retry_same_key"});
+    assert.equal(publicUnavailable.headers.get("cache-control"),"no-store");
     await expect
       .poll(() =>
         diagnosticsFromWorker().some(
@@ -569,6 +613,7 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
       "private-query",
       "private-client-reference",
       "nightly_rate",
+      "public_listing_disclosure",
       guest.email,
     ])
       assert.ok(

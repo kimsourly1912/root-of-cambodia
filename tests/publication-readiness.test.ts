@@ -2,6 +2,7 @@ import { test } from "vitest";
 import assert from "node:assert/strict";
 import {
   database,
+  migrate,
   catalog,
   owner,
   other,
@@ -9,6 +10,7 @@ import {
   unverified,
   scalar,
 } from "./support";
+import { env } from "cloudflare:workers";
 import { createPropertyDraft } from "@root-of-cambodia/backend/property-drafts";
 import {
   ownerReviewAction,
@@ -35,7 +37,7 @@ import {
 } from "@root-of-cambodia/backend/bookings";
 import { shiftNight } from "@root-of-cambodia/backend/calendar-dates";
 import { digest } from "@root-of-cambodia/backend/operations";
-import { readyPublicationFixture } from "./publication-fixtures";
+import { readyPublicationFixture, disclosureFor } from "./publication-fixtures";
 
 const fields = {
   ownerName: "Owner",
@@ -65,10 +67,11 @@ async function setup(
       : null,
   };
 }
-const submit = (db: D1Database, id: string, key = "submit") =>
+const submit = async (db: D1Database, id: string, key = "submit") =>
   ownerReviewAction(db, owner, key, id, {
     action: "submit",
     propertyRevision: 1,
+    publicDisclosure: await disclosureFor(db, id, owner.id),
   });
 const approve = (db: D1Database, id: string, key = "approve") =>
   decideReview(db, other, key, id, {
@@ -373,8 +376,14 @@ test("atomic submission and approval recheck deadline and stock setup without ch
 });
 
 test("earlier incomplete pending reviews retain snapshots and receipts but need correction before new approval", async () => {
-  const p = await database();
+  const p = await database({ migrate: false });
   try {
+    await migrate(
+      p.db,
+      env.TEST_MIGRATIONS.filter((migration) => migration.name < "0012").map(
+        (migration) => migration.name,
+      ),
+    );
     const db = p.db,
       { id } = await setup(db, false);
     const snapshot = (await readSnapshot(db, id, owner.id)).json;
@@ -408,7 +417,13 @@ test("earlier incomplete pending reviews retain snapshots and receipts but need 
         )
         .bind(command, command),
     ]);
-    assert.deepEqual(await submit(db, id), { id: command, status: "pending" });
+    await migrate(db);
+    const legacySubmit = () =>
+      ownerReviewAction(db, owner, "submit", id, {
+        action: "submit",
+        propertyRevision: 1,
+      });
+    assert.deepEqual(await legacySubmit(), { id: command, status: "pending" });
     const details = await reviewDetails(db, other, command);
     assert.equal(details.readiness.ready, false);
     assert.equal(
@@ -426,7 +441,7 @@ test("earlier incomplete pending reviews retain snapshots and receipts but need 
       configRevision: 1,
       reason: "Complete the publication checklist.",
     });
-    assert.deepEqual(await submit(db, id), { id: command, status: "pending" });
+    assert.deepEqual(await legacySubmit(), { id: command, status: "pending" });
     await assert.rejects(
       submit(db, id, "new-submission"),
       /publication_incomplete/,

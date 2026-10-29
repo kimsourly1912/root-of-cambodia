@@ -2,6 +2,10 @@ import { digest, verifiedSQL, type Actor } from "./operations";
 import { DomainError } from "./errors";
 import { publicationReadySQL } from "./publication-readiness";
 import {
+  PUBLIC_DISCLOSURE_VERSION,
+  type PublicDisclosure,
+} from "./public-listing";
+import {
   snapshotSQL,
   type ReviewConfig,
   type ReviewStatus,
@@ -16,6 +20,7 @@ export type PublicationWrite =
       propertyId: string;
       propertyRevision: number;
       snapshotJson: string;
+      disclosure?: PublicDisclosure;
     }
   | {
       action: "withdraw";
@@ -109,6 +114,19 @@ export async function commitPublicationAction(
             actor.id,
           ),
       );
+      if (write.disclosure)
+        statements.push(
+          db
+            .prepare(
+              "INSERT INTO public_listing_disclosure(request_id,owner_id,policy_version,preview_hash) SELECT id,owner_id,?,? FROM property_review_request WHERE id=? AND last_command_id=? AND status='pending'",
+            )
+            .bind(
+              write.disclosure.version,
+              write.disclosure.previewHash,
+              command,
+              command,
+            ),
+        );
     } else {
       const status =
         write.action === "withdraw"
@@ -136,7 +154,9 @@ export async function commitPublicationAction(
           : "";
       const approval =
         write.action === "approve"
-          ? " AND EXISTS(SELECT 1 FROM pilot_publication_config c JOIN user u ON u.id=property_review_request.owner_id WHERE c.singleton=1 AND c.terms_version=? AND u.emailVerified=1)"
+          ? " AND EXISTS(SELECT 1 FROM pilot_publication_config c JOIN user u ON u.id=property_review_request.owner_id WHERE c.singleton=1 AND c.terms_version=? AND u.emailVerified=1) AND EXISTS(SELECT 1 FROM public_listing_disclosure d WHERE d.request_id=property_review_request.id AND d.owner_id=property_review_request.owner_id AND d.policy_version='" +
+            PUBLIC_DISCLOSURE_VERSION +
+            "')"
           : "";
       const terms =
         write.action === "approve" ? write.config.termsVersion : null;

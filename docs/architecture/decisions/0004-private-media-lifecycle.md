@@ -4,7 +4,7 @@
 
 **Responsible role:** technical maintainer; project owner for unresolved policy (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
+**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
 **Sources:** [docs/archive/2026-10/Root-of-Cambodia-Architecture.md](../../archive/2026-10/Root-of-Cambodia-Architecture.md), [docs/archive/2026-10/Root-of-Cambodia-Property-Photos-Review.md](../../archive/2026-10/Root-of-Cambodia-Property-Photos-Review.md), [packages/backend/src/media.ts](../../../packages/backend/src/media.ts), [packages/backend/migrations/0009_property_media.sql](../../../packages/backend/migrations/0009_property_media.sql).
 
@@ -27,4 +27,4 @@ Limits and payloads are documented in [owner supply](../../features/owner-supply
 
 ## Supersession and open policy
 
-No superseding ADR. This record does not approve abandoned-upload expiry, original/tombstone/history retention or destructive purge. D05/D09/D11 in [open decisions](../../product/open-decisions.md) cover publication/cover/delivery variants, retention and abuse/storage budgets. Cleanup scheduling, cost, staging permissions and recovery remain release gates.
+The upload/original lifecycle remains in force. [ADR 0005](0005-public-listing-boundary.md) adds the accepted explicit processed-public-read boundary; it does not make originals public. This record does not approve abandoned-upload expiry, original/tombstone/history retention or destructive purge. D05/D09/D11 in [open decisions](../../product/open-decisions.md) cover publication/cover/delivery variants, retention and abuse/storage budgets. Cleanup scheduling, cost, staging permissions and recovery remain release gates.

@@ -4,7 +4,7 @@
 
 **Responsible role:** booking maintainer; project owner for policy (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
+**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
 **Sources:** [apps/web/app/api/booking-quotes/route.ts](../../apps/web/app/api/booking-quotes/route.ts), [apps/web/app/api/bookings/](../../apps/web/app/api/bookings), [apps/web/app/api/external-reservations/route.ts](../../apps/web/app/api/external-reservations/route.ts), [apps/web/app/api/inventory/route.ts](../../apps/web/app/api/inventory/route.ts), [packages/backend/src/bookings.ts](../../packages/backend/src/bookings.ts), [packages/backend/src/quotes.ts](../../packages/backend/src/quotes.ts), [packages/backend/src/booking-persistence.ts](../../packages/backend/src/booking-persistence.ts), [packages/backend/src/access.ts](../../packages/backend/src/access.ts).
 
@@ -35,7 +35,7 @@ The transaction snapshots property/guest names and guest email (online), dates, 
 | /api/external-reservations | POST selection + preview:true, or selection + quoteHash and Idempotency-Key | Preview 200 hash/totalCents; commit 200 id/status=confirmed |
 | /api/inventory | POST roomId/night/capacity/blocked/revision and Idempotency-Key | 200 id/status=updated receipt |
 
-[Route source](../../apps/web/app/api/) is authoritative. The old proposed 202 submission and /api/owner/bookings/... routes are not the current contract. There is no booking-list GET, public place/property API, broad admin/support endpoint or payment-status action. The narrow [pilot publication review](publication-review.md) endpoints are implemented separately; they are not booking impersonation or general administrative powers.
+[Route source](../../apps/web/app/api/) is authoritative. The old proposed 202 submission and /api/owner/bookings/... routes are not the current contract. There is no booking-list GET, broad admin/support endpoint or payment-status action. Separate [guest-browsing APIs](guest-browsing.md) expose only authorized public listing data; they do not enable anonymous quotes, guest booking logistics or mutation access. The narrow [pilot publication review](publication-review.md) endpoints are implemented separately; they are not booking impersonation or general administrative powers.
 
 JSON routes use [http.ts](../../apps/web/src/http.ts): verified session, write Origin/application-json checks, streamed 32 KiB cap, private/no-store and Vary: Cookie. Errors are `{error: code}` with X-Request-Id header, not the old proposed message/field-error/request-ID body. Domain statuses include 401/403/404/409/413/422/503. Better Auth owns its own handler/limiter; common business-action 429 budgets are not implemented.
 

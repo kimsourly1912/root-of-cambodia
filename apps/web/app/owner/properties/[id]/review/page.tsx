@@ -6,6 +6,8 @@ import { PropertyNavigation } from "@/components/property-navigation";
 import { ReviewSnapshot } from "@/components/review-snapshot";
 import { PublicationAction } from "@/components/publication-action";
 import { PublicationChecklist } from "@/components/publication-checklist";
+import { PublicStayDetails } from "@/components/public-stay-details";
+import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 export default async function Page({
   params,
@@ -46,6 +48,26 @@ export default async function Page({
               ownerPropertyId={data.publication === "draft" ? id : undefined}
             />
           )}
+          {data.publicPreview && (
+            <details open className="rounded-xl border bg-card p-5">
+              <summary className="mb-5 cursor-pointer text-lg font-semibold">
+                Guest listing preview
+              </summary>
+              <PublicStayDetails
+                listing={data.publicPreview.listing}
+                heading="h3"
+                photoBase={
+                  data.draft
+                    ? `/api/owner/properties/${id}/photos`
+                    : pending
+                      ? `/api/property-reviews/${data.latest!.id}/photos`
+                      : data.disclosure
+                        ? `/api/stays/${id}/photos`
+                        : undefined
+                }
+              />
+            </details>
+          )}
           {snapshot && (
             <ReviewSnapshot
               snapshot={snapshot}
@@ -82,8 +104,29 @@ export default async function Page({
                   ? "Your saved details are frozen during review. Withdraw the submission if you need to edit them."
                   : data.publication === "draft"
                     ? "Save changes in each setup tab first. Submitting freezes the saved draft until you withdraw it or receive correction notes."
-                    : "Your last submitted details are retained below. Public browsing is not available yet."}
+                    : data.disclosure
+                      ? "Your approved public listing is available to browse."
+                      : "This earlier approval has no public-display confirmation and is not included in guest browsing."}
               </p>
+              {data.publication === "published" && data.disclosure && (
+                <Link
+                  href={`/stays/${id}`}
+                  className="inline-block text-primary underline"
+                >
+                  View guest listing
+                </Link>
+              )}
+              {pending && !data.disclosure && (
+                <p>
+                  Withdraw this earlier submission to review and confirm public
+                  display before a new approval.
+                </p>
+              )}
+              {data.disclosure && (
+                <p className="text-xs text-muted-foreground">
+                  Public display confirmed · {data.disclosure.version}
+                </p>
+              )}
               {!data.reviewerConfigured && (
                 <p>The pilot reviewer must be configured before submission.</p>
               )}
@@ -100,6 +143,14 @@ export default async function Page({
                   body={{
                     propertyRevision: data.propertyRevision,
                   }}
+                  disclosure={
+                    data.publicPreview
+                      ? {
+                          version: data.publicPreview.version,
+                          previewHash: data.publicPreview.previewHash,
+                        }
+                      : undefined
+                  }
                   choices={[
                     {
                       action: "submit",

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import type { PublicDisclosure } from "@root-of-cambodia/backend/public-listing";
 type Choice = {
   action: string;
   label: string;
@@ -16,11 +17,13 @@ export function PublicationAction({
   body,
   choices,
   reviewer = false,
+  disclosure,
 }: {
   url: string;
   body: Record<string, unknown>;
   choices: Choice[];
   reviewer?: boolean;
+  disclosure?: PublicDisclosure;
 }) {
   const router = useRouter(),
     busy = useRef(false),
@@ -29,6 +32,7 @@ export function PublicationAction({
       body: Record<string, unknown>;
     } | null>(null);
   const [reason, setReason] = useState(""),
+    [publicConfirmed, setPublicConfirmed] = useState(false),
     [pending, setPending] = useState(false),
     [uncertain, setUncertain] = useState(false),
     [done, setDone] = useState(false),
@@ -40,6 +44,12 @@ export function PublicationAction({
     setError("");
     setSignIn(false);
     if (!attempt.current) {
+      if (action === "submit" && (!disclosure || !publicConfirmed)) {
+        setError(
+          "Review the guest listing preview and confirm public display before submitting.",
+        );
+        return;
+      }
       if (action === "return_changes" && !reason.trim()) {
         setError("Add correction notes before returning this submission.");
         return;
@@ -49,6 +59,7 @@ export function PublicationAction({
         body: {
           ...body,
           action,
+          ...(action === "submit" ? { publicDisclosure: disclosure } : {}),
           ...(reviewer
             ? {
                 reason,
@@ -81,7 +92,15 @@ export function PublicationAction({
         };
         attempt.current = null;
         setUncertain(false);
-        if (result.error === "publication_incomplete") {
+        if (
+          result.error === "public_disclosure_required" ||
+          result.error === "public_disclosure_changed"
+        ) {
+          setConflict(true);
+          setError(
+            "Review the latest guest listing preview and confirm public display before continuing.",
+          );
+        } else if (result.error === "publication_incomplete") {
           setConflict(true);
           setError(
             "This property no longer meets the publication checklist. Reload the latest status to see what needs attention.",
@@ -126,6 +145,28 @@ export function PublicationAction({
   }
   return (
     <div className="space-y-4">
+      {disclosure && (
+        <div className="space-y-3 rounded-lg border p-3">
+          <p className="text-sm">
+            Review the guest listing preview. Exact address, contact fields and
+            arrival notes stay private. Check your description and photos for
+            information you intend to share.
+          </p>
+          <label className="flex items-start gap-3 text-sm">
+            <input
+              type="checkbox"
+              className="mt-1 h-4 w-4 shrink-0 accent-primary"
+              checked={publicConfirmed}
+              disabled={pending || uncertain || done || conflict}
+              onChange={(event) => setPublicConfirmed(event.target.checked)}
+            />
+            <span>
+              I understand these listing details and processed photos will be
+              visible publicly after approval.
+            </span>
+          </label>
+        </div>
+      )}
       {reviewer && (
         <div className="space-y-2">
           <Label htmlFor="review-reason">
@@ -182,7 +223,12 @@ export function PublicationAction({
                 ? "outline"
                 : "default"
             }
-            disabled={c.disabled || pending || done}
+            disabled={
+              c.disabled ||
+              pending ||
+              done ||
+              (c.action === "submit" && (!disclosure || !publicConfirmed))
+            }
             onClick={() => act(c.action)}
           >
             {pending ? "Saving…" : c.label}
