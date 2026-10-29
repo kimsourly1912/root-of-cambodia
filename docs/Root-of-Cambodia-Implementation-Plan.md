@@ -52,11 +52,13 @@ application/ was retained through steps 1–3 and migrated in step 4 after expli
 
 ## 4. Testing and package tooling
 
+The owner subsequently requested pnpm explicitly. The active workspace now uses pnpm 12.15.0, pnpm-workspace.yaml, workspace:* links and one root pnpm-lock.yaml. This supersedes the earlier npm choice described below, not the application architecture. The [pnpm migration review](Root-of-Cambodia-Pnpm-Workspace-Review.md) records artifact preservation and fresh checks. Step 6 begins after this separate tooling change.
+
 Vitest is the approved runner direction. Cloudflare integration supplies the environment for D1/runtime tests; the Wrangler harness supplies the environment for actual built-application HTTP checks. A harness can be orchestrated in Node without replacing Vitest as the runner. Browser journeys use Playwright.
 
 Use official supported integration guidance and pin a compatible version set. Do not assume old integration package names/configuration still match current documentation. Keep framework/runtime upgrades separate unless required for compatibility, then explain that dependency explicitly.
 
-The owner approved npm 11.9.0 with Node 24.22.1 and native npm workspaces. One root lockfile controls the active application; proofs/foundation remains independent. All 506 third-party package lock entries retain their versions, integrities and resolutions. Current pinned framework/runtime/test dependencies remain unchanged; no workspace orchestrator was added.
+The earlier step 4 decision approved npm 11.9.0 with Node 24.22.1 and native npm workspaces. One root lockfile controls the active application; proofs/foundation remains independent. All 506 third-party package lock entries retain their versions, integrities and resolutions. Current pinned framework/runtime/test dependencies remain unchanged; no workspace orchestrator was added.
 
 ## 5. Permissions and decisions
 

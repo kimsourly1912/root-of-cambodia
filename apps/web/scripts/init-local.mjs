@@ -1,7 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
-import { handoffLocal } from "../../../scripts/handoff-local.mjs";
+import { handoffLocal } from "../../../scripts/handoff-local.ts";
 import { access, writeFile } from "node:fs/promises";
 import { randomBytes } from "node:crypto";
 import { spawnSync } from "node:child_process";

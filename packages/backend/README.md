@@ -4,9 +4,9 @@ This private workspace contains the existing booking/quote/inventory services, s
 
 The step 4 move preserved shared business modules and SQL migrations unchanged. Step 5 subsequently adds safe diagnostics and explicit delivery outcomes; booking/inventory persistence SQL and all migrations remain unchanged. D1 remains one atomic booking/inventory database per environment. A named save still owns its entire operation/receipt batch; do not independently commit its component writes. SQL migrations remain authoritative, and no migration is applied during a request.
 
-Generated worker-configuration.d.ts here contains only the pinned runtime types. Each app separately generates its own environment bindings. This lets the backend typecheck without importing either app's entrypoint. Regenerate all three files from the root with npm run types:bindings.
+Generated worker-configuration.d.ts here contains only the pinned runtime types. Each app separately generates its own environment bindings. This lets the backend typecheck without importing either app's entrypoint. Regenerate all three files from the root with pnpm run types:bindings.
 
-Use root npm commands. The app and jobs configurations reference this workspace's single migrations directory. No published package, network service, generic table repositories or new database was introduced.
+Use root pnpm commands. The app and jobs configurations reference this workspace's single migrations directory. No published package, network service, generic table repositories or new database was introduced.
 
 See the [service-boundary review](../../docs/Root-of-Cambodia-Service-Boundaries.md) and [workspace review](../../docs/Root-of-Cambodia-Workspace-Review.md).
 

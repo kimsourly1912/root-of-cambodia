@@ -11,7 +11,7 @@ import {
 import path from "node:path";
 import os from "node:os";
 import { unstable_readConfig } from "wrangler";
-import { handoffLocal } from "../scripts/handoff-local.mjs";
+import { handoffLocal } from "../scripts/handoff-local";
 
 const root = path.resolve(import.meta.dirname, "..");
 async function sources(dir: string): Promise<string[]> {

@@ -10,17 +10,19 @@ The active application uses [apps/web](apps/web/README.md), [apps/jobs](apps/job
 
 Current local validation: **77 Vitest tests passed** — 72 D1/runtime cases, three workspace checks and two built-Worker journeys. All 12 original website HTTP checks remain, with added request/log correlation and privacy checks. Delivery results now distinguish provider acceptance from inbox delivery and detect superseded leases. Separate typechecks and both builds passed. See the [step 5 review](docs/Root-of-Cambodia-Diagnostics-Delivery-Review.md). These are synthetic local results, not production verification.
 
-Run active application commands from the repository root with Node 24.22.1 and npm 11.9.0:
+Run active application commands from the repository root with Node 24.22.1 and **pnpm 12.15.0** (the packageManager pin):
 
 ```sh
-npm ci
-npm run init:local
-npm run types:bindings
-npm run typecheck
-npm run build:worker
-npm run build:jobs
-npm test
+pnpm install --frozen-lockfile
+pnpm run init:local
+pnpm run types:bindings
+pnpm run typecheck
+pnpm run build:worker
+pnpm run build:jobs
+pnpm test
 ```
+
+The owner requested pnpm after step 5. [The migration review](docs/Root-of-Cambodia-Pnpm-Workspace-Review.md) records the workspace setup, exact dependency preservation and fresh pnpm evidence. The earlier npm choice is superseded for the active application; the historical proof below stays independent.
 
 The following table records the earlier isolated proof; it remains historical evidence:
 
@@ -43,6 +45,7 @@ Overall architecture is approved: one modular Next.js application, one backgroun
 - [Approved booking/database design](docs/Root-of-Cambodia-Booking-Database-Design.md)
 - [Architecture implementation plan](docs/Root-of-Cambodia-Implementation-Plan.md)
 - [Approved step 4 workspace plan](docs/Root-of-Cambodia-Workspace-Plan.md)
+- [pnpm workspace and verification](docs/Root-of-Cambodia-Pnpm-Workspace-Review.md)
 - [Diagnostics and delivery contracts](docs/Root-of-Cambodia-Diagnostics-Delivery-Review.md)
 - [Workspace/jobs verification](docs/Root-of-Cambodia-Workspace-Review.md)
 - [Service and persistence boundaries](docs/Root-of-Cambodia-Service-Boundaries.md)

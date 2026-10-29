@@ -2,7 +2,7 @@
 
 The scheduled and queue entrypoints import the same private backend operations as the website. They contain no booking lifecycle SQL. Configuration is local-only; no Cron schedule or remote resources were provisioned.
 
-From the repository root, run npm ci, npm run init:local, npm run types:bindings, npm run build:jobs and npm test. preview:jobs and preview:worker both use root .wrangler/state and the same local D1 database ID. Only init:local owns migration application; neither Worker migrates on requests.
+From the repository root, run pnpm install --frozen-lockfile, pnpm run init:local, pnpm run types:bindings, pnpm run build:jobs and pnpm test. preview:jobs and preview:worker both use root .wrangler/state and the same local D1 database ID. Only init:local owns migration application; neither Worker migrates on requests.
 
 The scheduled handler runs shared maintenance (bounded expiry and outbox publication). The queue handler calls shared consume. Success, duplicates, invalid messages and durably stored backoff are acknowledged; uncertain database failures request a retry with the same outbox ID. Superseded workers cannot report delivery completion or reschedule a newer lease. The adapter logs stable safe result codes and hashed notification references, never raw recipient-bearing IDs, tokens or errors. Scheduled exceptions are replaced with fixed safe messages before rethrowing. Due work and expired leases remain sweepable. Detailed live retry/dead-letter operations remain a later decision.
 

@@ -3,24 +3,19 @@
   "private": true,
   "type": "module",
   "name": "root-of-cambodia",
-  "packageManager": "npm@11.9.0",
+  "packageManager": "pnpm@12.15.0",
   "engines": {
     "node": ">=24.22.1 <25"
   },
-  "workspaces": [
-    "apps/web",
-    "apps/jobs",
-    "packages/backend"
-  ],
   "scripts": {
-    "init:local": "npm run init:local --workspace @root-of-cambodia/web",
-    "build": "npm run build --workspace @root-of-cambodia/web",
-    "build:worker": "npm run build:worker --workspace @root-of-cambodia/web",
-    "build:jobs": "npm run build --workspace @root-of-cambodia/jobs",
-    "preview:worker": "npm run preview:worker --workspace @root-of-cambodia/web",
-    "preview:jobs": "npm run preview --workspace @root-of-cambodia/jobs",
-    "types:bindings": "npm run types:runtime --workspace @root-of-cambodia/backend && npm run types:bindings --workspace @root-of-cambodia/web && npm run types:bindings --workspace @root-of-cambodia/jobs",
-    "typecheck": "npm run typecheck --workspaces && tsc --noEmit -p tests/tsconfig.json",
+    "init:local": "pnpm --filter @root-of-cambodia/web run init:local",
+    "build": "pnpm --filter @root-of-cambodia/web run build",
+    "build:worker": "pnpm --filter @root-of-cambodia/web run build:worker",
+    "build:jobs": "pnpm --filter @root-of-cambodia/jobs run build",
+    "preview:worker": "pnpm --filter @root-of-cambodia/web run preview:worker",
+    "preview:jobs": "pnpm --filter @root-of-cambodia/jobs run preview",
+    "types:bindings": "pnpm --filter @root-of-cambodia/backend run types:runtime && pnpm --filter @root-of-cambodia/web run types:bindings && pnpm --filter @root-of-cambodia/jobs run types:bindings",
+    "typecheck": "pnpm -r run typecheck && tsc --noEmit -p tests/tsconfig.json",
     "test:backend": "vitest run --project backend",
     "test:jobs": "vitest run --project backend tests/jobs.test.ts",
     "test:worker": "vitest run --project worker-http",
@@ -35,6 +30,8 @@
     "tsx": "4.23.15",
     "typescript": "7.0.2",
     "vitest": "5.0.5",
-    "wrangler": "4.154.0"
+    "wrangler": "4.154.0",
+    "@root-of-cambodia/backend": "workspace:*",
+    "better-auth": "1.7.14"
   }
 }

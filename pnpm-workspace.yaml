@@ -1,0 +1,26 @@
+packages:
+  - apps/web
+  - apps/jobs
+  - packages/backend
+
+minimumReleaseAgeExclude:
+  - "@cloudflare/vitest-plugin@1.4.9"
+  - miniflare@5.20261023.1-beta
+  - wrangler@4.154.0
+  - "@dotenvx/primitives@4.1.0"
+  - baseline-browser-mapping@2.11.34
+
+saveExact: true
+
+# Existing pinned native tooling; no blanket lifecycle-script approval.
+allowBuilds:
+  esbuild: true
+  workerd: true
+  fsevents: false
+
+minimumReleaseAgeStrict: true
+
+# Preserve the two npm-lock resolutions that the importer otherwise downgraded.
+overrides:
+  "@dotenvx/providers@0.3.12>@dotenvx/primitives": 4.1.0
+  baseline-browser-mapping: 2.11.34
