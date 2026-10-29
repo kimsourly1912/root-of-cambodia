@@ -15,6 +15,7 @@ const jobsEnv = (db: D1Database): JobsEnv => ({
   DB: db,
   APP_MODE: "local",
   NOTIFICATIONS: env.NOTIFICATIONS,
+  MEDIA: env.MEDIA,
 });
 const capture = (db: D1Database) =>
   db

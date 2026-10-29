@@ -37,7 +37,7 @@ export default defineConfig({
         queueProducers: { NOTIFICATIONS: "roc-notifications-local-only" },
         d1Databases: bindings.map((binding) => binding.binding),
         r2Buckets: ["MEDIA"],
-        images: "IMAGES",
+        images: { binding: "IMAGES", remote: false },
         bindings: {
           TEST_MIGRATIONS: await readD1Migrations({
             projectPath: path.join(root, "apps/web"),
