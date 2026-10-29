@@ -1236,9 +1236,12 @@ test("sole pilot reviewer returns corrections and publishes only with configured
 test("signed-out visitors can search, clear and recover from invalid or unavailable stay links",async({page},info)=>{
   await page.goto("/stays");
   await expect(page.getByRole("heading",{name:"Stays in Cambodia",exact:true})).toBeVisible();
-  await page.getByLabel("Property name",{exact:true}).fill("Missing-"+info.project.name+"-"+crypto.randomUUID());
+  const query = "Missing-"+info.project.name+"-"+crypto.randomUUID();
+  await page.getByLabel("Property name",{exact:true}).fill(query);
   await page.getByRole("button",{name:"Search stays",exact:true}).click();
-  await expect(page.getByRole("heading",{name:"No stays found",exact:true})).toBeVisible();
+  await expect(page).toHaveURL((url) => url.searchParams.get("q") === query);
+  await expect(page.getByRole("heading",{name:"No stays found",exact:true}),
+    "Empty search response: "+await page.locator("main").innerText()).toBeVisible();
   await page.getByRole("link",{name:"Clear search",exact:true}).click();
   await expect(page).toHaveURL(/\/stays$/);
   await page.goto("/stays?q="+"x".repeat(101));
