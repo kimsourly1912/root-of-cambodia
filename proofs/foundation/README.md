@@ -1,5 +1,9 @@
 # Root of Cambodia — local foundation proof
 
+> **Historical independent fixture.** Reproduction instructions below apply only inside proofs/foundation, not to the active app. Current application evidence is in [status](../../docs/status.md); the original README is [archived](../../docs/archive/2026-10/readmes/foundation-README.md).
+
+**Responsible role:** fixture maintainer. **Last source verification:** 29 October 2026, 607a705. **Sources:** [fixture manifest](package.json), [original review](../../docs/archive/2026-10/Root-of-Cambodia-Schema-Review.md).
+
 This is a disposable compatibility fixture, not the application or a production starter. It tests upstream Next.js/OpenNext, native Better Auth + D1, Drizzle's D1 read path, and a small atomic reservation design.
 
 No deployment command is provided. All data is synthetic. Email is captured locally and never sent. Do not deploy the capture adapter or reuse its token table in production.
@@ -38,7 +42,7 @@ For an optional manual preview, prepare:local seeds the default local state, the
 - ../../docs/: observed results, plans, and the initial build specification.
 - package-lock.json: exact dependency resolution for this fixture.
 
-The application package-manager decision remains open: pnpm 11.25.0 import hit a tool error here, so the proof was reproduced using npm. No minimum-release-age policy was disabled.
+The active application now uses the pinned root pnpm workspace; see [setup](../../docs/development/setup.md) and [ADR 0003](../../docs/architecture/decisions/0003-pnpm-workspace.md). This historical fixture remains independent with its original npm lockfile. The earlier pnpm-import failure describes only the proof environment; it is not an open active-tooling decision.
 
 ## Important boundaries
 
