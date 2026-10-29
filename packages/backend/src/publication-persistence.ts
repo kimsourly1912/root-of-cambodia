@@ -1,5 +1,6 @@
 import { digest, verifiedSQL, type Actor } from "./operations";
 import { DomainError } from "./errors";
+import { publicationReadySQL } from "./publication-readiness";
 import {
   snapshotSQL,
   type ReviewConfig,
@@ -81,7 +82,9 @@ export async function commitPublicationAction(
               verifiedSQL +
               " AND (" +
               snapshotSQL +
-              ")=? AND EXISTS(SELECT 1 FROM pilot_publication_config c JOIN user u ON u.id=c.reviewer_user_id WHERE c.singleton=1 AND u.emailVerified=1)",
+              ")=? AND EXISTS(SELECT 1 FROM pilot_publication_config c JOIN user u ON u.id=c.reviewer_user_id WHERE c.singleton=1 AND u.emailVerified=1) AND EXISTS(" +
+              publicationReadySQL +
+              ")",
           )
           .bind(
             write.propertyId,
@@ -91,6 +94,8 @@ export async function commitPublicationAction(
             write.propertyId,
             actor.id,
             write.snapshotJson,
+            write.propertyId,
+            actor.id,
           ),
         db
           .prepare(
@@ -122,7 +127,12 @@ export async function commitPublicationAction(
               "WHERE p.id=? AND p.owner_id=?",
               "WHERE p.id=property_review_request.property_id AND p.owner_id=property_review_request.owner_id",
             ) +
-            ")=snapshot_json"
+            ")=snapshot_json AND EXISTS(" +
+            publicationReadySQL.replace(
+              "WHERE p.id=? AND p.owner_id=?",
+              "WHERE p.id=property_review_request.property_id AND p.owner_id=property_review_request.owner_id",
+            ) +
+            ")"
           : "";
       const approval =
         write.action === "approve"

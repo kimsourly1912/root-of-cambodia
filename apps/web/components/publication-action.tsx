@@ -81,7 +81,12 @@ export function PublicationAction({
         };
         attempt.current = null;
         setUncertain(false);
-        if (response.status === 409) {
+        if (result.error === "publication_incomplete") {
+          setConflict(true);
+          setError(
+            "This property no longer meets the publication checklist. Reload the latest status to see what needs attention.",
+          );
+        } else if (response.status === 409) {
           setConflict(true);
           setError(
             "This submission or your access changed. Reload the latest status before continuing.",

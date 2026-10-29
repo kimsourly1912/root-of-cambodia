@@ -4,6 +4,7 @@ import { randomBytes } from "node:crypto";
 import { createTestHarness } from "wrangler";
 import type { DiagnosticRecord } from "@root-of-cambodia/backend/diagnostics";
 import { catalog, scalar } from "./fixtures";
+import { readyPublicationFixture } from "./publication-fixtures";
 const baseURL = "http://127.0.0.1:8787";
 const server = createTestHarness({
   workers: [
@@ -520,6 +521,15 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     assert.equal((await server.fetch(baseURL+"/api/property-reviews",{headers:{Cookie:owner.cookie}})).status,404);
     assert.equal((await post("/__test/pilot-reviewer",{userId:owner.id,termsVersion:"forged"},owner.cookie)).status,404);
     await db.prepare("INSERT INTO pilot_publication_config VALUES(1,?,NULL,1)").bind(other.id).run();
+    const incomplete = await post(reviewPath,{action:"submit",propertyRevision:1},owner.cookie,"review-incomplete");
+    assert.equal(incomplete.status,422);
+    assert.deepEqual(await incomplete.json(),{error:"publication_incomplete"});
+    const guidance = await server.fetch(baseURL+reviewPath,{headers:{Cookie:owner.cookie}});
+    assert.ok(guidance.headers.get("cache-control")?.includes("no-store"));
+    const guidanceBody = await guidance.json() as {readiness:{ready:boolean;missing:string[]}};
+    assert.equal(guidanceBody.readiness.ready,false);
+    assert.ok(guidanceBody.readiness.missing.includes("description"));
+    await readyPublicationFixture(db,{id:owner.id},draft.id);
     assert.equal((await post(reviewPath,{action:"submit",propertyRevision:1},owner.cookie,"review-submit","https://untrusted.invalid")).status,403);
     const submitted=await post(reviewPath,{action:"submit",propertyRevision:1},owner.cookie,"review-submit");
     assert.equal(submitted.status,200);assert.ok(submitted.headers.get("cache-control")?.includes("no-store"));
@@ -534,7 +544,9 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     const returned=await post("/api/property-reviews/"+pending.id,{action:"return_changes",revision:1,configRevision:1,reason:"Please add directions."},other.cookie,"review-return");
     assert.equal(returned.status,200);
     assert.equal((await returned.json() as {status:string}).status,"returned");
-    await db.prepare("DROP TABLE nightly_rate").run();
+    // Keep newly populated calendar-history references intact while making the
+    // application's expected table unavailable for this isolated failure test.
+    await db.prepare("ALTER TABLE nightly_rate RENAME TO fault_unavailable_rates").run();
     const unavailable = await post("/api/booking-quotes", input, guest.cookie);
     assert.equal(unavailable.status, 503);
     assert.deepEqual(await unavailable.json(), {

@@ -8,7 +8,7 @@
 
 **Sources:** [package.json](package.json), [apps/web/app/](apps/web/app), [packages/backend/src/](packages/backend/src).
 
-A Cambodia discovery and accommodation platform in development. Guests request stays and pay the property directly. Current code provides verified owner access, private property/room/calendar/information/photo setup and booking APIs. Public discovery, publication review, complete guest/arrival journeys and live providers remain unfinished.
+A Cambodia discovery and accommodation platform in development. Guests request stays and pay the property directly. Current code provides verified owner access, private property/room/calendar/information/photo setup and booking APIs. Public discovery, broader moderation, complete guest/arrival journeys and live providers remain unfinished. The local publication workflow and accepted minimum checklist are documented in current status.
 
 Start with the [documentation map](docs/README.md) and [current status/evidence](docs/status.md). For development use [setup](docs/development/setup.md) and [testing](docs/development/testing.md); agents must read [AGENTS.md](AGENTS.md).
 

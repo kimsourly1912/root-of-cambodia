@@ -1,22 +1,22 @@
-# Proposed pilot publication checklist
+# Accepted pilot publication checklist
 
-**Status:** proposed; requires project-owner agreement before enforcement. No product policy is approved by this document.
+**Status:** accepted by the project owner on 29 October 2026; enforcement implemented on feat/publication-readiness, with verification tracked in status.
 
-**Responsible role:** project owner (decision); maintainer (implementation after approval).
+**Responsible role:** project owner (policy); maintainer (implementation).
 
-**Last source verification:** 29 October 2026, merged main [d53544c](https://github.com/kimsourly1912/root-of-cambodia/commit/d53544cbee11def8e2522a33075235ba0abe73e0).
+**Last source verification:** 29 October 2026, implementation based on merged main [99e8350](https://github.com/kimsourly1912/root-of-cambodia/commit/99e8350afd1b0aeca035e8707d428d6865fdb8dc).
 
-**Sources:** [accepted scope](scope.md), [D05/D15/D17](open-decisions.md), [publication contract](../features/publication-review.md), [snapshot reader](../../packages/backend/src/publication-queries.ts), [current review guidance](../../apps/web/components/review-snapshot.tsx).
+**Sources:** [accepted scope](scope.md), [D05/D15/D17](open-decisions.md), [publication contract](../features/publication-review.md), [snapshot reader](../../packages/backend/src/publication-queries.ts), [current checklist](../../apps/web/components/publication-checklist.tsx).
 
-## What needs deciding
+## Accepted decision and rationale
 
-The owner/reviewer/corrections/approval workflow is merged. It checks identity, ownership, saved snapshots, unfinished uploads and explicitly configured terms. Missing description/address/contact/rooms/rates/photos are currently reminders; even an otherwise bare draft can be approved when terms are configured. This is deliberate pending D05, not proof of a launch-ready listing.
+The owner approved the recommended minimum after reviewing PR #20 and the proposal, replying “Yes please continue and approve” on 29 October 2026. This resolves the minimum-content portion of D05 only. The previous release treated missing description/address/contact/rooms/rates/photos as reminders. This implementation makes them mandatory for new submission and approval commands, while preserving earlier receipts and immutable snapshots.
 
-Recommendation: approve a small minimum-content checklist before building public discovery. Keep private drafts flexible; enforce the approved checklist when submitting and again when approving. The checklist would establish basic listing completeness, not verify legal ownership, safety, service quality, availability or a right to operate.
+Keep private drafts flexible; enforce this checklist when submitting and again when approving. It establishes basic listing completeness, not legal ownership, safety, service quality, availability or a right to operate. Public discovery remains later scope.
 
-## Recommended minimum
+## Approved minimum
 
-| Area | Proposed publication requirement | Reason / boundary |
+| Area | Publication requirement | Reason / boundary |
 | --- | --- | --- |
 | Existing basics | Retain verified owner, owner display name, Khmer property name, province, valid check-in/check-out times and house rules | Already required for draft creation; English name remains optional |
 | Description and address | Nonblank saved description and address | A guest needs to understand the stay and where it is; automated checks cannot verify accuracy |
@@ -38,14 +38,14 @@ The reviewer should check that photos and description reasonably match the accom
 | Recommended minimum plus manual review | Small implementation within the existing stack; repeatable minimum while retaining human judgment |
 | Require three photos, coordinates and a fixed calendar horizon | More setup effort and greater exclusion of small/seasonal owners; map/location verification and commercial calendar policy need further decisions |
 
-## Implementation after agreement
+## Implementation contract
 
-Use the existing Next.js pages and shared backend; no new service, framework or storage product is needed. A shared readiness result should return missing-item codes to the owner and reviewer with links to the relevant setup tabs. Services enforce the approved rules; the atomic save must recheck the relevant saved values and calendar eligibility so direct API calls or stale pages cannot bypass them. Preserve immutable submission snapshots, version fencing, required history and same-key recovery. Review additive SQL changes only if needed for those commit-time checks; do not rewrite migration 0011.
+Use the existing Next.js pages and shared backend. The shared readiness result returns missing-item codes to the scoped owner/reviewer reads; owner drafts link to relevant setup tabs. Services enforce the rules and the atomic save repeats the same SQL predicates against current D1 time, so direct API calls and stale pages cannot bypass them. Preserve immutable submission snapshots, version fencing, required history and same-key recovery. The existing schema supports these guarded saves; no migration is added and migrations 0001–0011 remain unchanged. Existing pending reviews that are incomplete can be withdrawn/returned for correction, but a new approval must pass the checklist. Earlier successful receipts still replay after eligibility changes, and published records are not automatically unpublished.
 
 Tests should cover each missing requirement, optional fields, inactive rooms, past dates, the exact 24-hour boundary, stale/revoked access, competing actions, rollback, receipt replay and existing publication/booking behavior. A fully reserved calendar remains a completeness success, but booking submission/acceptance must continue rejecting unavailable stock. Show the owner what to fix before submission; a missing item never silently publishes a listing.
 
-Approving this proposal resolves only this D05 minimum checklist. It does not select the real reviewer account, approve/author booking terms, authorize deployment/public discovery, define published editing/pause rules or settle guest address/contact/arrival disclosure. D15/D17 and environment/abuse/recovery decisions remain separate.
+This approval resolves only this D05 minimum checklist. It does not select the real reviewer account, approve/author booking terms, authorize deployment/public discovery, define published editing/pause rules or settle guest address/contact/arrival disclosure. D15/D17 and environment/abuse/recovery decisions remain separate.
 
 ## Decision record
 
-Awaiting project-owner agreement with the recommended minimum or specified changes. Do not mark this accepted or implement mandatory gates until agreement is recorded in [open decisions](open-decisions.md).
+Accepted on 29 October 2026 in the project conversation, following the proposal in PR #20. [Open decisions](open-decisions.md#minimum-publication-checklist--29-october-2026) records the approval and remaining boundaries. No merge or deployment of this new implementation is inferred from checklist approval.

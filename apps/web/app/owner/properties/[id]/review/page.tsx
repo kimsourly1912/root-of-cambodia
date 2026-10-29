@@ -5,6 +5,7 @@ import { DomainError } from "@root-of-cambodia/backend/errors";
 import { PropertyNavigation } from "@/components/property-navigation";
 import { ReviewSnapshot } from "@/components/review-snapshot";
 import { PublicationAction } from "@/components/publication-action";
+import { PublicationChecklist } from "@/components/publication-checklist";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 export default async function Page({
   params,
@@ -38,18 +39,26 @@ export default async function Page({
       </p>
       <PropertyNavigation propertyId={id} active="review" />
       <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
-        {snapshot && (
-          <ReviewSnapshot
-            snapshot={snapshot}
-            previewBase={
-              pending
-                ? `/api/property-reviews/${data.latest!.id}/photos`
-                : data.draft
-                  ? `/api/owner/properties/${id}/photos`
-                  : undefined
-            }
-          />
-        )}
+        <div className="min-w-0 space-y-6">
+          {data.publication !== "published" && (
+            <PublicationChecklist
+              readiness={data.readiness}
+              ownerPropertyId={data.publication === "draft" ? id : undefined}
+            />
+          )}
+          {snapshot && (
+            <ReviewSnapshot
+              snapshot={snapshot}
+              previewBase={
+                pending
+                  ? `/api/property-reviews/${data.latest!.id}/photos`
+                  : data.draft
+                    ? `/api/owner/properties/${id}/photos`
+                    : undefined
+              }
+            />
+          )}
+        </div>
         <aside className="space-y-5 lg:sticky lg:top-8">
           <Card className="shadow-none">
             <CardHeader>
@@ -95,7 +104,8 @@ export default async function Page({
                     {
                       action: "submit",
                       label: "Submit saved draft",
-                      disabled: !data.reviewerConfigured,
+                      disabled:
+                        !data.reviewerConfigured || !data.readiness.ready,
                     },
                   ]}
                 />

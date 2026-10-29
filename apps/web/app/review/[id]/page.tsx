@@ -3,6 +3,7 @@ import { reviewerRead } from "@/src/reviewer-read";
 import { reviewDetails } from "@root-of-cambodia/backend/publication-queries";
 import { ReviewSnapshot } from "@/components/review-snapshot";
 import { PublicationAction } from "@/components/publication-action";
+import { PublicationChecklist } from "@/components/publication-checklist";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 export default async function Page({
   params,
@@ -24,10 +25,13 @@ export default async function Page({
         are needed.
       </p>
       <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
-        <ReviewSnapshot
-          snapshot={data.request.snapshot}
-          previewBase={`/api/property-reviews/${id}/photos`}
-        />
+        <div className="min-w-0 space-y-6">
+          <PublicationChecklist readiness={data.readiness} />
+          <ReviewSnapshot
+            snapshot={data.request.snapshot}
+            previewBase={`/api/property-reviews/${id}/photos`}
+          />
+        </div>
         <aside className="lg:sticky lg:top-8">
           <Card className="shadow-none">
             <CardHeader>
@@ -61,7 +65,7 @@ export default async function Page({
                   {
                     action: "approve",
                     label: "Approve and publish",
-                    disabled: !data.termsVersion,
+                    disabled: !data.termsVersion || !data.readiness.ready,
                   },
                 ]}
               />

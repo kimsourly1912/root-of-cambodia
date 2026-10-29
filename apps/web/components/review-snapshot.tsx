@@ -9,35 +9,8 @@ export function ReviewSnapshot({
   snapshot: Snapshot;
   previewBase?: string;
 }) {
-  const hints = [
-    !s.information.description && "Description",
-    !s.information.address && "Address",
-    !s.logistics.contactPhone && !s.logistics.contactEmail && "Contact details",
-    !s.rooms.some((r) => r.active) && "Active room types",
-    !s.rooms.some((r) => r.active && r.configuredNights > 0) &&
-      "Prices and availability",
-    !s.photos.length && "Photos",
-  ].filter(Boolean);
   return (
     <div className="min-w-0 space-y-6">
-      <Card className="shadow-none">
-        <CardHeader>
-          <CardTitle>
-            <h2>Review guidance</h2>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <p>
-            {hints.length
-              ? `Details to consider: ${hints.join(", ")}.`
-              : "The listed preparation details are present."}
-          </p>
-          <p className="text-muted-foreground">
-            These are preparation reminders. The pilot reviewer assesses each
-            submission manually.
-          </p>
-        </CardContent>
-      </Card>
       <Card className="shadow-none">
         <CardHeader>
           <CardTitle>

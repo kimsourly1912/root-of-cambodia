@@ -45,7 +45,7 @@ Service/query/persistence modules are [property-logistics.ts](../../packages/bac
 
 Coordinates are owner-entered and not geocoded or verified. Contact methods are informational and unverified; they do not change the sign-in email or trigger messages. Details remain private to the owner and, while submitted, the explicitly configured pilot publication reviewer: no guest/public read endpoint or booking disclosure is added. Arrival notes do not enable check-in, settle arrival/no-show/late-cancellation policy or change accepted terms.
 
-The form supports save/reopen/clear, blank drafts, exact same-key/body recovery after a lost response and refresh/review after a stale conflict. Pending attempts stay only in the open tab. The shared adapter still enforces Origin/JSON bounds/private caching; failures include invalid_property_logistics (422) and existing 401/403/404/409/413/503 codes. The [review contract](publication-review.md) defines submission access and terms gating; required publication fields and guest snapshot/disclosure policy (D05/D17) remain open.
+The form supports save/reopen/clear, blank drafts, exact same-key/body recovery after a lost response and refresh/review after a stale conflict. Pending attempts stay only in the open tab. The shared adapter still enforces Origin/JSON bounds/private caching; failures include invalid_property_logistics (422) and existing 401/403/404/409/413/503 codes. The [review contract](publication-review.md) defines submission access and terms gating; the [minimum checklist](../product/publication-checklist-proposal.md) is accepted and enforced for submission/approval, while broader editing/public delivery and guest snapshot/disclosure policy (D05/D17) remain open.
 
 ## Implemented HTTP surface
 
