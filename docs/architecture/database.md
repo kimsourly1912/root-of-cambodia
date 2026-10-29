@@ -4,7 +4,7 @@
 
 **Responsible role:** backend maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
+**Last source verification:** 30 October 2026; owner-response implementation based on guest PR #25 head [a5bf41f](https://github.com/kimsourly1912/root-of-cambodia/commit/a5bf41ff6d54351358cd307b5ef4b9ded3f9d233).
 
 **Sources:** [packages/backend/migrations/](../../packages/backend/migrations), [packages/backend/src/operations.ts](../../packages/backend/src/operations.ts), [packages/backend/src/booking-persistence.ts](../../packages/backend/src/booking-persistence.ts), [packages/backend/src/schema.ts](../../packages/backend/src/schema.ts), [tests/migrations.test.ts](../../tests/migrations.test.ts), [tests/safeguards.test.ts](../../tests/safeguards.test.ts).
 
@@ -27,6 +27,7 @@
 | [0011](../../packages/backend/migrations/0011_property_publication_review.sql) | Single reviewer configuration, immutable review requests/events and separately sealed owner/reviewer command receipts |
 | [0012](../../packages/backend/migrations/0012_public_listing_disclosure.sql) | Immutable owner-attributed public-display version/digest, new submission seal/approval guards and latest-review index; no backfill of earlier approvals |
 | [0013](../../packages/backend/migrations/0013_guest_booking_journey.sql) | Immutable configured terms documents and account-bound request reviews; UI-path submission fencing; no old-data backfill |
+| [0014](../../packages/backend/migrations/0014_booking_acceptance_logistics.sql) | Atomic acceptance-time logistics copies, direct transition/receipt guards and immutable owner response reviews; no historical backfill |
 
 Add a new ordered migration; do not rewrite an applied one. Verify both fresh application and populated upgrades using the configured migration loader/tracker. A failed preflight needs a reviewed repair plan, never deletion of a populated database to force success. The proof schema is independent and is not an application upgrade path.
 
@@ -75,3 +76,5 @@ Use [testing](../development/testing.md) for rollback, races, authorization revo
 ## Public listing acknowledgement
 
 [Guest browsing](../features/guest-browsing.md) uses an allowlist of immutable approved content. Public-display evidence is part of the same submission batch and records the current owner, request, policy version, displayed digest and database timestamp. New submit seals and approvals require it. Earlier sealed receipts still replay; earlier approved data is not backfilled or exposed. Ordered gallery construction is explicit for new snapshots; earlier stored snapshots remain immutable. Migration 0012 is additive, but older code cannot create new submissions without its required evidence; future rollout/rollback must preserve this privacy guard. No booking schema/operation rule changes.
+
+Accepted D17 is implemented by [booking logistics](../../packages/backend/src/booking-logistics.ts), [owner responses](../../packages/backend/src/owner-bookings.ts) and the named booking transition save. The acceptance copy and transition/allocation/history/outbox/receipt are one atomic operation; terms/guest quote snapshots stay immutable at submission. New migration 0014 preserves prior receipts and old Confirmed records without fabricating copies. New native fixtures explicitly prepare required logistics; historical migration fixtures construct the old protocol only in tests, with no application compatibility bypass.

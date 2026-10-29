@@ -2,11 +2,8 @@ import { test } from "vitest";
 import assert from "node:assert/strict";
 import { database, catalog, request, guest, owner, scalar } from "./support";
 import { quote } from "@root-of-cambodia/backend/quotes";
-import {
-  submit,
-  transition,
-  expireDue,
-} from "@root-of-cambodia/backend/bookings";
+import { submit, expireDue } from "@root-of-cambodia/backend/bookings";
+import { testTransition as transition } from "./booking-fixtures";
 import { historical } from "./historical";
 test("24-hour lead boundary uses Cambodia local check-in; client deadlines are ignored", async () => {
   const p = await database();

@@ -7,7 +7,7 @@ import { ownerPropertyLogistics } from "@root-of-cambodia/backend/property-logis
 import { savePropertyLogistics } from "@root-of-cambodia/backend/property-logistics";
 import { commitPropertyLogistics } from "@root-of-cambodia/backend/property-logistics-persistence";
 import { readBooking } from "@root-of-cambodia/backend/access";
-import { transition } from "@root-of-cambodia/backend/bookings";
+import { testTransition as transition } from "./booking-fixtures";
 const blank = { latitude: null, longitude: null, contactName: "", contactPhone: "", contactEmail: "", arrivalInstructions: "", revision: null };
 const base = { ...blank, latitude: 10.606, longitude: 104.181, contactName: "Reception", contactPhone: "+855 12 345 678", contactEmail: "stay@example.invalid", arrivalInstructions: "ផ្លូវភូមិ\nTurn left at the bridge." };
 async function setup(db: D1Database) {
@@ -183,7 +183,7 @@ test("private logistics does not change or disclose through booking snapshots, p
     const stock = (await db.prepare("SELECT * FROM inventory_night ORDER BY room_type_id,night").all()).results;
     const outbox = await scalar(db, "SELECT count(*) n FROM notification_outbox");
     await db.prepare("UPDATE place SET publication='draft' WHERE id='p'").run();
-    await save(db, "p", "logistics", base);
+    await save(db, "p", "logistics", {...base, revision:(await ownerPropertyLogistics(db,owner,"p")).revision});
     assert.deepEqual(await readBooking(db, { id: "guest" }, booking.id), before);
     assert.deepEqual(await db.prepare("SELECT * FROM property WHERE id='p'").first(), property);
     assert.deepEqual((await db.prepare("SELECT * FROM inventory_night ORDER BY room_type_id,night").all()).results, stock);

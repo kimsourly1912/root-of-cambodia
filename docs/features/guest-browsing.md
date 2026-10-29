@@ -4,7 +4,7 @@
 
 **Responsible role:** product owner (disclosure policy); web/backend maintainer (implementation).
 
-**Last source verification:** 29 October 2026; based on merged main [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
+**Last source verification:** 30 October 2026; owner-response implementation based on guest PR #25 head [a5bf41f](https://github.com/kimsourly1912/root-of-cambodia/commit/a5bf41ff6d54351358cd307b5ef4b9ded3f9d233).
 
 **Sources:** [public listing projection](../../packages/backend/src/public-listing.ts), [catalog reads](../../packages/backend/src/catalog-queries.ts), [public adapters](../../apps/web/src/public-http.ts), [pages](../../apps/web/app/stays), [routes](../../apps/web/app/api/stays), [migration 0012](../../packages/backend/migrations/0012_public_listing_disclosure.sql), [native checks](../../tests/catalog.test.ts), [built HTTP checks](../../tests/worker-http.test.ts), [browser flow](../../tests/browser/owner.spec.ts).
 
@@ -14,7 +14,7 @@ The project owner accepted the [browsing proposal](../product/guest-browsing-pro
 
 Public fields are property IDs/names/province, description/facilities, active room IDs/names/capacities, check-in/out times, house rules, configured per-stay charge code/label/USD cents and ready photo IDs in approved order. Exact address/coordinates, contact-person/phone/email, arrival notes, owner account identifiers, raw calendar prices/stock, original files, object keys/hashes, review history and display hashes are excluded. Public descriptions/photo pixels can contain intentionally entered information; no OCR/redaction or verification badge is promised.
 
-No guest booking controls, date quotes, availability filters, stay-price teaser, map provider, destination taxonomy, ratings, online payment or real provider is added. Existing booking APIs retain verified access and authoritative dates/prices/stock. D17 private logistics disclosure for Pending/Confirmed/later bookings is unresolved and not implemented here.
+No guest booking controls, date quotes, availability filters, stay-price teaser, map provider, destination taxonomy, ratings, online payment or real provider is added. Existing booking APIs retain verified access and authoritative dates/prices/stock. D17 was subsequently accepted in [ADR 0006](../architecture/decisions/0006-booking-journey.md) and implemented in the private booking journey. It does not extend the anonymous allowlist described here.
 
 ## Preview and atomic acknowledgement
 

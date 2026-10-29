@@ -1,16 +1,16 @@
 # Booking and inventory contract
 
-**Status:** guest request/tracking screens implemented locally; owner response/confirmed logistics is the next accepted slice; arrival blocked.
+**Status:** guest request/tracking and owner response/confirmed logistics implemented locally; arrival blocked.
 
 **Responsible role:** booking maintainer; project owner for policy (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
+**Last source verification:** 30 October 2026; owner-response implementation based on guest PR #25 head [a5bf41f](https://github.com/kimsourly1912/root-of-cambodia/commit/a5bf41ff6d54351358cd307b5ef4b9ded3f9d233).
 
 **Sources:** [apps/web/app/api/booking-quotes/route.ts](../../apps/web/app/api/booking-quotes/route.ts), [apps/web/app/api/bookings/](../../apps/web/app/api/bookings), [apps/web/app/api/external-reservations/route.ts](../../apps/web/app/api/external-reservations/route.ts), [apps/web/app/api/inventory/route.ts](../../apps/web/app/api/inventory/route.ts), [packages/backend/src/bookings.ts](../../packages/backend/src/bookings.ts), [packages/backend/src/quotes.ts](../../packages/backend/src/quotes.ts), [packages/backend/src/booking-persistence.ts](../../packages/backend/src/booking-persistence.ts), [packages/backend/src/access.ts](../../packages/backend/src/access.ts).
 
 ## Policy, actors and non-goals
 
-[Accepted scope](../product/scope.md) governs request-to-book, pay-at-property USD prices, 12-hour owner response, at least 24-hour lead time, immutable submitted price/terms and free guest cancellation before scheduled check-in. Pending holds no stock. Current APIs do not constitute public discovery or complete booking screens. No payment processing, no-show workflow, admin impersonation or late-arrival rule is implemented.
+[Accepted scope](../product/scope.md) governs request-to-book, pay-at-property USD prices, 12-hour owner response, at least 24-hour lead time, immutable submitted price/terms and free guest cancellation before scheduled check-in. Pending holds no stock. Public discovery and booking screens now call these shared APIs/services; they do not establish a complete arrival-to-stay lifecycle. No payment processing, no-show workflow, admin impersonation or late-arrival rule is implemented.
 
 Verified guests submit online requests and read/cancel their own bookings. Verified owners read/respond/cancel/complete bookings for their own properties and use owner-only external reservations/inventory edits. System expiry is a trusted internal operation. Missing ownership is normally concealed as 404. No implicit super-admin booking access exists.
 
@@ -46,7 +46,7 @@ Representative codes: quote_required/invalid_request/invalid_dates/invalid_occup
 | Action / operation | Actor and current-state/time condition | Result / stock |
 | --- | --- | --- |
 | Online submit | Verified guest; published property; >=24h before scheduled check-in, rechecked by database time | Pending, expiry at submission +12h; no hold |
-| accept | Verified owner; Pending; now strictly before expiry | Confirmed; all nights allocate atomically or whole operation conflicts |
+| accept | Verified owner; Pending; now strictly before expiry; matching complete logistics preview hash | Confirmed; acceptance copy and all-night allocation commit together or whole operation conflicts |
 | decline | Verified owner; Pending; now strictly before expiry | Declined; no stock addition |
 | System expire | Pending; now >= expiry | Expired; no stock addition |
 | cancel_guest | Same verified guest; Pending/Confirmed; now strictly before check-in | Cancelled; committed allocations released once |
@@ -69,13 +69,13 @@ A matching receipt returns the original successful operation after later state/c
 
 ## Planned UI and acceptance
 
-The [30 October booking journey](../product/booking-journey-proposal.md#approval-record-and-next-action) is accepted. Guest slice A is implemented; owner slice B and the acceptance-copy projection follow separately. [ADR 0006](../architecture/decisions/0006-booking-journey.md) records approval and architecture.
+The [30 October booking journey](../product/booking-journey-proposal.md#approval-record-and-next-action) is accepted. Guest slice A and owner slice B are implemented locally; their separate PRs and evidence are tracked in status. [ADR 0006](../architecture/decisions/0006-booking-journey.md) records approval and architecture.
 
 The [screen brief](../design/screen-brief.md) describes review/request, pending/confirmed/declined/expired/cancelled detail and booking lists as planned screens. Show full price and exact Cambodia-time deadline; distinguish Pending from Confirmed and booking state from payment. Expose loading, session/verification, changed-price/unavailable, stale and uncertain retry states. Mock controls cannot represent a real booking.
 
 Regressions cover last-room and multi-night/room races, missing coverage, rollback, current authorization, exact deadlines/lead time/cancellation cutoff, replay after later changes, immutable quotes and notification recovery. [Testing](../development/testing.md) specifies the layers; [status](../status.md) identifies observed environment evidence.
 
-Arrival/no-show/late cancellation (D01), occupancy/physical-room continuity (D02/D03), external details (D04), support/suspension (D06), delivery/reminders (D07), retention/recovery (D09/D10) and snapshot disclosure (D17) remain open. Completion tests beginning with trusted Checked-in fixtures do not establish a complete app lifecycle.
+Arrival/no-show/late cancellation (D01), occupancy/physical-room continuity (D02/D03), external details (D04), support/suspension (D06), delivery/reminders (D07), retention/recovery (D09/D10) remain open; D17 is accepted and implemented for the stated booking states. Completion tests beginning with trusted Checked-in fixtures do not establish a complete app lifecycle.
 
 ## Guest screens and recovery (slice A)
 
@@ -97,4 +97,24 @@ Live public eligibility and current room membership/terms are checked for the ne
 
 An immutable configured terms document must exist for the property/current selected pilot terms version. A version ID alone does not provide legal text. Missing text blocks new UI requests with a visible unavailable state. The trusted [local terms command](../development/setup.md#local-booking-terms-documents) accepts already approved content only. This work creates no real legal text or live delivery. Migration 0013 adds only empty terms/review tables, indexes and guards; preserves earlier bookings/receipts without backfill. D09 retention remains unresolved.
 
-Slice A deliberately renders Confirmed logistics as unavailable; it does not read current property contact as an invented historical snapshot. Slice B implements accepted D17. Infants/age definitions remain D02 and unsupported; no zero-infant or commercial age rule is inferred from an adults/children form. Broader post-cutoff support and arrival remain unavailable, rather than linked to an invented support channel.
+Slice A initially rendered Confirmed logistics as unavailable. Slice B now implements D17: new acceptance copies are visible only while Confirmed, while older bookings without a copy retain the honest unavailable state. Infants/age definitions remain D02 and unsupported; no zero-infant or commercial age rule is inferred from an adults/children form. Broader post-cutoff support and arrival remain unavailable, rather than linked to an invented support channel.
+
+## Owner response and confirmed logistics (slice B)
+
+Owners use `/owner/properties/:propertyId/bookings` and its `/:bookingId` detail. Lists/details remain available when a listing is paused. Current verified property ownership is checked in scoped reads; a guest, unrelated owner or publication reviewer gains no owner booking access. Details include the submitted price/room/policy snapshots, guest name/email, deadlines and attributable history.
+
+The response form offers only supported current actions: accept/decline before response expiry and owner cancellation before scheduled check-in. Cancellation needs a nonblank reason. Owners preview exact logistics and acknowledge them before preparing acceptance. Preparing a saved response never changes booking state; an explicit apply commits it. Owner response IDs survive reload/auth navigation without putting reasons or private logistics in URLs/browser storage. Uncertain results retain the same saved response/key/payload and recover the original receipt before current preparation checks; reload shows current booking status.
+
+| Route | Implemented behavior |
+| --- | --- |
+| /api/owner/properties/:id/bookings | GET verified owner-only bounded collection; optional submitted-time/ID cursor |
+| /api/owner/bookings/:id/acceptance | GET explicit current logistics preview, readiness and digest/revisions; no public or guest access |
+| /api/owner/bookings/:id/attempts/:attemptId | POST action/optional reason/acceptanceHash prepares an immutable scoped response; GET recovers preview/receipt |
+| /api/owner/bookings/:id/attempts/:attemptId/apply | POST applies exactly the saved action through the existing atomic booking service |
+| /api/bookings/:id/accept | Existing POST now requires acceptanceHash for a new acceptance; earlier successful no-hash receipts still replay unchanged |
+
+Migration 0014 adds acceptance copies and immutable owner response reviews. It backfills neither copies nor approvals. Snapshot insert checks current verified owner, pending/deadline, exact current address/contact/notes/coordinates and versions; the transition requires its matching copy. The named save includes snapshot, stock, history/outbox, receipt and final assertion in one D1 batch. Later-night stock failures, changed versions/ownership/verification or failed history/outbox leave no copy/allocation/success receipt. Reserved owner-response keys are fenced to the saved operation fingerprint even through direct action APIs. Earlier applied migrations remain unchanged.
+
+New guest details perform a final scoped status/snapshot read: logistics is allowlisted and returned only for the booking guest while Confirmed. No internal owner IDs, hashes, versions or operation metadata are included. Pending/Declined/Expired/Cancelled/legacy Checked-in/Completed reads omit it. Pausing does not revoke existing Confirmed access. Owners can distinguish the saved acceptance copy from current details. Subsequent property edits never rewrite the copy. Legacy Confirmed bookings without one remain readable with unavailable details. Hiding future responses cannot recall downloaded content; retention/erasure and later guest-notified corrections remain D09/D05/D07.
+
+Booking updates with the same second timestamp use insertion order as the tie-breaker, so Pending appears before its subsequent response/cancellation. No new arrival/no-show/late-cancellation/payment/completion or privileged support operation is enabled.

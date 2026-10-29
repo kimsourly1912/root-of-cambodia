@@ -1,6 +1,9 @@
 // These are API codes, not raw provider/database messages. Add new codes deliberately.
 export const ERROR_CODES = [
   "arrival_policy_decision_required",
+  "acceptance_preview_required",
+  "acceptance_preview_changed",
+  "acceptance_incomplete",
   "booking_conflict",
   "booking_terms_unavailable",
   "booking_terms_required",

@@ -4,6 +4,7 @@ import { randomBytes } from "node:crypto";
 import { createTestHarness } from "wrangler";
 import type { DiagnosticRecord } from "@root-of-cambodia/backend/diagnostics";
 import { catalog, scalar } from "./fixtures";
+import { ensureAcceptanceFixture } from "./booking-fixtures";
 import { readyPublicationFixture } from "./publication-fixtures";
 import photoFixtures from "./photo-fixtures.json" with { type: "json" };
 import { mediaKeys } from "@root-of-cambodia/backend/media-queries";
@@ -36,15 +37,20 @@ const pass = (label: string) => {
   checks++;
   console.log("PASS " + label);
 };
-const post = (
+const post = async (
   path: string,
   body: unknown,
   cookie?: string,
   key?: string,
   origin = baseURL,
   ip = "192.0.2.10",
-) =>
-  server.fetch(baseURL + path, {
+) => {
+  if(path.endsWith("/accept") && cookie && body && typeof body==="object" && !("acceptanceHash" in body)) {
+    const id=path.split("/").at(-2);
+    const preview=await server.fetch(baseURL+"/api/owner/bookings/"+id+"/acceptance",{headers:{Cookie:cookie}});
+    if(preview.status===200)body={...body,acceptanceHash:(await preview.json() as {hash:string}).hash};
+  }
+  return server.fetch(baseURL + path, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -56,6 +62,7 @@ const post = (
     body: JSON.stringify(body),
     redirect: "manual",
   });
+};
 test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async () => {
   try {
     await server.listen();
@@ -67,6 +74,7 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     await worker.applyD1Migrations("DB");
     const db = (await worker.getEnv()).DB;
     const { input } = await catalog(db, 1);
+    await ensureAcceptanceFixture(db,"p");
     await db
       .prepare(
         "CREATE TABLE local_email(id TEXT PRIMARY KEY,recipient TEXT NOT NULL,kind TEXT NOT NULL,url TEXT NOT NULL)",
@@ -617,8 +625,21 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     const ownPage=await server.fetch(baseURL+"/bookings/"+newBooking.id,{headers:{Cookie:guest.cookie}});assert.equal(ownPage.status,200);assert.ok((await ownPage.text()).includes("Pending confirmation"));
     const list=await server.fetch(baseURL+"/api/guest/bookings",{headers:{Cookie:guest.cookie}});assert.equal(list.status,200);assert.ok((await list.json() as {items:{id:string}[]}).items.some(item=>item.id===newBooking.id));
     assert.equal((await server.fetch(baseURL+"/api/guest/bookings?cursor=a&cursor=b",{headers:{Cookie:guest.cookie}})).status,422);
+    const rawAcceptance=await server.fetch(baseURL+"/api/bookings/"+newBooking.id+"/accept",{method:"POST",headers:{Cookie:owner.cookie,Origin:baseURL,"Content-Type":"application/json","Idempotency-Key":"no-preview"},body:"{}"});
+    assert.equal(rawAcceptance.status,422);
+    const previewResponse=await server.fetch(baseURL+"/api/owner/bookings/"+newBooking.id+"/acceptance",{headers:{Cookie:owner.cookie}});assert.equal(previewResponse.status,200);const guestAcceptance=await previewResponse.json() as {hash:string};
+    const responseId=crypto.randomUUID(),responsePath="/api/owner/bookings/"+newBooking.id+"/attempts/"+responseId;
+    assert.equal((await post(responsePath,{action:"accept",acceptanceHash:guestAcceptance.hash},owner.cookie)).status,200);
+    assert.equal((await server.fetch(baseURL+responsePath,{headers:{Cookie:guest.cookie}})).status,404);
+    assert.equal((await post(responsePath+"/apply",{},owner.cookie)).status,200);
+    assert.equal((await post(responsePath+"/apply",{},owner.cookie)).status,200);
+    const confirmedGuest=await server.fetch(baseURL+detailPath,{headers:{Cookie:guest.cookie}});assert.equal(confirmedGuest.status,200);assert.ok((await confirmedGuest.text()).includes("stay@example.invalid"));
+    const ownerCollection=await server.fetch(baseURL+"/api/owner/properties/"+draft.id+"/bookings",{headers:{Cookie:owner.cookie}});assert.equal(ownerCollection.status,200);assert.equal((await server.fetch(baseURL+"/api/owner/properties/"+draft.id+"/bookings",{headers:{Cookie:other.cookie}})).status,404);
+    await db.prepare("UPDATE place SET publication='paused' WHERE id=?").bind(draft.id).run();
+    assert.ok((await (await server.fetch(baseURL+detailPath,{headers:{Cookie:guest.cookie}})).text()).includes("stay@example.invalid"));
     assert.equal((await post("/api/bookings/"+newBooking.id+"/cancel_guest",{},guest.cookie,"new-guest-cancel")).status,200);
     assert.equal((await post("/api/bookings/"+newBooking.id+"/cancel_guest",{},guest.cookie,"new-guest-cancel")).status,200);
+    assert.ok(!(await (await server.fetch(baseURL+detailPath,{headers:{Cookie:guest.cookie}})).text()).includes("stay@example.invalid"));
     await db.prepare("UPDATE place SET publication='paused' WHERE id=?").bind(draft.id).run();
     assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id)).status,404);
     assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id+"/photos/"+publicSupply.photoId)).status,404);

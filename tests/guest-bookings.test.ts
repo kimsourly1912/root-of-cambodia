@@ -27,7 +27,8 @@ import {
   guestBookings,
   guestBooking,
 } from "@root-of-cambodia/backend/guest-bookings";
-import { transition, submit } from "@root-of-cambodia/backend/bookings";
+import { submit } from "@root-of-cambodia/backend/bookings";
+import { testTransition as transition } from "./booking-fixtures";
 import { shiftNight } from "@root-of-cambodia/backend/calendar-dates";
 async function supply(db: D1Database) {
   await catalog(db);

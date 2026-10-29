@@ -5,6 +5,7 @@ import {
   finish,
   type Actor,
 } from "./operations";
+import { prepareAcceptance } from "./booking-logistics";
 import type { Quote, QuoteInput } from "./quotes";
 
 // Internal persistence boundary. Services perform early authorization; SQL and
@@ -158,6 +159,7 @@ export async function commitBookingTransition(
   id: string,
   action: BookingChange,
   text: string | null,
+  acceptanceHash?: string,
 ) {
   const asGuest = action === "cancel_guest";
   const spec = {
@@ -184,20 +186,58 @@ export async function commitBookingTransition(
     db,
     actor,
     key,
-    { kind: action, id, reason: text },
-    (op) => [
-      db
-        .prepare(
-          "UPDATE booking SET status=?,last_operation_id=?,reason=? WHERE id=? AND " +
-            spec.where +
-            " AND " +
-            verifiedSQL +
-            " AND " +
-            (asGuest ? "guest_id=?" : ownerSQL),
-        )
-        .bind(spec.status, op, text, id, actor.id, actor.id),
-      finish(db, op, id),
-    ],
+    {
+      kind: action,
+      id,
+      reason: text,
+      ...(action === "accept" && acceptanceHash !== undefined
+        ? { acceptanceHash }
+        : {}),
+    },
+    async (op) => {
+      const statements: D1PreparedStatement[] = [];
+      if (key.startsWith("owner-response:"))
+        statements.push(
+          assertion(
+            db,
+            op,
+            "EXISTS(SELECT 1 FROM owner_booking_attempt a JOIN operation o ON o.id=? AND o.principal='user:'||a.actor_id AND o.key='owner-response:'||a.id WHERE a.actor_id=? AND o.fingerprint=a.operation_fingerprint)",
+            [op, actor.id],
+          ),
+        );
+      if (action === "accept") {
+        const preview = await prepareAcceptance(db, actor, id, acceptanceHash);
+        statements.push(
+          db
+            .prepare(
+              "INSERT INTO booking_acceptance(booking_id,operation_id,owner_id,information_revision,logistics_revision,preview_hash,details_json) VALUES (?,?,?,?,?,?,?)",
+            )
+            .bind(
+              id,
+              op,
+              actor.id,
+              preview.informationRevision,
+              preview.logisticsRevision,
+              preview.hash,
+              JSON.stringify(preview.details),
+            ),
+        );
+      }
+      statements.push(
+        db
+          .prepare(
+            "UPDATE booking SET status=?,last_operation_id=?,reason=? WHERE id=? AND " +
+              spec.where +
+              " AND " +
+              verifiedSQL +
+              " AND " +
+              (asGuest ? "guest_id=?" : ownerSQL),
+          )
+          .bind(spec.status, op, text, id, actor.id, actor.id),
+        finish(db, op, id),
+      );
+      return statements;
+    },
     asGuest ? "guest" : "owner",
   );
 }

@@ -3,7 +3,7 @@ import { test } from "vitest";
 import assert from "node:assert/strict";
 import { getMigrations } from "better-auth/db/migration";
 import { database, migrate, catalog, request, owner, scalar } from "./support";
-import { transition } from "@root-of-cambodia/backend/bookings";
+import { testTransition as transition } from "./booking-fixtures";
 import { deliver } from "@root-of-cambodia/backend/outbox";
 import { makeAuth } from "@root-of-cambodia/backend/auth";
 test("fresh installation has all FKs/indexes and matches the pinned Better Auth configuration", async () => {
@@ -243,7 +243,7 @@ test("safeguards upgrade retains every populated row, old schema object and orig
     assert.deepEqual(afterDraftMigration.property_logistics_event, []);
     delete afterDraftMigration.property_logistics;
     delete afterDraftMigration.property_logistics_event;
-    for (const table of ["pilot_publication_config","property_review_command","property_review_request","property_review_event","public_listing_disclosure","booking_terms_document","guest_booking_attempt"]) {
+    for (const table of ["pilot_publication_config","property_review_command","property_review_request","property_review_event","public_listing_disclosure","booking_terms_document","guest_booking_attempt","booking_acceptance","owner_booking_attempt"]) {
       assert.deepEqual(afterDraftMigration[table], []);
       delete afterDraftMigration[table];
     }

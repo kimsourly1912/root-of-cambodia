@@ -39,10 +39,8 @@ import {
 import { preparePhoto, editPhotos } from "@root-of-cambodia/backend/media";
 import { completeMedia } from "@root-of-cambodia/backend/media-persistence";
 import { digest } from "@root-of-cambodia/backend/operations";
-import {
-  transition,
-  submit as submitBooking,
-} from "@root-of-cambodia/backend/bookings";
+import { submit as submitBooking } from "@root-of-cambodia/backend/bookings";
+import { testTransition as transition } from "./booking-fixtures";
 import { quote } from "@root-of-cambodia/backend/quotes";
 import { shiftNight } from "@root-of-cambodia/backend/calendar-dates";
 

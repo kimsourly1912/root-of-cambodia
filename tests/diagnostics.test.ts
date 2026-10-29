@@ -7,7 +7,7 @@ import {
 } from "@root-of-cambodia/backend/diagnostics";
 import { DomainError, safeFailure } from "@root-of-cambodia/backend/errors";
 import { database, catalog, request, owner, scalar } from "./support";
-import { transition } from "@root-of-cambodia/backend/bookings";
+import { testTransition as transition } from "./booking-fixtures";
 
 test("diagnostics allowlist output and replace untrusted codes, details and correlation inputs", async () => {
   const secret =
