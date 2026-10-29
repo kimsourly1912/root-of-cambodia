@@ -1,0 +1,101 @@
+> **Historical snapshot — not current instructions.** Archived 29 October 2026 from [README.md at 607a705](https://github.com/kimsourly1912/root-of-cambodia/blob/607a7057b908a005f9f3529141b0978f52d24ce0/README.md). Original dates, decisions, PR states and results below are historical.
+> **Current authority:** [README.md](../../../../README.md), [docs/status.md](../../../status.md), [docs/development/setup.md](../../../development/setup.md).
+> Historical text is preserved; relative link destinations are adjusted only for relocation. Do not execute old setup or prototype prompts as current guidance.
+
+<!-- historical-body-start -->
+
+# Root of Cambodia
+
+A planned place-discovery and accommodation-booking platform for Cambodian users, covering selected listings across Cambodia.
+
+Guests request stays and pay at the property. Owners manage their own property information, rooms, availability, and booking responses. Super admin operates the platform and handles review and support.
+
+## Current status
+
+Private property photos are implemented in PR #15, based on merged PRs #13/#14. GitHub CI passes frozen installation, strict types, both builds, **131 Vitest tests** and **12 desktop/phone browser checks**, using local Cloudflare emulators. PC dependency installation is network-blocked; real services remain unverified. See the [photo review](../Root-of-Cambodia-Property-Photos-Review.md) for boundaries, evidence and remaining release decisions. No merge or deployment was performed.
+
+The active application uses [apps/web](web-README.md), [apps/jobs](jobs-README.md) and [packages/backend](backend-README.md), with reviewed migrations, verified sessions, atomic booking/inventory operations and notification recovery contracts. The owner interface supports verified access, private property drafts, room types, dated pricing/availability, descriptions, addresses and facility lists. The broader product journeys and live infrastructure remain unfinished. See the [backend review report](../Root-of-Cambodia-Backend-Foundation-Review.md) for tests, scope and remaining decisions.
+
+Current local validation: **114 Vitest tests** - 109 D1/runtime cases, three workspace checks and two built-Worker journeys - plus **ten Playwright browser checks**. All prior 105 Vitest tests are retained. The [property-information review](../Root-of-Cambodia-Property-Information-Review.md) records the boundaries, fresh verification and browser-version limits. All 12 original website HTTP checks remain, with added request/log correlation and privacy checks. Delivery results now distinguish provider acceptance from inbox delivery and detect superseded leases. Separate typechecks and both builds passed. See the [step 5 review](../Root-of-Cambodia-Diagnostics-Delivery-Review.md). These are synthetic local results, not production verification.
+
+Run active application commands from the repository root with Node 24.22.1 and **pnpm 12.15.0** (the packageManager pin):
+
+```sh
+pnpm install --frozen-lockfile
+pnpm run init:local
+pnpm run types:bindings
+pnpm run typecheck
+pnpm run build:worker
+pnpm run build:jobs
+pnpm test
+```
+
+The owner requested pnpm after step 5. [The migration review](../Root-of-Cambodia-Pnpm-Workspace-Review.md) records the workspace setup, exact dependency preservation and fresh pnpm evidence. The earlier npm choice is superseded for the active application; the historical proof below stays independent.
+
+The following table records the earlier isolated proof; it remains historical evidence:
+
+| Check | Observed result |
+| --- | --- |
+| TypeScript and Next.js production build | Passed |
+| OpenNext Cloudflare Worker bundle | Passed |
+| D1/Drizzle reservation tests | 18 passed after schema review |
+| Better Auth native D1 flow | Passed with local email capture |
+| Built Worker request checks | 9 passed under local workerd |
+
+The proof covers last-room contention, rollback, repeated actions, verified sessions, owner isolation, password reset, and authentication throttling. Live email, remote deployment, media/jobs, maps, performance, and recovery remain unverified.
+
+Overall architecture is approved: one modular Next.js application, one background Worker, shared business rules and one initial D1 database per environment. The [architecture record](../Root-of-Cambodia-Architecture.md) separates approved direction, current implementation and open decisions.
+
+## Planning documents
+
+- [Product plan](../Root-of-Cambodia-Product-Plan.md)
+- [Approved architecture and next decisions](../Root-of-Cambodia-Architecture.md)
+- [Approved booking/database design](../Root-of-Cambodia-Booking-Database-Design.md)
+- [Architecture implementation plan](../Root-of-Cambodia-Implementation-Plan.md)
+- [Approved step 4 workspace plan](../Root-of-Cambodia-Workspace-Plan.md)
+- [Private property information](../Root-of-Cambodia-Property-Information-Review.md)
+- [Private pricing and availability](../Root-of-Cambodia-Pricing-Availability-Review.md)
+- [Private room-type setup](../Root-of-Cambodia-Room-Types-Review.md)
+- [Owner access and private property drafts](../Root-of-Cambodia-Owner-Drafts-Review.md)
+- [pnpm workspace and verification](../Root-of-Cambodia-Pnpm-Workspace-Review.md)
+- [Diagnostics and delivery contracts](../Root-of-Cambodia-Diagnostics-Delivery-Review.md)
+- [Workspace/jobs verification](../Root-of-Cambodia-Workspace-Review.md)
+- [Service and persistence boundaries](../Root-of-Cambodia-Service-Boundaries.md)
+- [Database safeguards and upgrade verification](../Root-of-Cambodia-Database-Safeguards.md)
+- [Completed Vitest alignment and verification](../Root-of-Cambodia-Vitest-Alignment.md)
+- [Technical plan](../Root-of-Cambodia-Technical-Plan.md)
+- [Initial build specification](../Root-of-Cambodia-Build-Specification.md)
+- [Foundation check and evidence limits](../Root-of-Cambodia-Foundation-Check.md)
+- [Schema and booking-rule review](../Root-of-Cambodia-Schema-Review.md)
+- [Claude screen mockup brief and copy-ready prompts](../Claude-Mockup-Brief.md)
+
+## Selected direction
+
+- Next.js full stack, React, and TypeScript.
+- shadcn/ui and Tailwind CSS for the planned interface.
+- Better Auth with email verification; no phone verification.
+- Cloudflare Workers with an explicitly tested OpenNext adapter.
+- Cloudflare D1 with Drizzle; atomic reservation operations use D1-specific SQL.
+- R2/Images and Queues/Cron are planned integrations.
+
+## Run the isolated proof
+
+The [foundation fixture](foundation-README.md) is a disposable technical check, not the application or a production starter. It requires no provider account or live credentials. Use Node 24.22.1 and npm 11.9.0 for the recorded version tuple.
+
+```sh
+cd proofs/foundation
+npm ci
+npm run init:local
+npm run types:bindings
+npm run typecheck
+npm run test:d1
+npm run test:auth
+npm run build:worker
+npm run test:worker
+```
+
+The fixture captures email locally and uses synthetic data. Local secrets, runtime databases, installed dependencies, and generated build output are excluded from Git. Do not deploy the local capture adapter.
+
+## Next work
+
+The application architecture and detailed booking/database direction are approved. Implementation-plan steps 1-5 are complete locally. Owner access/property drafts, room types, private pricing/availability and property information are merged through PR #14. Private draft photos are reviewed in PR #15. Map/contact/arrival information, publication requirements/review and guest/owner booking screens remain step 6 work. Arrival remains blocked pending its policy decision. Complete separately authorized staging and configured-service checks before a pilot; operational decisions remain in the build specification.

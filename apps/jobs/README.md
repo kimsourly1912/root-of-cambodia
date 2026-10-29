@@ -1,17 +1,17 @@
-# Root of Cambodia local jobs Worker
+# Local jobs Worker
 
-The scheduled and queue entrypoints import the same private backend operations as the website. They contain no booking lifecycle SQL. Configuration is local-only; no Cron schedule or remote resources were provisioned.
+**Status:** current package boundary; evidence in canonical status.
 
-From the repository root, run pnpm install --frozen-lockfile, pnpm run init:local, pnpm run types:bindings, pnpm run build:jobs and pnpm test. preview:jobs and preview:worker both use root .wrangler/state and the same local D1 database ID. Only init:local owns migration application; neither Worker migrates on requests.
+**Responsible role:** package maintainer (responsibility, not an assigned person).
 
-The scheduled handler runs shared maintenance (bounded expiry and outbox publication). The queue handler calls shared consume. Success, duplicates, invalid messages and durably stored backoff are acknowledged; uncertain database failures request a retry with the same outbox ID. Superseded workers cannot report delivery completion or reschedule a newer lease. The adapter logs stable safe result codes and hashed notification references, never raw recipient-bearing IDs, tokens or errors. Scheduled exceptions are replaced with fixed safe messages before rethrowing. Due work and expired leases remain sweepable. Detailed live retry/dead-letter operations remain a later decision.
+**Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
 
-The scheduled handler also calls bounded removed-photo cleanup through its `MEDIA` R2 binding, sharing the same local bucket as web. Removal tombstones retain both derived paths; failures and attempts are counted and reswept, including after successful deletion to catch late upload writes. No abandoned-upload expiry or retention/erasure policy is inferred. No live Cron schedule is configured; physical cleanup waits for maintenance. See the [photo review](../../docs/Root-of-Cambodia-Property-Photos-Review.md).
+**Sources:** [apps/jobs/package.json](package.json), [apps/jobs/src/index.ts](src/index.ts), [apps/jobs/src/runtime.ts](src/runtime.ts).
 
-The provider inserts into local_notification, created by local initialization. It sends no real email. Its stable key deduplicates capture after lost acknowledgements. A missing table is treated as provider failure by the existing durable retry path. Outside APP_MODE=local, handlers fail before any acknowledgement or business writes. Do not deploy this capture configuration as production.
+Scheduled and queue adapters call shared backend expiry/delivery operations. Scheduled maintenance also sweeps removed-photo tombstones through MEDIA. Do not duplicate lifecycle SQL in this app.
 
-build:jobs uses Wrangler deploy with --dry-run solely to create dist output; it performs no deployment. The built jobs journey loads that output through Wrangler's prebuiltWorkerDir harness. Other jobs tests exercise the actual exported handlers with controlled failures in native workerd/D1.
+[Notifications](../../docs/features/notifications.md) defines acknowledgements, retries, leases and provider-acceptance semantics. [Owner supply](../../docs/features/owner-supply.md) defines cleanup limits. Local capture sends no real email; outside local mode jobs fails before business writes/acknowledgements. No live Cron schedule is configured.
 
-See the [workspace review](../../docs/Root-of-Cambodia-Workspace-Review.md) for evidence and unresolved release gates.
+Use root [setup](../../docs/development/setup.md) and [testing](../../docs/development/testing.md). Both web and jobs builds are required before the full suite. The jobs build is Wrangler dry-run output; it does not deploy. Previews share root local state; init:local owns migration application.
 
-Provider acceptance is not inbox delivery. Explicit outcomes and the legacy delivered-field interpretation are documented in the [diagnostics/delivery review](../../docs/Root-of-Cambodia-Diagnostics-Delivery-Review.md); inboxDelivery remains unknown.
+See [status](../../docs/status.md) and [release/recovery](../../docs/operations/release-and-recovery.md); these local adapters are not deployable production configuration.
