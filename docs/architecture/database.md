@@ -4,7 +4,7 @@
 
 **Responsible role:** backend maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026; candidate based on [b653b57](https://github.com/kimsourly1912/root-of-cambodia/commit/b653b57b711e0d03aebb8e119f9df10e0c31f8b3), with the private location/contact slice verified on feat/private-property-logistics.
+**Last source verification:** 29 October 2026; publication candidate based on merged main [484989d](https://github.com/kimsourly1912/root-of-cambodia/commit/484989df749689f797aa125ccf590e7eba0b0cb6).
 
 **Sources:** [packages/backend/migrations/](../../packages/backend/migrations), [packages/backend/src/operations.ts](../../packages/backend/src/operations.ts), [packages/backend/src/booking-persistence.ts](../../packages/backend/src/booking-persistence.ts), [packages/backend/src/schema.ts](../../packages/backend/src/schema.ts), [tests/migrations.test.ts](../../tests/migrations.test.ts), [tests/safeguards.test.ts](../../tests/safeguards.test.ts).
 
@@ -24,6 +24,8 @@
 | [0008](../../packages/backend/migrations/0008_property_information.sql) | Versioned information extension and attributable events |
 | [0009](../../packages/backend/migrations/0009_property_media.sql) | Media journal, gallery versions, removal tombstones and events |
 | [0010](../../packages/backend/migrations/0010_property_logistics.sql) | Independently versioned private coordinates/contact/arrival instructions and attributable events |
+
+| [0011](../../packages/backend/migrations/0011_property_publication_review.sql) | Single reviewer configuration, immutable review requests/events and separately sealed owner/reviewer command receipts |
 
 Add a new ordered migration; do not rewrite an applied one. Verify both fresh application and populated upgrades using the configured migration loader/tracker. A failed preflight needs a reviewed repair plan, never deletion of a populated database to force success. The proof schema is independent and is not an application upgrade path.
 
@@ -45,13 +47,15 @@ Private property information, location/contact/arrival details and media/gallery
 - Operation, actual writes, required history/outbox, receipt and final assertion share one D1 batch. Zero-row writes cannot leave success receipts or unconditional side effects. Failed required history/outbox work aborts the save.
 - Submitted snapshots and history are immutable/retained by database guards. Current catalog/rate edits cannot rewrite submitted prices or accepted policies.
 
-The named boundaries include [booking-persistence.ts](../../packages/backend/src/booking-persistence.ts), [inventory-persistence.ts](../../packages/backend/src/inventory-persistence.ts), draft/room/calendar/information/media persistence. Do not expose arbitrary CRUD that independently mutates reservation state.
+The named boundaries include [booking-persistence.ts](../../packages/backend/src/booking-persistence.ts), [inventory-persistence.ts](../../packages/backend/src/inventory-persistence.ts), draft/room/calendar/information/logistics/media persistence and [publication-persistence.ts](../../packages/backend/src/publication-persistence.ts). Do not expose arbitrary CRUD that independently mutates reservation state.
 
 Constraints protect relationships/numbers; bounded triggers validate transitions and perform defined allocation/release/history/outbox effects. They never call external providers or decide unresolved policies. BEFORE triggers validate/reject, while critical effects use reviewed AFTER triggers; correctness must not depend on unspecified ordering between triggers. Read SQL and its regressions together; [0002 ADR](decisions/0002-atomic-booking-operations.md) preserves the tradeoff.
 
 ## Replay and uncertain outcomes
 
 [operations.ts](../../packages/backend/src/operations.ts) scopes a key to a principal (`user:<id>` or system), with role and normalized operation payload in the fingerprint. The same key with another kind/payload conflicts; it is not a separate key namespace per endpoint. Keys accept 1–128 ASCII letters/digits/colon/underscore/hyphen.
+
+Publication review uses a separate actor/key namespace because the preserved booking operation role vocabulary excludes reviewer. See the [review contract](../features/publication-review.md#state-snapshot-and-atomicity).
 
 Successful receipts are stored atomically. Services recheck access before replay. A matching receipt describes that operation's original result, even after a later cancellation or catalog change. Refresh the current authorized record afterward. Quote preparation is deferred until no matching receipt exists.
 

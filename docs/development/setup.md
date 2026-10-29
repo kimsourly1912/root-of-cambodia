@@ -77,3 +77,22 @@ Runtime auth deliberately rejects nonlocal mode/nonloopback AUTH_URL; jobs rejec
 Stop a preview occupying port 8787 before browser tests; Playwright refuses to reuse an existing server. A conflicting-state error requires preserving/reconciling both copies. A missing Worker bundle requires the appropriate build, not a new test-only entrypoint. Record actual OS/browser overrides and limitations in verification evidence.
 
 Live resources/providers, migration execution and release are governed by [release/recovery](../operations/release-and-recovery.md), not these local instructions.
+
+## Local pilot reviewer
+
+After init:local and creating/email-verifying the deliberately selected local app account, provision the [single pilot reviewer](../features/publication-review.md) from the repository root:
+
+```sh
+pnpm reviewer:local --user-id <verified-app-user-id>
+```
+
+The trusted local command selects no account automatically, rejects unknown/unverified accounts and always uses remoteBindings:false with root .wrangler/state. It is not a web endpoint or remote migration command. Inspect account IDs privately in your local database; a GitHub identity is not an app user ID.
+
+Terms default to unset, which blocks approval. Only after the owner approves actual booking terms and their version, configure that identifier explicitly:
+
+```sh
+pnpm reviewer:local --user-id <verified-app-user-id> --terms-version <approved-version>
+pnpm reviewer:local --user-id <verified-app-user-id> --clear-terms
+```
+
+Omitting the terms option preserves an existing configured version. --clear-terms revokes it; the two terms options are mutually exclusive. The command assigns one reviewer and increments configuration revisions for in-flight fencing. Synthetic test version IDs are not approved legal text. Configuration changes do not rewrite earlier approved requests or booking snapshots. Nonlocal resources/operators and public launch remain separately gated.

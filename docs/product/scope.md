@@ -28,7 +28,7 @@ Accommodation is the first complete booking journey: hotels, resorts, guesthouse
 | Verification meaning | Inbox control, not legal identity or proof of arrival; any phone field is informational |
 | Owner access | Owner accounts initially; staff invitations deferred |
 | Owner operations | Owners maintain information, rooms, prices, availability and bookings |
-| Publication | Verified owner email and first-property review before publication |
+| Publication | Verified owner email and first-property review before publication; project owner is the sole pilot listing reviewer (29 October 2026). Narrow procedure in [pilot review](../features/publication-review.md); required-fields policy remains open |
 | Ongoing edits | Owners update information, with moderation/reports available; additional-property and high-impact-edit procedures remain open |
 | Response deadline | Accept or decline within 12 hours of submission, otherwise expire; acceptance at/after deadline is rejected even before a sweep runs |
 | Lead time | Submit at least 24 hours before the property's scheduled check-in |

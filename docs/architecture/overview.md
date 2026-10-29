@@ -4,7 +4,7 @@
 
 **Responsible role:** technical maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026; candidate based on [b653b57](https://github.com/kimsourly1912/root-of-cambodia/commit/b653b57b711e0d03aebb8e119f9df10e0c31f8b3), with the private location/contact slice verified on feat/private-property-logistics.
+**Last source verification:** 29 October 2026; publication candidate based on merged main [484989d](https://github.com/kimsourly1912/root-of-cambodia/commit/484989df749689f797aa125ccf590e7eba0b0cb6).
 
 **Sources:** [apps/web/src/runtime.ts](../../apps/web/src/runtime.ts), [apps/jobs/src/index.ts](../../apps/jobs/src/index.ts), [packages/backend/package.json](../../packages/backend/package.json), [tests/workspace.test.ts](../../tests/workspace.test.ts).
 
@@ -44,11 +44,12 @@ Package exports currently expose low-level modules too. These are conceptual bou
 | Rooms/calendar | `room-types.ts`, `room-queries.ts`, `room-persistence.ts`; `calendar.ts`, `calendar-dates.ts`, `calendar-queries.ts`, `calendar-persistence.ts` |
 | Property information/media | `property-information*.ts`; `media.ts`, `media-queries.ts`, `media-persistence.ts` |
 | Private location/contact/arrival | property-logistics.ts, property-logistics-queries.ts, property-logistics-persistence.ts; no public disclosure or arrival action |
+| Pilot publication review | publication.ts, publication-queries.ts, publication-persistence.ts; configured single reviewer and explicit terms gate |
 | Booking/quotes | `bookings.ts`, `quotes.ts`, `quote-queries.ts`, `booking-persistence.ts` |
 | Inventory | `inventory.ts`, `inventory-persistence.ts` |
 | Delivery/diagnostics | `jobs.ts`, `outbox.ts`, `diagnostics.ts`, `errors.ts` |
 
-Use straightforward typed functions and existing patterns. Do not introduce generic table repositories, services, a new framework/ORM or feature folders just to match a proposed tree. Future discovery, publication/support and payments need separately approved contracts; do not scaffold speculative modules.
+Use straightforward typed functions and existing patterns. Do not introduce generic table repositories, services, a new framework/ORM or feature folders just to match a proposed tree. Future discovery, broader support/admin and payments need separately approved contracts; do not scaffold speculative modules.
 
 ## Consistency, growth and operations
 
