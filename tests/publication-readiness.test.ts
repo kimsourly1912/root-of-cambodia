@@ -179,9 +179,9 @@ test("every required content field blocks submission independently while optiona
       if (missing === "description" || missing === "address")
         await db
           .prepare(
-            `UPDATE property_information SET ${missing === "description" ? "description_text" : "address_text"}='  ',revision=revision+1 WHERE property_id=?`,
+            `UPDATE property_information SET ${missing === "description" ? "description_text" : "address_text"}=?,revision=revision+1 WHERE property_id=?`,
           )
-          .bind(id)
+          .bind(" \t\n\u00a0\u2003\ufeff", id)
           .run();
       else if (missing === "contact")
         await db

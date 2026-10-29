@@ -10,16 +10,20 @@ export const calendarReadinessSQL = `EXISTS(
  AND n.night>=date(unixepoch()+86400,'unixepoch','+7 hours')
  AND unixepoch(n.night||'T'||p.checkin_time||':00+07:00')>=unixepoch()+86400
 )`;
+// Match the whitespace trimmed by the existing input normalizers, including
+// line breaks and Unicode spaces in retained/imported values. SQL trim() alone
+// would treat a tab-only or nonbreaking-space-only description as content.
+const nonblank = (field: string) =>
+  `length(trim(coalesce(${field},''),char(9,10,11,12,13,32,160,5760,8192,8193,8194,8195,8196,8197,8198,8199,8200,8201,8202,8232,8233,8239,8287,12288,65279)))>0`;
 const requirements = {
-  basics: `u.emailVerified=1 AND length(trim(o.display_name))>0
-   AND length(trim(l.name_km))>0 AND length(trim(l.province))>0
-   AND length(trim(p.policy_text))>0
+  basics: `u.emailVerified=1 AND ${nonblank("o.display_name")}
+   AND ${nonblank("l.name_km")} AND ${nonblank("l.province")}
+   AND ${nonblank("p.policy_text")}
    AND (p.checkin_time GLOB '[01][0-9]:[0-5][0-9]' OR p.checkin_time GLOB '2[0-3]:[0-5][0-9]')
    AND (p.checkout_time GLOB '[01][0-9]:[0-5][0-9]' OR p.checkout_time GLOB '2[0-3]:[0-5][0-9]')`,
-  description: "length(trim(coalesce(i.description_text,'')))>0",
-  address: "length(trim(coalesce(i.address_text,'')))>0",
-  contact:
-    "length(trim(coalesce(d.contact_phone,'')))>0 OR length(trim(coalesce(d.contact_email,'')))>0",
+  description: nonblank("i.description_text"),
+  address: nonblank("i.address_text"),
+  contact: `${nonblank("d.contact_phone")} OR ${nonblank("d.contact_email")}`,
   photos: `EXISTS(SELECT 1 FROM json_each(coalesce(g.ids_json,'[]')) j
    JOIN property_media m ON m.id=j.value AND m.property_id=p.id WHERE m.state='ready')`,
   uploads: `NOT EXISTS(SELECT 1 FROM json_each(coalesce(g.ids_json,'[]')) j
