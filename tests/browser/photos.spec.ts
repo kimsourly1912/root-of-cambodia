@@ -160,7 +160,7 @@ test("owner uploads, retries a lost response, reorders, handles stale tabs and r
   expect((await page.request.get(`${base}/${uploadId}`)).status()).toBe(404);
   await page.reload();
   await expect(page.getByRole("img")).toHaveCount(1);
-  const anotherContext = await browser.newContext();
+  const anotherContext = await browser.newContext({ baseURL: origin });
   try {
     await anotherContext.setExtraHTTPHeaders({
       "X-Test-Client": "photos-other-" + info.project.name,
