@@ -427,7 +427,7 @@ test("current state, ownership, owner verification and a corrupt confirmation ha
 });
 
 test(
-  "search escapes literal wildcards, supports Khmer/English, validates bounds and paginates public identifiers",
+  "search treats wildcards literally, supports Khmer/English, validates bounds and paginates public identifiers",
   { timeout: 30000 },
   async () => {
     const p = await database();

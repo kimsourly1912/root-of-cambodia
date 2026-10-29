@@ -53,7 +53,6 @@ export function browseInput(input: Record<string, unknown>): BrowseInput {
     throw new DomainError("invalid_request", 422);
   return { q, province, cursor };
 }
-const pattern = (value: string) => "%" + value.replace(/[!%_]/g, "!$&") + "%";
 async function stillEligible(db: D1Database, rows: PublicRow[]) {
   if (!rows.length) return new Set<string>();
   const current = await db
@@ -73,13 +72,15 @@ export async function browseStays(
   raw: Record<string, unknown> = {},
 ) {
   const input = browseInput(raw);
+  // instr is literal and avoids D1's 50-byte LIKE/GLOB pattern limit. SQLite
+  // lower folds ASCII English while preserving Khmer and wildcard characters.
   const rows = (
     await db
       .prepare(
         projectionSQL +
           ` AND p.id>?
    AND (?='' OR json_extract(r.snapshot_json,'$.property.province')=? COLLATE NOCASE)
-   AND (?='' OR json_extract(r.snapshot_json,'$.property.nameKm') LIKE ? ESCAPE '!' OR json_extract(r.snapshot_json,'$.property.nameEn') LIKE ? ESCAPE '!')
+   AND (?='' OR instr(lower(json_extract(r.snapshot_json,'$.property.nameKm')),lower(?))>0 OR instr(lower(json_extract(r.snapshot_json,'$.property.nameEn')),lower(?))>0)
    ORDER BY p.id LIMIT 21`,
       )
       .bind(
@@ -87,8 +88,8 @@ export async function browseStays(
         input.province,
         input.province,
         input.q,
-        pattern(input.q),
-        pattern(input.q),
+        input.q,
+        input.q,
       )
       .all<PublicRow>()
   ).results;

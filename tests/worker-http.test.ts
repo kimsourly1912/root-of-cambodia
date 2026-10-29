@@ -565,6 +565,16 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     const listResponse=await server.fetch(baseURL+"/api/stays?q=review&province=kampot");
     assert.equal(listResponse.status,200);
     assert.deepEqual((await listResponse.json() as {items:{id:string}[]}).items.map((item)=>item.id),[draft.id]);
+    // Real D1 limits LIKE/GLOB patterns to 50 bytes. Valid 100-character
+    // searches, including multibyte Khmer, must still return a safe empty page.
+    for (const q of ["Missing-" + "x".repeat(92), "ផ្ទះ".repeat(25)]) {
+      const emptySearch = "/stays?" + new URLSearchParams({ q, province: "" });
+      const emptyAPI = await server.fetch(baseURL + "/api" + emptySearch);
+      assert.equal(emptyAPI.status, 200);
+      assert.deepEqual((await emptyAPI.json() as {items:unknown[]}).items, []);
+      const emptyHTML = await (await server.fetch(baseURL + emptySearch)).text();
+      assert.ok(emptyHTML.includes("No stays found"));
+    }
     assert.equal((await server.fetch(baseURL+"/api/stays?q=a&q=b")).status,422);
     assert.equal((await server.fetch(baseURL+"/api/stays?ownerId="+owner.id)).status,422);
     assert.equal((await post("/api/stays",{})).status,405);
