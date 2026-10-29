@@ -27,7 +27,10 @@
     "./calendar": "./src/calendar.ts",
     "./calendar-dates": "./src/calendar-dates.ts",
     "./calendar-queries": "./src/calendar-queries.ts",
-    "./calendar-persistence": "./src/calendar-persistence.ts"
+    "./calendar-persistence": "./src/calendar-persistence.ts",
+    "./property-information": "./src/property-information.ts",
+    "./property-information-queries": "./src/property-information-queries.ts",
+    "./property-information-persistence": "./src/property-information-persistence.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

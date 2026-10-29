@@ -1,7 +1,7 @@
 # Root of Cambodia — Architecture Implementation Plan
 
 Date: 28 October 2026; progress updated 29 October 2026
-Status: Step 6 is in progress with verified owner access, private property drafts, room types and dated pricing/availability; see the [pricing/availability review](Root-of-Cambodia-Pricing-Availability-Review.md) and [room-type review](Root-of-Cambodia-Room-Types-Review.md); see the [owner-draft review](Root-of-Cambodia-Owner-Drafts-Review.md). Steps 1 (Vitest alignment), 2 (database safeguards), 3 (service/persistence separation), 4 (workspace/jobs boundaries) and 5 (diagnostics/delivery contracts) are completed locally; see the [alignment report](Root-of-Cambodia-Vitest-Alignment.md), [safeguards review](Root-of-Cambodia-Database-Safeguards.md) and [service-boundary review](Root-of-Cambodia-Service-Boundaries.md). Remaining steps are delivery work under the approved application and booking/database designs. The workspace/tooling choice was subsequently approved and implemented; see the [workspace review](Root-of-Cambodia-Workspace-Review.md).
+Status: Steps 1–5 are completed locally. Step 6 is in progress with owner access, private property/room setup, pricing/availability and property information. The [information review](Root-of-Cambodia-Property-Information-Review.md) records current evidence and remaining scope. Earlier-step decisions and verification remain below. Staging and deployment remain separately authorized.
 
 ## 1. Where we are
 
@@ -69,6 +69,8 @@ Bring material deviations back for agreement: a new database/framework, a differ
 Open product decisions remain open: arrival/no-show/late cancellation, infants/age bands, physical-room continuity, external booking details, audited admin support, suspension, provider/domain, reminders, retention and recovery targets. Do not silently encode these while refactoring.
 
 ## 6. Current evidence
+
+The next information slice is based on still-open PR #13 and reviewed separately. It adds private descriptions, addresses and ordered facility lists with their own versioned atomic save/history, without changing booking-setting revisions. Fresh local checks pass 114 Vitest tests and ten desktop/mobile browser checks, frozen installation, populated/fresh migrations, bindings, strict types and both builds. See the [property-information review](Root-of-Cambodia-Property-Information-Review.md). Photos/media, map/contact/arrival information, publication requirements/review and booking screens remain; no merge or deployment is implied.
 
 PR #12 was subsequently merged with explicit authorization. The pricing/availability slice starts from updated main in a separate branch. It adds seven-night views, whole-cent USD prices, total/blocked unit setup, read-only reserved counts and one atomic versioned save for selected dates. Public draft gating and booking snapshots/allocations are preserved, including when a reservation arrives during editing. The [pricing/availability review](Root-of-Cambodia-Pricing-Availability-Review.md) records 105 Vitest tests, eight browser checks and local verification limits. Media, publication readiness/review and booking screens remain; step 7/staging is still separate.
 

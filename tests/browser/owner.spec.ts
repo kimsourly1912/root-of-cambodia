@@ -653,3 +653,216 @@ test("owner sets weekly prices and units with exact cents, atomic retry and stal
     page.getByRole("heading", { name: "Property unavailable" }),
   ).toBeVisible();
 });
+
+test("owner saves private descriptions, addresses and facilities with safe retry and stale-edit protection", async ({
+  page,
+}, info) => {
+  await register(page, `information-${info.project.name}@example.invalid`);
+  const headers = {
+    Origin: "http://127.0.0.1:8787",
+    "Idempotency-Key": "information-property",
+  };
+  const response = await page.request.post("/api/owner/properties", {
+    headers,
+    data: { ...fields, ownerName: "Local Owner" },
+  });
+  expect(response.status()).toBe(201);
+  const property = await response.json();
+  const base = `/owner/properties/${property.id}`,
+    api = "/api" + base + "/information";
+  const before = await (await page.request.get("/api" + base)).json();
+  expect((await (await page.request.get(api)).json()).revision).toBeNull();
+  await page.goto(base);
+  await page.getByRole("link", { name: "Information", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Property information", exact: true }),
+  ).toBeVisible();
+  const description = "ស្នាក់នៅជិតទន្លេ\nA quiet place to stay.";
+  const address = "ផ្លូវភូមិ\nKampot";
+  await page
+    .getByLabel("Property description", { exact: true })
+    .fill(description);
+  await page.getByLabel(/Property address/).fill(address);
+  await page
+    .getByLabel("Facilities — one per line", { exact: true })
+    .fill("Parking\n Wi-Fi in common areas \n");
+  let key = "",
+    body = "",
+    retryKey = "",
+    retryBody = "";
+  await page.route(
+    "**" + new URL(api, "http://127.0.0.1:8787").pathname,
+    async (route) => {
+      if (route.request().method() !== "PATCH") {
+        await route.continue();
+        return;
+      }
+      key = route.request().headers()["idempotency-key"];
+      body = route.request().postData() ?? "";
+      expect((await route.fetch()).status()).toBe(200);
+      await route.abort("failed");
+    },
+    { times: 1 },
+  );
+  await page
+    .getByRole("button", { name: "Save property information", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Retry same save" }),
+  ).toBeVisible();
+  await expect(page.getByLabel(/Property address/)).toBeDisabled();
+  await page.route(
+    "**" + api,
+    async (route) => {
+      retryKey = route.request().headers()["idempotency-key"];
+      retryBody = route.request().postData() ?? "";
+      await route.continue();
+    },
+    { times: 1 },
+  );
+  await page.getByRole("button", { name: "Retry same save" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "Property information saved.",
+  );
+  await expect(page.getByLabel(/Property address/)).toBeEnabled();
+  expect(retryKey).toBe(key);
+  expect(retryBody).toBe(body);
+  let saved = await page.request.get(api);
+  expect(saved.status()).toBe(200);
+  expect(saved.headers()["cache-control"]).toContain("no-store");
+  expect(await saved.json()).toEqual({
+    description,
+    address,
+    facilities: ["Parking", "Wi-Fi in common areas"],
+    revision: 1,
+  });
+  expect(await (await page.request.get("/api" + base)).json()).toEqual(before);
+  const url = page.url(),
+    stale = await page.context().newPage();
+  await stale.goto(url);
+  await page.getByLabel(/Property address/).fill("River lane, Kampot");
+  await page
+    .getByRole("button", { name: "Save property information", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText(
+    "Property information saved.",
+  );
+  await expect(page.getByLabel(/Property address/)).toBeEnabled();
+  await stale
+    .getByLabel("Property description", { exact: true })
+    .fill("Stale description");
+  await stale
+    .getByRole("button", { name: "Save property information", exact: true })
+    .click();
+  await expect(stale.locator("main").getByRole("alert")).toContainText(
+    "changed since you opened it",
+  );
+  await stale
+    .getByRole("button", { name: "Reload latest information" })
+    .click();
+  await expect(stale.getByLabel(/Property address/)).toHaveValue(
+    "River lane, Kampot",
+  );
+  await expect(
+    stale.getByLabel("Property description", { exact: true }),
+  ).toHaveValue(description);
+  await stale.close();
+  await page.reload();
+  await expect(page.getByLabel(/Property address/)).toHaveValue(
+    "River lane, Kampot",
+  );
+  await expect(
+    page.getByLabel("Facilities — one per line", { exact: true }),
+  ).toHaveValue("Parking\nWi-Fi in common areas");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBeTruthy();
+  await page.evaluate(() => document.fonts.ready);
+  await page.screenshot({
+    path: `/tmp/roc-information/${info.project.name}-information.png`,
+    fullPage: true,
+  });
+  await page
+    .getByLabel("Facilities — one per line", { exact: true })
+    .fill("Parking\nParking");
+  await page
+    .getByRole("button", { name: "Save property information", exact: true })
+    .click();
+  await expect(page.locator("main").getByRole("alert")).toContainText(
+    "different facilities",
+  );
+  await expect(page.getByRole("link", { name: "Sign in again" })).toHaveCount(
+    0,
+  );
+  expect((await (await page.request.get(api)).json()).revision).toBe(2);
+  expect(
+    (
+      await page.request.patch(api, {
+        headers: { ...headers, Origin: "https://untrusted.example.invalid" },
+        data: { description, address, facilities: [], revision: 2 },
+      })
+    ).status(),
+  ).toBe(403);
+  expect(
+    (
+      await page.request.patch(api, {
+        headers,
+        data: {
+          description,
+          address,
+          facilities: [],
+          revision: 2,
+          publication: "published",
+        },
+      })
+    ).status(),
+  ).toBe(422);
+  const second = await page.request.post("/api/owner/properties", {
+    headers: { ...headers, "Idempotency-Key": "information-second" },
+    data: { ...fields, ownerName: "Local Owner" },
+  });
+  const secondProperty = await second.json();
+  expect(
+    (
+      await (
+        await page.request.get(
+          `/api/owner/properties/${secondProperty.id}/information`,
+        )
+      ).json()
+    ).address,
+  ).toBe("");
+  await page.getByLabel("Property description", { exact: true }).fill("");
+  await page.getByLabel(/Property address/).fill("");
+  await page.getByLabel("Facilities — one per line", { exact: true }).fill("");
+  await page
+    .getByRole("button", { name: "Save property information", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText(
+    "Property information saved.",
+  );
+  await expect(page.getByLabel(/Property address/)).toBeEnabled();
+  expect(await (await page.request.get(api)).json()).toEqual({
+    description: "",
+    address: "",
+    facilities: [],
+    revision: 3,
+  });
+  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  await expect(page).toHaveURL(/\/sign-in$/);
+  await register(
+    page,
+    `information-other-${info.project.name}@example.invalid`,
+  );
+  expect((await page.request.get(api)).status()).toBe(404);
+  expect(
+    (
+      await page.request.patch(api, { headers, data: JSON.parse(body) })
+    ).status(),
+  ).toBe(404);
+  await page.goto(url);
+  await expect(
+    page.getByRole("heading", { name: "Property unavailable" }),
+  ).toBeVisible();
+});

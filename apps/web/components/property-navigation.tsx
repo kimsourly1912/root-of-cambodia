@@ -4,14 +4,18 @@ export function PropertyNavigation({
   active,
 }: {
   propertyId: string;
-  active: "details" | "rooms";
+  active: "details" | "rooms" | "information";
 }) {
   const base = `/owner/properties/${propertyId}`;
   return (
-    <nav aria-label="Property setup" className="mb-8 mt-6 flex gap-6 border-b">
+    <nav
+      aria-label="Property setup"
+      className="mb-8 mt-6 flex flex-wrap gap-x-6 gap-y-1 border-b"
+    >
       {[
         ["details", "Property details", base],
         ["rooms", "Room types", base + "/rooms"],
+        ["information", "Information", base + "/information"],
       ].map(([key, label, href]) => (
         <Link
           key={key}
