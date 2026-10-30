@@ -148,7 +148,7 @@ test("owner reviews external rooms, recovers a lost confirmation after reload an
     {roomRevision:1,nights:[{night,capacity:latest.capacity,blocked:latest.blocked,unitCents:3600,inventoryRevision:latest.inventoryRevision,rateRevision:latest.rateRevision}]},"patch");
   await page.getByRole("checkbox").check();
   await page.getByRole("button",{name:"Confirm external reservation",exact:true}).click();
-  await expect(page.getByRole("alert")).toContainText("saved price, stock, settings or your access changed");
+  await expect(page.locator("main").getByRole("alert")).toContainText("saved price, stock, settings or your access changed");
   await expect(page.getByRole("button",{name:"Confirm external reservation",exact:true})).toHaveCount(0);
   expect((await (await page.request.get(calendar)).json()).nights[0].reserved).toBe(0);
   await select();
