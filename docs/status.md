@@ -1,6 +1,6 @@
 # Current implementation and verification status
 
-**Status:** live read-only staging verified; no full pilot/production readiness established.
+**Status:** interactive Cloudflare fixture testing prepared; email and full pilot/production readiness remain deferred.
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
@@ -10,7 +10,38 @@
 
 This is the single current delivery/evidence page. Feature docs define contracts; archive reviews retain older results without becoming additional roadmaps.
 
-## Current handoff — read-only Cloudflare staging
+## Current handoff — interactive staging feature testing
+
+The owner requested implemented guest/owner/reviewer features on staging after
+approving Cloudflare-only setup and deferring email. The explicit staging-test
+mode admits private fictional fixture accounts through normal Better Auth and
+unchanged backend verification/ownership rules. Registration, account changes,
+verification and recovery remain disabled; no remote capture or email delivery.
+The [testing guide](https://staging.rootsofcambodia.com/testing) supplies role
+journeys; passwords are delivered separately outside git.
+
+Fixtures cover two published stays with original illustrations and 35-night
+calendars, one pending publication review, one empty draft and Pending/Confirmed
+guest requests. Normal services/APIs create the data, review acknowledgements and
+bookings; no clock, stock or transition rule is bypassed. Private adapters/SSR
+also require fixed fixture IDs. Images uses its free transformation allowance.
+Jobs, queue consumption, recurring expiry/cleanup and email remain undeployed.
+The [staging contract](operations/staging.md) records safeguards and limitations.
+
+Strict types and both Worker builds passed locally. The full suite passed
+**221 tests across 29 files**, including four focused staging built-Worker tests: real fictional-account sessions, publication/media/booking
+services, wrong-owner refusal, disabled mail endpoints, sign-out, idempotent seed
+preservation and absence of remote capture/delivery. Exact-source CI, remote population and live verification are pending for this
+candidate. Local matching Chromium remains unavailable after the earlier truncated
+download; matching-browser CI supplies separate browser evidence when complete.
+
+An optional Access organization creation was rejected by automatic review because
+it would change account-wide identity settings. No retry or Access resource was
+created; existing app authentication provides the narrower testing path.
+
+PR #35 holds these changes and remains unmerged. Production/apex are unchanged.
+
+## Historical handoff — initial read-only Cloudflare staging
 
 PR #33 (owner pause/resume) and #34 (offline corrections/fresh review) are merged.
 Main 40f7ffa553a14005f622aa5c846f0f9dc5e70f42 has tree

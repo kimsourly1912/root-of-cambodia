@@ -1,3 +1,4 @@
+import { requireStagingAccount } from "./staging-accounts";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { guestReturn } from "./return-path";
@@ -11,10 +12,11 @@ export async function ownerSession(next = "/owner") {
   const context = diagnostics("http");
   let result;
   try {
-    const { env, auth, readOnly } = await runtime();
+    const { env, auth, readOnly, fixtureTest } = await runtime();
     const session = readOnly ? null : await auth.api.getSession({ headers: await headers() });
     if (!session) result = null;
     else {
+      requireStagingAccount(session.user.id, fixtureTest);
       const actor = { id: session.user.id };
       await verified(env.DB, actor);
       result = { db: env.DB, actor };

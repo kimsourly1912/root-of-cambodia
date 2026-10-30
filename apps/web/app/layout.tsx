@@ -4,15 +4,15 @@ import { runtime } from "@/src/runtime";
 import "./globals.css";
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {
-  const { readOnly } = await runtime();
+  const { isStaging } = await runtime();
   return {
     title: { default: "Root of Cambodia", template: "%s · Root of Cambodia" },
     description: "Explore accommodation in Cambodia and manage your property.",
-    ...(readOnly ? { robots: { index: false, follow: false } } : {}),
+    ...(isStaging ? { robots: { index: false, follow: false } } : {}),
   };
 }
 export default async function Layout({ children }: { children: ReactNode }) {
-  const { readOnly } = await runtime();
+  const { readOnly, fixtureTest, isStaging } = await runtime();
   return (
     <html lang="en">
       <body>
@@ -23,7 +23,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
           Skip to content
         </a>
         <div className="border-b bg-secondary px-5 py-2 text-center text-xs text-secondary-foreground">
-          {readOnly
+          {fixtureTest ? "Staging test · Sample data only. Email is off." : readOnly
             ? "Staging preview · Browsing only. Accounts, bookings and email are unavailable."
             : "Local preview · Email delivery is not connected. Drafts stay private."}
         </div>
@@ -37,6 +37,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
               className="flex flex-wrap gap-5 text-sm font-medium text-primary"
             >
               <Link href="/stays">Explore stays</Link>
+              {fixtureTest && <Link href="/testing">Testing guide</Link>}
               {!readOnly && <>
                 <Link href="/bookings">My bookings</Link>
                 <Link href="/owner">Owner workspace</Link>
@@ -46,7 +47,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
         </header>
         {children}
         <footer className="mx-auto max-w-6xl px-5 py-10 text-xs text-muted-foreground sm:px-8">
-          Root of Cambodia · {readOnly ? "Staging preview" : "Local preview"} <span className="mx-2">/</span>{" "}
+          Root of Cambodia · {isStaging ? "Staging preview" : "Local preview"} <span className="mx-2">/</span>{" "}
           Payment at the property
         </footer>
       </body>

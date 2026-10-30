@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { runtime } from "@/src/runtime";
 export default async function Home() {
-  const { readOnly } = await runtime();
+  const { readOnly, fixtureTest } = await runtime();
   return (
     <main id="main" className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24">
       <div className="max-w-2xl">
@@ -30,7 +30,9 @@ export default async function Home() {
             <Link href="/owner">Open owner workspace →</Link>
           </Button>
           <Button asChild variant="outline" size="lg">
+            {fixtureTest ? <Link href="/testing">Start testing</Link> :
             <Link href="/sign-up">Create an account</Link>
+            }
           </Button></>}
         </div>
         {!readOnly && <div className="mt-14 grid gap-5 border-t pt-8 sm:grid-cols-3">

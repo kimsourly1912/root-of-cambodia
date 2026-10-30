@@ -1,3 +1,4 @@
+import { requireStagingAccount } from "@/src/staging-accounts";
 import { runtime } from "@/src/runtime";
 import { readReviewPreview } from "@root-of-cambodia/backend/publication";
 import { DomainError } from "@root-of-cambodia/backend/errors";
@@ -22,12 +23,13 @@ export async function GET(
     "X-Request-Id": context.correlationId,
   };
   try {
-    const { env, auth, readOnly } = await runtime();
+    const { env, auth, readOnly, fixtureTest } = await runtime();
     if (readOnly) throw new DomainError("unauthorized", 401);
     const session = await auth.api.getSession({
       headers: request.headers,
     });
     if (!session) throw new DomainError("unauthorized", 401);
+    requireStagingAccount(session.user.id, fixtureTest);
     const { id, photoId } = await params;
     const body = await readReviewPreview(
       env.DB,

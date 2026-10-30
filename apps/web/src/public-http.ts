@@ -15,7 +15,7 @@ export async function publicEndpoint(
   try {
     // Runtime admits local capture or the exact read-only staging origin.
     // Anonymous reads retain the existing public field/media allowlist.
-    const { env, readOnly } = await runtime();
+    const { env, isStaging } = await runtime();
     const data = await handle(env);
     const response = image
       ? new Response(data as BodyInit, {
@@ -27,7 +27,7 @@ export async function publicEndpoint(
         })
       : Response.json(data, { headers });
     context.completed();
-    if (readOnly) response.headers.set("X-Robots-Tag", "noindex, nofollow");
+    if (isStaging) response.headers.set("X-Robots-Tag", "noindex, nofollow");
     return response;
   } catch (error) {
     const failure = context.failure(error);

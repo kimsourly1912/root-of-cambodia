@@ -27,6 +27,7 @@ test("built staging Worker browses D1 but refuses auth, business writes and medi
   const server = createTestHarness({ workers: [{
     configPath: "apps/web/wrangler.jsonc",
     env: "staging",
+    vars: { APP_MODE: "staging-read-only" },
     secrets: { BETTER_AUTH_SECRET: randomBytes(32).toString("hex") },
   }] });
   try {
@@ -35,7 +36,9 @@ test("built staging Worker browses D1 but refuses auth, business writes and medi
     await worker.applyD1Migrations("DB"); // Isolated local harness only.
     const env = await worker.getEnv(), db = env.DB;
     assert.equal(env.APP_MODE, "staging-read-only");
-    assert.equal(env.IMAGES, undefined);
+    // The binding is available for interactive staging, but read-only mode
+    // must still refuse uploads before using it.
+    assert.ok(env.IMAGES);
     assert.equal("EMAIL" in env, false);
     const counts = async () => {
       const result: Record<string, number> = {};
@@ -115,3 +118,64 @@ test("built staging Worker browses D1 but refuses auth, business writes and medi
     assert.equal(capture.results.length, 0);
   } finally { await server.close(); }
 });
+
+test("interactive staging auth admits only bounded fixture logins and the exact origin", async () => {
+  const {stagingAuthAction,requireStagingAccount}=await import("../apps/web/src/staging-accounts");
+  const policy=runtimePolicy("staging-test",origin);
+  assert.deepEqual(policy,{readOnly:false,fixtureTest:true,localCapture:false,isStaging:true});
+  assert.throws(()=>runtimePolicy("staging-test",origin+".invalid"));
+  const request=(path:string,body:unknown,from=origin)=>new Request(origin+"/api/auth/"+path,{method:"POST",headers:{Origin:from,"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const login={email:"owner@roc-staging.invalid",password:"Synthetic-only-password-123"};
+  assert.equal(await stagingAuthAction(request("sign-in/email",login)),"signin");
+  for(const [path,body,from] of [
+    ["sign-in/email",login,"https://evil.invalid"],
+    ["sign-in/email",{...login,email:"customer@example.invalid"},origin],
+    ["sign-in/email",{...login,callbackURL:"https://evil.invalid"},origin],
+    ["sign-in/email",{...login,password:"x".repeat(3000)},origin],
+    ["sign-up/email",login,origin],["reset-password",login,origin],
+  ] as const) assert.equal(await stagingAuthAction(request(path,body,from)),null);
+  assert.equal(await stagingAuthAction(new Request(origin+"/api/auth/get-session")),"session");
+  assert.equal(await stagingAuthAction(request("sign-out",{})),"signout");
+  requireStagingAccount("staging-guest-v1",true);
+  assert.throws(()=>requireStagingAccount("unrelated-user",true));
+  requireStagingAccount("local-user",false);
+});
+
+test("interactive staging signs in fictional users and exercises real publication, media and booking services", async () => {
+  const {seedStagingAccounts,seedStagingProperties}=await import("../scripts/staging-fixtures");
+  const {STAGING_ACCOUNTS}=await import("../apps/web/src/staging-accounts");
+  const server=createTestHarness({workers:[{configPath:"apps/web/wrangler.jsonc",env:"staging",secrets:{BETTER_AUTH_SECRET:randomBytes(32).toString("hex")}}]});
+  try {
+    await server.listen();const worker=server.getWorker<CloudflareEnv>();await worker.applyD1Migrations("DB");const env=await worker.getEnv(),db=env.DB;
+    const credentials=STAGING_ACCOUNTS.map(a=>({id:a.id,password:"Synthetic-test-only-password-"+a.role}));
+    await seedStagingAccounts(db,credentials);
+    const seed=await seedStagingProperties({...env,IMAGES:env.IMAGES!},process.cwd());
+    assert.equal(seed.properties.filter(p=>p.state==="published").length,2);
+    assert.equal(seed.bookings.length,2);
+    const call=(path:string,body?:unknown,cookie?:string,key?:string)=>server.fetch(baseURL+path,{method:body===undefined?"GET":"POST",headers:{Origin:origin,"Content-Type":"application/json",...(cookie?{Cookie:cookie}:{}),...(key?{"Idempotency-Key":key}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});
+    const cookies:string[]=[];
+    for(const [i,account] of STAGING_ACCOUNTS.entries()) {
+      const login=await call("/api/auth/sign-in/email",{email:account.email,password:credentials[i].password});
+      assert.equal(login.status,200,account.role);
+      const set=login.headers.getSetCookie();assert.ok(set.some(c=>/Secure/i.test(c)));assert.ok(set.some(c=>/HttpOnly/i.test(c)));
+      cookies.push(set.map(c=>c.split(";")[0]).join("; "));
+      const session=await call("/api/auth/get-session",undefined,cookies[i]);assert.equal((await session.json() as {user:{id:string}}).user.id,account.id);
+    }
+    const properties=await call("/api/owner/properties",undefined,cookies[0]);assert.equal(properties.status,200);
+    assert.equal((await properties.json() as {items:unknown[]}).items.length,4);
+    assert.equal((await call("/api/owner/properties/"+seed.properties[0].id,undefined,cookies[1])).status,404);
+    const queue=await call("/api/property-reviews",undefined,cookies[2]);assert.equal(queue.status,200);assert.equal((await queue.json() as {items:unknown[]}).items.length,1);
+    const bookings=await call("/api/guest/bookings",undefined,cookies[1]);assert.equal(bookings.status,200);assert.equal((await bookings.json() as {items:unknown[]}).items.length,2);
+    const catalog=await call("/api/stays");assert.equal((await catalog.json() as {items:unknown[]}).items.length,2);
+    const guide=await server.fetch(baseURL+"/testing");assert.ok((await guide.text()).includes("Try the features"));
+    for(const path of ["sign-up/email","request-password-reset","send-verification-email","update-user"]) assert.equal((await call("/api/auth/"+path,{},cookies[0])).status,503);
+    // Idempotent bootstrap preserves existing properties, media and reservations.
+    await seedStagingAccounts(db,credentials);await seedStagingProperties({...env,IMAGES:env.IMAGES!},process.cwd());
+    assert.equal((await db.prepare("SELECT count(*) n FROM property").first<{n:number}>())!.n,4);
+    assert.equal((await db.prepare("SELECT count(*) n FROM booking").first<{n:number}>())!.n,2);
+    assert.equal((await db.prepare("SELECT count(*) n FROM delivery_attempt").first<{n:number}>())!.n,0);
+    assert.equal((await db.prepare("SELECT name FROM sqlite_master WHERE name IN ('local_email','local_notification')").all()).results.length,0);
+    const out=await call("/api/auth/sign-out",{},cookies[0]);assert.equal(out.status,200);
+    assert.equal(await (await call("/api/auth/get-session",undefined,cookies[0])).json(),null);
+  } finally {await server.close();}
+},60000);

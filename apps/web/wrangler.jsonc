@@ -25,7 +25,7 @@
   "observability": {
     "enabled": true,
   },
-  // Staging is explicitly read-only while Email Sending is deferred.
+  // Staging admits only fictional seeded accounts while email is deferred.
   "env": {
     "staging": {
       "account_id": "dcfd514b7e29898cd93e1bbb17b1aa22",
@@ -34,7 +34,7 @@
       "preview_urls": false,
       "routes": [{ "pattern": "staging.rootsofcambodia.com", "custom_domain": true }],
       "vars": {
-        "APP_MODE": "staging-read-only",
+        "APP_MODE": "staging-test",
         "AUTH_URL": "https://staging.rootsofcambodia.com",
       },
       "d1_databases": [{
@@ -44,6 +44,7 @@
         "migrations_dir": "../../packages/backend/migrations",
       }],
       "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "roc-media-staging", "remote": false }],
+      "images": { "binding": "IMAGES", "remote": false },
     },
   },
 }

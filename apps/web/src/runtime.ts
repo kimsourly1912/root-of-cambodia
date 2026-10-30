@@ -3,7 +3,7 @@ import { makeAuth } from "@root-of-cambodia/backend/auth";
 import { runtimePolicy } from "./runtime-policy";
 export async function runtime() {
   const { env } = await getCloudflareContext({ async: true });
-  const { readOnly } = runtimePolicy(env.APP_MODE, env.AUTH_URL);
+  const policy = runtimePolicy(env.APP_MODE, env.AUTH_URL);
   const auth = makeAuth(env.DB, {
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.AUTH_URL,
@@ -11,7 +11,7 @@ export async function runtime() {
       send: async (message) => {
         // Defense in depth: staged auth routes refuse activity before the
         // handler, and no live URL/token is ever stored as captured email.
-        if (readOnly) throw new Error("Email delivery is unavailable");
+        if (!policy.localCapture) throw new Error("Email delivery is unavailable");
         await env.DB.prepare(
           "INSERT INTO local_email(id,recipient,kind,url) VALUES (?,?,?,?)",
         )
@@ -25,5 +25,5 @@ export async function runtime() {
       },
     },
   });
-  return { env, auth, readOnly };
+  return { env, auth, ...policy };
 }

@@ -5,11 +5,15 @@ export function runtimePolicy(mode: string, authURL: string) {
   if (
     mode === "local" &&
     ["http://127.0.0.1:8787", "http://localhost:8787"].includes(authURL)
-  ) return { readOnly: false };
+  ) return { readOnly: false, fixtureTest: false, localCapture: true, isStaging: false };
   if (
     mode === "staging-read-only" &&
     authURL === "https://staging.rootsofcambodia.com"
-  ) return { readOnly: true };
+  ) return { readOnly: true, fixtureTest: false, localCapture: false, isStaging: true };
+  if (
+    mode === "staging-test" &&
+    authURL === "https://staging.rootsofcambodia.com"
+  ) return { readOnly: false, fixtureTest: true, localCapture: false, isStaging: true };
   throw new Error("Application runtime is not configured");
 }
 

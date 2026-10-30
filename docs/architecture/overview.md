@@ -80,10 +80,13 @@ The [database contract](database.md), [features](../README.md#feature-contracts)
 
 ## Temporary staging without email — 30 October 2026
 
-The owner deferred Cloudflare Email Sending while authorizing work with activated
-R2. The [read-only staging mode](../operations/staging.md) permits only the exact
-staging origin and anonymous existing public projections; account activity,
-business writes and uploads are refused at web adapters before side effects.
-Local capture remains loopback-only; jobs remains local-only and unscheduled.
-No booking service, database invariant, stack or privileged identity changes.
-This limited deployment is separate from authenticated/pilot release readiness.
+The owner deferred Cloudflare Email Sending and requested testing of implemented
+features. The [staging contract](../operations/staging.md) admits the exact origin
+with APP_MODE=staging-test and three fictional fixture identities. They use normal
+Better Auth password sessions, private supplied passwords and unchanged backend
+verification/ownership rules. Synthetic fixture verification makes no claim about
+an actual inbox. Public registration, verification, reset and account changes are
+refused before Better Auth. Shared private adapters and SSR recheck fixture IDs.
+Local capture remains loopback-only; staging mail throws and jobs is unscheduled.
+The retained staging-read-only mode refuses all auth/business mutations. Neither
+mode admits production or any other origin. No Access organization was created.
