@@ -30,6 +30,7 @@
 | [0014](../../packages/backend/migrations/0014_booking_acceptance_logistics.sql) | Atomic acceptance-time logistics copies, direct transition/receipt guards and immutable owner response reviews; no historical backfill |
 | [0015](../../packages/backend/migrations/0015_stay_lifecycle.sql) | Database-time owner arrival window; no data backfill or allocation change |
 | [0016](../../packages/backend/migrations/0016_property_payment_records.sql) | Immutable full-payment/correction ledger, guarded state projection and owner-bound saved reviews; no fabricated payments/backfill |
+| [0017](../../packages/backend/migrations/0017_external_booking_reviews.sql) | Immutable owner/property-bound external stock reviews, exact operation fingerprint fencing and bounded recovery index; no historical backfill |
 
 Add a new ordered migration; do not rewrite an applied one. Verify both fresh application and populated upgrades using the configured migration loader/tracker. A failed preflight needs a reviewed repair plan, never deletion of a populated database to force success. The proof schema is independent and is not an application upgrade path.
 
