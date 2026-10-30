@@ -35,7 +35,7 @@ Failures return the row to pending with delay `min(3600, 30 * (1 << min(attempts
 
 Scheduled maintenance expires up to 50 requests, publishes up to 50 outbox records and sweeps removed-photo objects. Queue input must be an object with a string id <=200 characters. Invalid messages, duplicate/no-claim outcomes, accepted delivery and durably stored backoff are acknowledged. Uncertain database failures request retry with the same ID. Due-work/expired-lease sweeps remain responsible for recovery.
 
-Outside APP_MODE=local, jobs fails before acknowledgements/business writes. Web auth likewise fails closed outside local mode/loopback AUTH_URL. No deployed Cron schedule is configured. A successful dry-run or queue fixture is not operational scheduling evidence. See [jobs README](../../apps/jobs/README.md).
+Outside APP_MODE=local, jobs fails before acknowledgements/business writes. Web also admits the explicit read-only staging origin, with all auth activity refused and no live/capture delivery. See [staging scope](../operations/staging.md). No deployed Cron schedule is configured. A successful dry-run or queue fixture is not operational scheduling evidence. See [jobs README](../../apps/jobs/README.md).
 
 ## Safe diagnostics
 

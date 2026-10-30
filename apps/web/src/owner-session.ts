@@ -11,8 +11,8 @@ export async function ownerSession(next = "/owner") {
   const context = diagnostics("http");
   let result;
   try {
-    const { env, auth } = await runtime();
-    const session = await auth.api.getSession({ headers: await headers() });
+    const { env, auth, readOnly } = await runtime();
+    const session = readOnly ? null : await auth.api.getSession({ headers: await headers() });
     if (!session) result = null;
     else {
       const actor = { id: session.user.id };

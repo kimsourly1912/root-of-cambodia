@@ -25,8 +25,7 @@
   "observability": {
     "enabled": true,
   },
-  // Prepared only: runtime still refuses staging until the real mail adapter
-  // and account prerequisites in docs/operations/staging.md are verified.
+  // Staging is explicitly read-only while Email Sending is deferred.
   "env": {
     "staging": {
       "account_id": "dcfd514b7e29898cd93e1bbb17b1aa22",
@@ -35,7 +34,7 @@
       "preview_urls": false,
       "routes": [],
       "vars": {
-        "APP_MODE": "staging",
+        "APP_MODE": "staging-read-only",
         "AUTH_URL": "https://staging.rootsofcambodia.com",
       },
       "d1_databases": [{
@@ -45,11 +44,6 @@
         "migrations_dir": "../../packages/backend/migrations",
       }],
       "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "roc-media-staging", "remote": false }],
-      "images": { "binding": "IMAGES", "remote": false },
-      "send_email": [{
-        "name": "EMAIL",
-        "allowed_destination_addresses": ["rootsofcambodia@gmail.com"],
-      }],
     },
   },
 }

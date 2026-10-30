@@ -1,99 +1,136 @@
 # Cloudflare staging setup
 
-**Status:** partially provisioned; not deployed and not ready for users.
-**Responsible role:** project owner for account activation; maintainer for setup.
-**Last account/source verification:** 30 October 2026; based on main
-[40f7ffa](https://github.com/kimsourly1912/root-of-cambodia/commit/40f7ffa553a14005f622aa5c846f0f9dc5e70f42).
-**Sources:** [web configuration](../../apps/web/wrangler.jsonc),
-[jobs configuration](../../apps/jobs/wrangler.jsonc),
-[release gates](release-and-recovery.md), [current evidence](../status.md).
+**Status:** resources provisioned; read-only application prepared; deployment pending.
+**Responsible role:** maintainer for staging; project owner for account authorization.
+**Last account/source verification:** 30 October 2026, based on main
+[40f7ffa](https://github.com/kimsourly1912/root-of-cambodia/commit/40f7ffa553a14005f622aa5c846f0f9dc5e70f42)
+and preparation source [2c9bb89](https://github.com/kimsourly1912/root-of-cambodia/commit/2c9bb896e1c4d3af66ccdb24d7edea0082c1cb49).
+**Sources:** [web config](../../apps/web/wrangler.jsonc),
+[jobs config](../../apps/jobs/wrangler.jsonc),
+[runtime policy](../../apps/web/src/runtime-policy.ts),
+[HTTP boundary](../../apps/web/src/http.ts), [status](../status.md).
 
-The owner authorized staging and email setup using only Cloudflare products on
-30 October 2026. This authorizes the scoped staging provisioning, configuration,
-integration and verification; production traffic, unrelated purchases, legal
-approval, retention policy and public pilot readiness are separate.
+## Instruction and temporary scope
 
-## Account and resource inventory
+The owner authorized Cloudflare-only staging setup, then activated R2 and
+instructed: skip Email Sending for now; proceed with available services until
+an account upgrade is announced. No third-party sender or paid upgrade is
+introduced. The implementation choice for this instruction is an explicitly
+read-only staging preview. It supports anonymous allowlisted browsing and
+infrastructure checks. It does not establish a full booking pilot.
 
-| Item | Verified state |
+The deployed application must use `APP_MODE=staging-read-only` and exactly
+`AUTH_URL=https://staging.rootsofcambodia.com`. Existing loopback local mode
+retains its captured-mail development behavior. Unknown modes, remote local
+capture and other staging origins fail closed. This is a distinct limited
+mode, not disabling verification or disguising a remote runtime as local.
+
+## Account and resources
+
+| Item | Actual state |
 | --- | --- |
-| Account | `dcfd514b7e29898cd93e1bbb17b1aa22`, connected as the project's Gmail account |
+| Account | `dcfd514b7e29898cd93e1bbb17b1aa22`, project account |
 | Domain | `rootsofcambodia.com`, active; zone `ea10d4d2dd807cef27e6907d6ac1d4c5` |
-| Proposed staging origin | `https://staging.rootsofcambodia.com`; no DNS record or Worker route created |
-| D1 | Created `roc-staging`, ID `169e1c39-c59a-40c8-8646-b82bbad08a2c`, APAC hint; empty, no application migrations or seed data applied |
-| Queue | Created `roc-notifications-staging`, ID `2fdbf2b65e5f4fd780a6deb1eb51c8d6`; no consumer deployed |
-| R2 | Not activated: bucket-list API returns 403 / 10042, "Please enable R2 through the Cloudflare Dashboard"; `roc-media-staging` is a proposed bucket, not an existing resource |
-| Email Sending | Domain-list and sending-limit API reads both return 401 / 2036, Unauthorized; onboarding and sending entitlement are unverified |
-| Email Routing | Domain is disabled/unconfigured; account has no verified destination addresses |
-| Images | Storage statistics API returns 403 / 5403; this does not by itself establish Workers image-transformation entitlement |
-| Billing | Subscription API is unavailable to the current OAuth connection; Workers plan/cost entitlement is unverified |
-| CLI | Pinned Wrangler is installed; `wrangler whoami` reports no CLI authentication. The connected app's credentials are not automatically a CLI login |
+| Staging origin | `https://staging.rootsofcambodia.com`; route/DNS not yet created |
+| D1 | `roc-staging`, ID `169e1c39-c59a-40c8-8646-b82bbad08a2c`, APAC hint; no application migrations/data applied |
+| R2 | Created `roc-media-staging` in APAC after successful activation; managed public domain disabled; no objects uploaded |
+| Queue | `roc-notifications-staging`, ID `2fdbf2b65e5f4fd780a6deb1eb51c8d6`; retained without consumer or schedule |
+| Web | `roc-web-staging`, prepared source/config; not deployed |
+| Jobs | `roc-jobs-staging`, prepared inert config; no deployed consumer/Cron |
+| Email | Explicitly deferred by owner; no send binding, live sender, capture table or substitute delivery in staging |
+| Images | Staging binding omitted because uploads/processing are disabled; no entitlement upgrade needed for this slice |
+| CLI | Pinned Wrangler installed; authenticated CLI session not established |
+| Access | Account API reports Access not enabled; no organization/policies purchased or created |
 
-Existing apex DNS and the existing unrelated Worker were left intact. No
-application secret, live user, real property, email message or remote migration
-was created. Recheck existing resource IDs before creating anything on retry.
+Existing apex DNS and unrelated Worker remain unchanged. Resource IDs are
+reused on continuation. Do not create another database or queue to work around
+authentication.
 
-## Prepared configuration and its limits
+## Read-only enforcement and limits
 
-Both existing Wrangler files now have an explicit `env.staging`, sharing only
-the staging D1/bucket/queue names and keeping local resource identities intact.
-Worker names are `roc-web-staging` and `roc-jobs-staging`. Public routes,
-workers.dev, preview URLs and Cron are disabled. The email binding allows only
-the project account's address for initial controlled testing; it does not
-redirect other recipients or authorize sending to arbitrary users.
+- Every business mutation through the shared HTTP boundary and photo-upload
+  adapter returns `503 staging_read_only` before authentication, body parsing,
+  business services or persistence. Private reads remain unauthenticated.
+- Auth endpoints refuse all activity, including GET verification links, before
+  Better Auth runs. Only exact `GET /api/auth/get-session` returns `null`, without
+  reading or refreshing a session. Server-rendered private routes redirect to
+  the unavailable-account screen without consulting a session.
+- Sign-in, signup, verification, reset and recovery screens show an honest
+  unavailable notice with no credential form. No account is marked verified,
+  no token is exposed and no email is reported sent. The mail callback also
+  refuses in staging as defense in depth.
+- Public catalog projections and processed-only private-R2 photo reads retain
+  their existing eligibility/privacy checks. No actual property is seeded and
+  no original object is publicly exposed.
+- Staging pages have noindex/nofollow metadata. This is an indexing instruction,
+  not authentication. Public routes remain disabled in the committed config
+  until a matching deployment and its permitted access scope are verified.
+- Jobs retains its local-only runtime guard. No staged outbox is consumed,
+  acknowledged or marked accepted, and no Cron is configured. No recurring
+  expiry, cleanup, provider/recovery or inbox-delivery result is claimed.
 
-These are preparation configurations, not functional live adapters. Web auth
-and jobs retain their local-only runtime guards. Do not change APP_MODE to
-local, use a loopback AUTH_URL remotely or deploy a capture provider to work
-around those guards. No new auth/notification email code is written before
-sender-domain onboarding and service access are established.
+The [staging built-Worker regression](../../tests/staging-runtime.test.ts) uses
+isolated local bindings, applies the real schema there and verifies empty
+catalog reads, unavailable auth UI/API, write/upload refusal, private access,
+unchanged account/business/outbox counts and absent capture tables. It does
+not mutate remote staging or prove live-service behavior.
 
-## Required account actions and continuation
+## Remote migration approval and deployment
 
-1. Activate R2 in this account through the Cloudflare dashboard. The API
-   explicitly requires dashboard activation. Preserve private bucket defaults.
-2. Restore Email Sending API access: reconnect Cloudflare, then recheck domain
-   listing and limits. If 401 persists, use a supported connection with the
-   required Email Sending permissions or complete onboarding in the dashboard.
-   Do not paste credentials into chat or commit them.
-3. Verify Workers/Email Sending and Images entitlements in the dashboard before
-   a paid-plan change. No subscription was purchased or upgraded by this task.
-4. Reinspect and create only the missing staging resources. Onboard an explicit
-   sender on the owned domain without disrupting existing DNS/mail. Confirm
-   sender authentication and restrict initial delivery to controlled test
-   addresses. All hosting, data, media, queue, scheduling and sending products
-   must remain Cloudflare services.
-5. Implement and test the real auth-mail and booking-notification adapters,
-   including safe errors, bounded provider duration, auth recovery and lost
-   acknowledgement behavior. Verify actual provider deduplication semantics;
-   a custom message header is not proof of idempotency. Preserve existing
-   outbox/lease/booking transaction rules.
-6. Establish CLI authentication through the supported secure flow before
-   Wrangler deployment; never put an API token in tracked config. Apply ordered
-   migrations to the isolated staging D1, configure a separate auth secret,
-   then build and deploy the matching web/jobs source. No local capture tables
-   or test-only ingress may become the live provider path.
-7. Establish restricted staging access before adding the hostname route. Add
-   Cron only with the verified provider/recovery path; run controlled real-service
-   auth, booking, expiry, queue, media/privacy and failure/recovery checks.
-   Record exact source/config/deployment IDs and actual inbox evidence.
+On 30 October automatic approval review rejected the first attempt to create
+`d1_migrations` in remote `roc-staging`. It stated that persistent remote schema
+changes require explicit authorization and contrasted them with the read-only
+preview. The preview restriction concerns visitor actions; provisioning its
+schema is a separate operator write. No rejected mutation was retried through
+a different API, CLI or indirect path. The remote database remains without
+application tables.
 
-The rest of the [release/recovery gates](release-and-recovery.md#release-gates),
-including approved terms, retention, abuse limits, recovery ownership and
-Khmer/mobile usability, remain prerequisites for collecting real pilot data.
-Initial staging verification should use synthetic business data only.
+Before that operator step, obtain explicit approval to apply the existing
+ordered migrations **0001–0020** to this isolated staging database, including
+the standard migration-tracking table. No new SQL migration is introduced;
+no production database, business seed, verification state, terms, data deletion
+or reset is included. The release source already has historical fresh/populated
+upgrade evidence; rerun appropriate local regressions for this runtime change.
 
-## Recovery
+After authorization and a supported secure CLI sign-in, the prepared operator
+command from the repository root is:
 
-Resources are isolated and empty. Preserve their IDs and reuse them on
-continuation. Do not delete a database or queue to fix authentication. Once
-staging records exist, follow forward migrations and deliberate reconciliation;
-Worker rollback does not undo database changes or sent email.
+```sh
+corepack pnpm --filter @root-of-cambodia/web exec wrangler d1 migrations apply DB --env staging --remote
+```
 
-## Current provider references
+This command has not been executed. The explicit staging environment fixes the
+account/database IDs above and uses the existing authoritative migration path.
+The intended continuation is:
 
-- [Cloudflare Email Service](https://developers.cloudflare.com/email-service/)
-- [Sender domain onboarding](https://developers.cloudflare.com/email-service/get-started/send-emails/)
-- [Workers sending API](https://developers.cloudflare.com/email-service/api/send-emails/workers-api/)
-- [Restricted email bindings](https://developers.cloudflare.com/email-service/configuration/send-bindings/)
-- [Wrangler environments](https://developers.cloudflare.com/workers/wrangler/environments/)
+1. Recheck the account, exact staging database and migration history. Apply
+   committed migrations with pinned Wrangler, retaining its atomic file and
+   migration-history behavior. Do not run local capture-table initialization
+   remotely or wrap the real database in test fixtures.
+2. Generate a separate staging `BETTER_AUTH_SECRET` securely. Never reuse a
+   local secret, print it or commit it. Build and dry-run the final source and
+   explicit staging environment before deployment.
+3. Deploy the web Worker with no Email/Images dependency. Keep jobs inert.
+   Record source SHA, artifact/deployment IDs and resources before attaching
+   the staging hostname; do not change the apex or workers.dev exposure.
+4. Limit any initial anonymous deployment to this empty read-only preview.
+   Confirm account APIs/private routes/writes remain unavailable. A future
+   authenticated or data-bearing staging pilot needs controlled audience
+   access, real email and the existing release/privacy/operations gates.
+5. Check real HTTPS pages/assets, D1 catalog, auth/write/cache/robots behavior
+   and private R2 configuration. Record actual results in status/PR. A build or
+   isolated emulator pass is not live deployment evidence.
+
+## Later email and pilot work
+
+Wait for the owner to announce the Cloudflare upgrade. Then verify Email Sending
+access/entitlement and sender-domain authentication before implementing sending.
+Do not restore write access merely by changing a flag. Implement and verify
+actual auth-mail and outbox adapters, provider timeouts/deduplication and lost
+acknowledgements, controlled audience access, ordered release and recovery.
+A custom message header is not proof of provider idempotency.
+
+[Release/recovery gates](release-and-recovery.md#release-gates) for approved
+terms, retention, abuse limits, support ownership, restore and Khmer/mobile
+usability still apply before real pilot data. No legal approval, new retention
+policy, subscription purchase or full pilot-readiness claim follows here.

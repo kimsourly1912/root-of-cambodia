@@ -70,9 +70,9 @@ Captured URLs are account credentials: keep output out of commits, screenshots a
 
 ## Configuration and troubleshooting
 
-[Web config](../../apps/web/wrangler.jsonc) binds DB, MEDIA, IMAGES and ASSETS, with local APP_MODE/AUTH_URL; BETTER_AUTH_SECRET is local private state. [Jobs config](../../apps/jobs/wrangler.jsonc) binds DB, MEDIA and NOTIFICATIONS. Neither file establishes staging/production resources. No live API credentials are needed for local emulation; never print secret values.
+[Web config](../../apps/web/wrangler.jsonc) binds DB, MEDIA, IMAGES and ASSETS, with local APP_MODE/AUTH_URL; BETTER_AUTH_SECRET is local private state. [Jobs config](../../apps/jobs/wrangler.jsonc) binds DB, MEDIA and NOTIFICATIONS. The separate staging environments reference isolated resources; their current inventory and limits are in [staging setup](../operations/staging.md). Neither establishes production readiness. No live API credentials are needed for local emulation; never print secret values.
 
-Runtime auth deliberately rejects nonlocal mode/nonloopback AUTH_URL; jobs rejects nonlocal mode before business writes/acknowledgements. Missing local capture tables require authorized initialization, not a guard bypass. Local Images may differ from the service.
+Web admits only loopback local capture or the exact origin-validated staging-read-only mode, which refuses auth/private sessions/business writes/uploads. Jobs rejects nonlocal mode before business writes/acknowledgements. Missing local capture tables require authorized initialization, not a guard bypass. Local Images may differ from the service.
 
 Stop a preview occupying port 8787 before browser tests; Playwright refuses to reuse an existing server. A conflicting-state error requires preserving/reconciling both copies. A missing Worker bundle requires the appropriate build, not a new test-only entrypoint. Record actual OS/browser overrides and limitations in verification evidence.
 

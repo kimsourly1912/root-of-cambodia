@@ -1,4 +1,4 @@
-import { AuthForm } from "@/components/auth-form";
+import { AccountForm } from "@/components/account-form";
 export default async function Page({
   searchParams,
 }: {
@@ -7,7 +7,7 @@ export default async function Page({
   const { next } = await searchParams;
   return (
     <main id="main" className="px-5 py-12 sm:py-16">
-      <AuthForm mode="forgot-password" next={next} />
+      <AccountForm mode="forgot-password" next={next} />
     </main>
   );
 }

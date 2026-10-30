@@ -54,6 +54,7 @@ export default defineConfig({
     exclude: [
       "tests/worker-http.test.ts",
       "tests/jobs-runtime.test.ts",
+      "tests/staging-runtime.test.ts",
       "tests/workspace.test.ts",
     ],
     testTimeout: 15_000,

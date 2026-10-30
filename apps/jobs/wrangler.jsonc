@@ -52,16 +52,7 @@
       "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "roc-media-staging", "remote": false }],
       "queues": {
         "producers": [{ "binding": "NOTIFICATIONS", "queue": "roc-notifications-staging" }],
-        "consumers": [{
-          "queue": "roc-notifications-staging",
-          "max_batch_size": 10,
-          "max_batch_timeout": 1,
-        }],
       },
-      "send_email": [{
-        "name": "EMAIL",
-        "allowed_destination_addresses": ["rootsofcambodia@gmail.com"],
-      }],
     },
   },
 }

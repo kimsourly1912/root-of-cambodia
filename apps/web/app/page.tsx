@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-export default function Home() {
+import { runtime } from "@/src/runtime";
+export default async function Home() {
+  const { readOnly } = await runtime();
   return (
     <main id="main" className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24">
       <div className="max-w-2xl">
         <p className="mb-5 text-sm font-semibold uppercase tracking-widest text-primary">
-          For property owners
+          {readOnly ? "Staging preview" : "For property owners"}
         </p>
         <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
           A place to begin.
@@ -16,21 +18,22 @@ export default function Home() {
           ការកក់កន្លែងស្នាក់នៅ
         </p>
         <p className="mt-4 max-w-xl text-lg text-muted-foreground">
-          Start a private property draft. Save the essentials, come back when
-          you’re ready, and keep everything together.
+          {readOnly
+            ? "Browse this preview. Account access and bookings are unavailable while email is disconnected."
+            : "Start a private property draft. Save the essentials, come back when you’re ready, and keep everything together."}
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Button asChild size="lg">
             <Link href="/stays">Explore stays →</Link>
           </Button>
-          <Button asChild size="lg">
+          {!readOnly && <><Button asChild size="lg">
             <Link href="/owner">Open owner workspace →</Link>
           </Button>
           <Button asChild variant="outline" size="lg">
             <Link href="/sign-up">Create an account</Link>
-          </Button>
+          </Button></>}
         </div>
-        <div className="mt-14 grid gap-5 border-t pt-8 sm:grid-cols-3">
+        {!readOnly && <div className="mt-14 grid gap-5 border-t pt-8 sm:grid-cols-3">
           {[
             ["01", "Verified access", "Sign in with your verified email."],
             ["02", "Save a draft", "Add the property details you know."],
@@ -46,7 +49,7 @@ export default function Home() {
               <p className="mt-1 text-sm text-muted-foreground">{copy}</p>
             </div>
           ))}
-        </div>
+        </div>}
       </div>
     </main>
   );

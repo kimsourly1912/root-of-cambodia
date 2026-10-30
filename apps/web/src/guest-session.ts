@@ -10,8 +10,8 @@ export async function guestSession(next: string) {
   let result: null | { db: D1Database; actor: { id: string } } = null,
     unverified = false;
   try {
-    const { env, auth } = await runtime();
-    const session = await auth.api.getSession({ headers: await headers() });
+    const { env, auth, readOnly } = await runtime();
+    const session = readOnly ? null : await auth.api.getSession({ headers: await headers() });
     if (session) {
       const actor = { id: session.user.id };
       await verified(env.DB, actor);

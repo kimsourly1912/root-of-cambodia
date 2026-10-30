@@ -22,7 +22,8 @@ export async function GET(
     "X-Request-Id": context.correlationId,
   };
   try {
-    const { env, auth } = await runtime();
+    const { env, auth, readOnly } = await runtime();
+    if (readOnly) throw new DomainError("unauthorized", 401);
     const session = await auth.api.getSession({
       headers: request.headers,
     });

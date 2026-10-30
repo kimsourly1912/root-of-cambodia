@@ -1,5 +1,6 @@
 // These are API codes, not raw provider/database messages. Add new codes deliberately.
 export const ERROR_CODES = [
+  "staging_read_only",
   "arrival_policy_decision_required",
   "acceptance_preview_required",
   "acceptance_preview_changed",

@@ -42,8 +42,9 @@ secrets, tokens, raw provider errors or guest data. Follow the
 
 Add ordered migrations rather than rewriting applied ones; verify fresh and
 populated upgrades when schema changes are authorized. Preserve application/
-compatibility state and scripts/handoff-local.ts. Do not bypass local-only
-provider guards to make a deployment pass.
+compatibility state and scripts/handoff-local.ts. Keep explicit runtime mode/origin guards. The staging-read-only
+mode refuses accounts and writes while email is deferred; jobs stays local-only.
+Never run local capture remotely or weaken verification to make deployment pass.
 
 ## Verification and delivery
 

@@ -1,6 +1,6 @@
 # Current implementation and verification status
 
-**Status:** current source baseline; no staging/production readiness established.
+**Status:** read-only staging prepared; remote schema/deployment pending; no pilot/production readiness established.
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
@@ -10,7 +10,7 @@
 
 This is the single current delivery/evidence page. Feature docs define contracts; archive reviews retain older results without becoming additional roadmaps.
 
-## Current handoff — Cloudflare staging preparation
+## Current handoff — read-only Cloudflare staging
 
 PR #33 (owner pause/resume) and #34 (offline corrections/fresh review) are merged.
 Main 40f7ffa553a14005f622aa5c846f0f9dc5e70f42 has tree
@@ -21,30 +21,40 @@ and all job steps succeeded; its PR reports 217 Vitest and 26 desktop/phone
 browser checks. These are inspected historical CI results, not new staging or
 local execution. No open PR remained at the start of this setup task.
 
-The owner now authorizes staging and email setup using only Cloudflare products.
-Account inspection found the active rootsofcambodia.com zone, but R2 requires
-dashboard activation and Email Sending API reads reject the connection (401).
-Created an isolated empty roc-staging D1 and roc-notifications-staging queue.
-[Staging setup](operations/staging.md) is the canonical resource inventory and
-continuation sequence, including IDs, authentication/entitlement gaps and
-prepared env.staging configuration. No Worker deployment, route, Cron, email,
-remote migration, legal approval or production mutation occurred.
+The owner authorized Cloudflare-only staging, then confirmed R2 activation and
+explicitly deferred Email Sending until a later upgrade. Created the private
+roc-media-staging bucket; verified its public managed domain is disabled.
+The existing isolated D1/queue remain. The [staging contract](operations/staging.md)
+records IDs, source boundaries and the exact continuation sequence.
 
-Next action: resolve the account activation/email access blockers, then complete
-the real Cloudflare provider adapters, secure staging access, ordered database
-setup, deployment and controlled service verification. Runtime local-only guards
-remain intact. Verification of this preparation is recorded in its PR handoff.
+The web now has an explicit origin-validated read-only staging mode: public
+allowlisted browsing is admitted; auth activity, private sessions, account
+forms, business mutations and photo uploads are unavailable. No staging capture
+provider/table, fake verified user, Email/Images binding, notification consumer
+or Cron is introduced. Existing local account/booking behavior is preserved.
+The current draft PR contains this work; it is not merged by this task.
 
-Fresh preparation checks on Linux with pinned Node 24.22.1/pnpm 12.15.0 passed
-frozen installation, local-only initialization through 0020, generated runtime/
-binding types, strict backend/web/jobs/test types, five existing tooling tests,
-the OpenNext web build and explicit staging web/jobs Wrangler dry runs. Parsed
-staging configs confirmed the selected account, shared isolated D1, disabled
-public/preview routes and project-only email allowlist. Whitespace and 93
-relative documentation targets passed. Full backend/HTTP/browser suites were
-not rerun for this config/docs-only preparation; no live email or deployed
-service verification is claimed. Browser access to dashboard activation
-requires separate sign-in; connected API access is not a dashboard session.
+Automatic approval review rejected creation of the remote migration-tracking
+table, requiring explicit approval for persistent remote schema changes. The
+rejected action was not retried by another path; no application migrations or
+business data were written remotely. Next operator action is explicit approval
+to apply existing ordered 0001–0020 to the isolated roc-staging D1, followed by
+secure CLI authentication, a matching web deployment and real service checks.
+No production mutation, paid upgrade, live email or deployed readiness is claimed.
+Fresh Linux verification with Node 24.22.1/pnpm 12.15.0 passed generated binding/
+runtime types, strict backend/web/jobs/test types, actual OpenNext web/jobs builds,
+explicit staging web/jobs dry runs and **219 tests across 29 files**, including
+all prior cases and two staging tests. The staging Worker test applied the real
+schema only to isolated local bindings and proved no auth/business/outbox changes
+or capture tables after rejected requests. Initial test setup incorrectly let
+the backend glob also load the Node harness; it now excludes the new HTTP test,
+matching the existing worker-test split. The original local and native checks
+remain intact. The new streamed owner-redirect assertion verifies the explicit
+sign-in refresh and absence of owner creation controls instead of assuming 307.
+
+Matching Chromium installation failed with a truncated/invalid archive; no fresh
+local browser pass or executable override is claimed. PR CI is separate. No
+remote schema mutation, live HTTP, inbox or full pilot verification is claimed.
 
 ## Baseline and evidence
 

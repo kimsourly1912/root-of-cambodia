@@ -20,7 +20,9 @@ export async function endpoint(
     "X-Request-Id": context.correlationId,
   };
   try {
-    const { env, auth } = await runtime();
+    const { env, auth, readOnly } = await runtime();
+    if (readOnly && mutates) throw new DomainError("staging_read_only", 503);
+    if (readOnly) throw new DomainError("unauthorized", 401);
     if (
       mutates &&
       (request.headers.get("origin") !== env.AUTH_URL ||

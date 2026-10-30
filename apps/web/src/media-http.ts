@@ -23,7 +23,9 @@ export async function photoTransfer(
     "X-Content-Type-Options": "nosniff",
   };
   try {
-    const { env, auth } = await runtime();
+    const { env, auth, readOnly } = await runtime();
+    if (readOnly && upload) throw new DomainError("staging_read_only", 503);
+    if (readOnly) throw new DomainError("unauthorized", 401);
     if (upload && request.headers.get("origin") !== env.AUTH_URL)
       throw new DomainError("forbidden", 403);
     const session = await auth.api.getSession({ headers: request.headers });
@@ -76,6 +78,7 @@ export async function photoTransfer(
       bytes.set(chunk, offset);
       offset += chunk.length;
     }
+    if (!env.IMAGES) throw new DomainError("photo_processing_unavailable", 503);
     const result = await uploadPhoto(
       env.DB,
       env.MEDIA,

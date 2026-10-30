@@ -77,3 +77,13 @@ Local, staging and production need distinct resources/secrets/data. Current runt
 - [0006: Booking journey and private disclosure](decisions/0006-booking-journey.md): accepted D17 and staged guest/owner screens; server-saved request recovery, immutable configured terms and atomic acceptance-time logistics copies.
 
 The [database contract](database.md), [features](../README.md#feature-contracts), [contributing standard](../development/contributing.md) and [open decisions](../product/open-decisions.md) provide detail.
+
+## Temporary staging without email — 30 October 2026
+
+The owner deferred Cloudflare Email Sending while authorizing work with activated
+R2. The [read-only staging mode](../operations/staging.md) permits only the exact
+staging origin and anonymous existing public projections; account activity,
+business writes and uploads are refused at web adapters before side effects.
+Local capture remains loopback-only; jobs remains local-only and unscheduled.
+No booking service, database invariant, stack or privileged identity changes.
+This limited deployment is separate from authenticated/pilot release readiness.
