@@ -17,7 +17,8 @@ export default async function Page({
     { cursor, status } = await searchParams,
     base = `/owner/properties/${id}/bookings`,
     { db, actor } = await ownerSession(base);
-  let page, property, selected;
+  let page, property;
+  let selected: ReturnType<typeof ownerBookingStatus> = "all";
   const bookingURL = (state: string, next?: string | null) => {
     const q = new URLSearchParams();
     if (state !== "all") q.set("status", state);
