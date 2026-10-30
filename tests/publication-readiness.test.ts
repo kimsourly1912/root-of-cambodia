@@ -31,10 +31,8 @@ import { preparePhoto } from "@root-of-cambodia/backend/media";
 import { editPhotos } from "@root-of-cambodia/backend/media";
 import { ownerMediaGallery } from "@root-of-cambodia/backend/media-queries";
 import { quote } from "@root-of-cambodia/backend/quotes";
-import {
-  submit as submitBooking,
-  transition,
-} from "@root-of-cambodia/backend/bookings";
+import { submit as submitBooking } from "@root-of-cambodia/backend/bookings";
+import { testTransition as transition } from "./booking-fixtures";
 import { shiftNight } from "@root-of-cambodia/backend/calendar-dates";
 import { digest } from "@root-of-cambodia/backend/operations";
 import { readyPublicationFixture, disclosureFor } from "./publication-fixtures";

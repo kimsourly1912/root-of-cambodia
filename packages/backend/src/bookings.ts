@@ -40,6 +40,7 @@ export async function transition(
   id: string,
   action: Action,
   reason?: string,
+  acceptanceHash?: string,
 ) {
   await verified(db, actor);
   await requireBookingActor(db, actor, id, action === "cancel_guest");
@@ -56,7 +57,20 @@ export async function transition(
     )
   )
     throw new DomainError("invalid_action", 422);
-  return commitBookingTransition(db, actor, key, id, action, text);
+  if (
+    acceptanceHash !== undefined &&
+    (action !== "accept" || !/^[a-f0-9]{64}$/.test(acceptanceHash))
+  )
+    throw new DomainError("invalid_request", 422);
+  return commitBookingTransition(
+    db,
+    actor,
+    key,
+    id,
+    action,
+    text,
+    acceptanceHash,
+  );
 }
 
 export async function expireDue(db: D1Database, limit = 50) {

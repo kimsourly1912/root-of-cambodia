@@ -32,7 +32,7 @@ export async function readBooking(db: D1Database, actor: Actor, id: string) {
     .all();
   const events = await db
     .prepare(
-      "SELECT kind,actor_id,actor_role,occurred_at,reason FROM booking_event WHERE booking_id=? ORDER BY occurred_at,id",
+      "SELECT kind,actor_id,actor_role,occurred_at,reason FROM booking_event WHERE booking_id=? ORDER BY occurred_at,rowid",
     )
     .bind(id)
     .all();

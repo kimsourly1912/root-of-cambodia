@@ -1,7 +1,7 @@
 import { test } from "vitest";
 import assert from "node:assert/strict";
 import { database, catalog, request, scalar } from "./support";
-import { transition } from "@root-of-cambodia/backend/bookings";
+import { testTransition as transition } from "./booking-fixtures";
 
 type Values = Record<string, string | number | null>;
 

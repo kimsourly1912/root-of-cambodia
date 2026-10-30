@@ -1,10 +1,13 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { guestReturn } from "./return-path";
 import { runtime } from "./runtime";
 import { verified } from "@root-of-cambodia/backend/operations";
 import { DomainError } from "@root-of-cambodia/backend/errors";
 import { diagnostics } from "@root-of-cambodia/backend/diagnostics";
-export async function ownerSession() {
+export async function ownerSession(next = "/owner") {
+  const suffix =
+    next === "/owner" ? "" : "?next=" + encodeURIComponent(guestReturn(next));
   const context = diagnostics("http");
   let result;
   try {
@@ -22,10 +25,10 @@ export async function ownerSession() {
       error instanceof DomainError &&
       error.code === "verified_session_required"
     )
-      redirect("/verify-email");
+      redirect("/verify-email" + suffix);
     throw new Error("Owner workspace temporarily unavailable");
   }
-  if (!result) redirect("/sign-in");
+  if (!result) redirect("/sign-in" + suffix);
   return result;
 }
 

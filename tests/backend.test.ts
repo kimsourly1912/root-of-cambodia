@@ -11,11 +11,8 @@ import {
   unverified,
 } from "./support";
 import { quote, dates, localInstant } from "@root-of-cambodia/backend/quotes";
-import {
-  submit,
-  transition,
-  expireDue,
-} from "@root-of-cambodia/backend/bookings";
+import { submit, expireDue } from "@root-of-cambodia/backend/bookings";
+import { testTransition as transition } from "./booking-fixtures";
 import { editInventory } from "@root-of-cambodia/backend/inventory";
 import { readBooking } from "@root-of-cambodia/backend/access";
 import { deliver, publishDue } from "@root-of-cambodia/backend/outbox";

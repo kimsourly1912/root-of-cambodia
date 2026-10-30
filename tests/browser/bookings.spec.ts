@@ -1,4 +1,9 @@
-import { test, expect, type APIRequestContext } from "@playwright/test";
+import {
+  test,
+  expect,
+  devices,
+  type APIRequestContext,
+} from "@playwright/test";
 import { createHash } from "node:crypto";
 import photos from "../photo-fixtures.json" with { type: "json" };
 const origin = "http://127.0.0.1:8787",
@@ -41,13 +46,16 @@ async function post(
   expect(r.ok(), await r.text()).toBeTruthy();
   return r.json();
 }
-test("guest signs in to the chosen stay, reviews and recovers a lost submission across reload, then cancels once", async ({
+test("guest and owner recover requests/responses and reveal logistics only while confirmed", async ({
   page,
   browser,
 }, info) => {
   const contexts = await Promise.all(
     ["owner", "reviewer"].map((role) =>
       browser.newContext({
+        ...devices[
+          info.project.name.startsWith("mobile") ? "Pixel 7" : "Desktop Chrome"
+        ],
         baseURL: origin,
         extraHTTPHeaders: {
           "X-Test-Client": `guest-${role}-${info.project.name}`,
@@ -168,7 +176,9 @@ test("guest signs in to the chosen stay, reviews and recovers a lost submission 
     await post(reviewer, "/api/property-reviews/" + review.id, {
       action: "approve",
       revision: 1,
-      configRevision: (await (await reviewer.get("/api/property-reviews/"+review.id)).json()).configRevision,
+      configRevision: (
+        await (await reviewer.get("/api/property-reviews/" + review.id)).json()
+      ).configRevision,
     });
     const email = `guest-ui-${info.project.name}@example.invalid`;
     await account(page.request, email, false);
@@ -276,6 +286,123 @@ test("guest signs in to the chosen stay, reviews and recovers a lost submission 
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBeTruthy();
+    // Continue the real UI journey as the owner; new requests follow the same reviewed engine.
+    async function anotherRequest() {
+      await page.goto(`/stays/${property.id}/request`);
+      await page.getByLabel("Check-in date", { exact: true }).fill(night);
+      await page.getByLabel("Check-out date", { exact: true }).fill(checkout);
+      await page.getByLabel("Rooms / units", { exact: true }).fill("1");
+      await page
+        .getByRole("button", { name: "Review request", exact: true })
+        .click();
+      await expect(page).toHaveURL(/\/bookings\/requests\/[0-9a-f-]+$/);
+      await page.getByRole("checkbox").check();
+      await page
+        .getByRole("button", { name: "Send request to owner", exact: true })
+        .click();
+      await expect(page).toHaveURL(/\/bookings\/[0-9a-f-]+$/);
+      return page.url();
+    }
+    const secondURL = await anotherRequest();
+    const ownerPage = await contexts[0].newPage();
+    await ownerPage.goto(`/owner/properties/${property.id}/bookings`);
+    await ownerPage
+      .locator("li")
+      .filter({ hasText: "Pending confirmation" })
+      .getByRole("link", { name: "View request", exact: true })
+      .click();
+    await expect(
+      ownerPage.getByText("PRIVATE_GUEST_ADDRESS", { exact: true }),
+    ).toBeVisible();
+    await ownerPage.getByRole("checkbox").check();
+    await ownerPage
+      .getByRole("button", { name: "Review response", exact: true })
+      .click();
+    await expect(ownerPage).toHaveURL(/response=/);
+    await ownerPage.route(
+      "**/api/owner/bookings/*/attempts/*/apply",
+      async (route) => {
+        expect((await route.fetch()).status()).toBe(200);
+        await route.abort("failed");
+      },
+      { times: 1 },
+    );
+    await ownerPage
+      .getByRole("button", { name: "Accept and confirm stay", exact: true })
+      .click();
+    await expect(
+      ownerPage.getByRole("button", {
+        name: "Retry same response",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await ownerPage.reload();
+    await expect(ownerPage).not.toHaveURL(/response=/);
+    await expect(
+      ownerPage.getByText("Confirmed", { exact: true }).first(),
+    ).toBeVisible();
+    await page.goto(secondURL);
+    await expect(
+      page.getByText("PRIVATE_GUEST_ADDRESS", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("PRIVATE_GUEST_ARRIVAL", { exact: true }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBeTruthy();
+    expect(
+      await ownerPage.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBeTruthy();
+    await ownerPage
+      .getByLabel("Cancellation reason (required)")
+      .fill("Property cannot host this stay.");
+    await ownerPage
+      .getByRole("button", { name: "Review response", exact: true })
+      .click();
+    await ownerPage
+      .getByRole("button", { name: "Cancel booking", exact: true })
+      .click();
+    await expect(
+      ownerPage.getByText("Cancelled", { exact: true }).first(),
+    ).toBeVisible();
+    await page.reload();
+    await expect(
+      page.getByText("Cancelled", { exact: true }).first(),
+    ).toBeVisible();
+    expect(await page.locator("main").textContent()).not.toContain(
+      "PRIVATE_GUEST_ADDRESS",
+    );
+    const thirdURL = await anotherRequest();
+    await ownerPage.goto(`/owner/properties/${property.id}/bookings`);
+    await ownerPage
+      .locator("li")
+      .filter({ hasText: "Pending confirmation" })
+      .getByRole("link", { name: "View request", exact: true })
+      .click();
+    await ownerPage
+      .getByLabel("Response", { exact: true })
+      .selectOption("decline");
+    await ownerPage
+      .getByRole("button", { name: "Review response", exact: true })
+      .click();
+    await ownerPage
+      .getByRole("button", { name: "Decline request", exact: true })
+      .click();
+    await expect(
+      ownerPage.getByText("Declined", { exact: true }).first(),
+    ).toBeVisible();
+    await page.goto(thirdURL);
+    await expect(
+      page.getByText("Declined", { exact: true }).first(),
+    ).toBeVisible();
+    expect(await page.locator("main").textContent()).not.toContain(
+      "PRIVATE_GUEST_ADDRESS",
+    );
     const outsider = await browser.newContext({
       baseURL: origin,
       extraHTTPHeaders: { "X-Test-Client": "guest-other-" + info.project.name },

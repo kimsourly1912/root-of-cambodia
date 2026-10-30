@@ -19,7 +19,7 @@ import {
 import { ownerRoomCalendar } from "@root-of-cambodia/backend/calendar-queries";
 import { commitRoomCalendar } from "@root-of-cambodia/backend/calendar-persistence";
 import { digest } from "@root-of-cambodia/backend/operations";
-import { transition } from "@root-of-cambodia/backend/bookings";
+import { testTransition as transition } from "./booking-fixtures";
 import { readBooking } from "@root-of-cambodia/backend/access";
 import { quote } from "@root-of-cambodia/backend/quotes";
 const start = "2027-01-03";

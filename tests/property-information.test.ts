@@ -14,7 +14,7 @@ import { ownerPropertyInformation } from "@root-of-cambodia/backend/property-inf
 import { savePropertyInformation } from "@root-of-cambodia/backend/property-information";
 import { commitPropertyInformation } from "@root-of-cambodia/backend/property-information-persistence";
 import { digest } from "@root-of-cambodia/backend/operations";
-import { transition } from "@root-of-cambodia/backend/bookings";
+import { testTransition as transition } from "./booking-fixtures";
 import { readBooking } from "@root-of-cambodia/backend/access";
 const base = {
   description: "A calm stay.",
@@ -449,7 +449,7 @@ test("listing information does not change booking settings/revisions, prices, st
     );
     // Trusted historical fixture: private setup still preserves already recorded bookings.
     await db.prepare("UPDATE place SET publication='draft' WHERE id='p'").run();
-    await save(db, "p", "information", base);
+    await save(db, "p", "information", {...base, revision:(await ownerPropertyInformation(db,owner,"p")).revision});
     assert.deepEqual(
       await db.prepare("SELECT * FROM property WHERE id='p'").first(),
       propertyBefore,

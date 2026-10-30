@@ -2,7 +2,8 @@ import { test } from "vitest";
 import assert from "node:assert/strict";
 import { database, catalog, request, guest, owner, scalar } from "./support";
 import { normalize, quote } from "@root-of-cambodia/backend/quotes";
-import { submit, transition } from "@root-of-cambodia/backend/bookings";
+import { submit } from "@root-of-cambodia/backend/bookings";
+import { testTransition as transition } from "./booking-fixtures";
 import { editInventory } from "@root-of-cambodia/backend/inventory";
 import { digest } from "@root-of-cambodia/backend/operations";
 
@@ -50,7 +51,7 @@ test("named saves retain fingerprints and replay original receipts after catalog
         },
       ],
       ["edit", { kind: "inventory", input: edit }],
-      ["accept", { kind: "accept", id: pending.id, reason: null }],
+      ["accept", { kind: "accept", id: pending.id, reason: null, acceptanceHash:(await db.prepare("SELECT preview_hash FROM booking_acceptance WHERE booking_id=?").bind(pending.id).first<{preview_hash:string}>())!.preview_hash }],
     ] as const) {
       const stored = await db
         .prepare(

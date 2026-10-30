@@ -3,6 +3,7 @@ import { verified, digest, type Actor, type Receipt } from "./operations";
 import { publicStay } from "./catalog-queries";
 import { quote, normalize, type Quote } from "./quotes";
 import { submit } from "./bookings";
+import { logisticsDetails } from "./booking-logistics";
 import { readBooking } from "./access";
 
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -242,11 +243,22 @@ export async function guestBooking(db: D1Database, actor: Actor, id: string) {
   const b = await readBooking(db, actor, id);
   if (b.guestId !== actor.id || b.source !== "online")
     throw new DomainError("not_found", 404);
+  const current = await db
+    .prepare(
+      "SELECT b.status,a.details_json,a.accepted_at FROM booking b JOIN user u ON u.id=b.guest_id LEFT JOIN booking_acceptance a ON a.booking_id=b.id WHERE b.id=? AND b.guest_id=? AND u.emailVerified=1",
+    )
+    .bind(id, actor.id)
+    .first<{
+      status: string;
+      details_json: string | null;
+      accepted_at: number | null;
+    }>();
+  if (!current) throw new DomainError("not_found", 404);
   return {
     id: b.id,
     propertyId: b.propertyId,
     propertyName: b.propertyName,
-    status: b.status,
+    status: current.status,
     checkinDate: b.checkinDate,
     checkoutDate: b.checkoutDate,
     checkinAt: b.checkinAt,
@@ -277,7 +289,13 @@ export async function guestBooking(db: D1Database, actor: Actor, id: string) {
       occurredAt: Number(e.occurred_at),
       reason: e.reason === null ? null : String(e.reason),
     })),
-    logistics: null,
+    logistics:
+      current.status === "confirmed" && current.details_json
+        ? {
+            ...logisticsDetails(current.details_json),
+            acceptedAt: current.accepted_at!,
+          }
+        : null,
   };
 }
 export type GuestBooking = Awaited<ReturnType<typeof guestBooking>>;

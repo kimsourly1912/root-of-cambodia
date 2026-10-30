@@ -20,6 +20,11 @@ export async function POST(
       throw new DomainError("not_found", 404);
     if (body.reason !== undefined && typeof body.reason !== "string")
       throw new DomainError("invalid_reason", 422);
+    if (
+      body.acceptanceHash !== undefined &&
+      typeof body.acceptanceHash !== "string"
+    )
+      throw new DomainError("invalid_request", 422);
     return transition(
       db,
       actor,
@@ -27,6 +32,7 @@ export async function POST(
       id,
       action as Action,
       body.reason as string | undefined,
+      body.acceptanceHash as string | undefined,
     );
   });
 }

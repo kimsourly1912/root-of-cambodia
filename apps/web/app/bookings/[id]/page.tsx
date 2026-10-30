@@ -5,6 +5,7 @@ import { ownerRead } from "@/src/owner-session";
 import { guestBooking } from "@root-of-cambodia/backend/guest-bookings";
 import { DomainError } from "@root-of-cambodia/backend/errors";
 import { usd, cambodiaTime, bookingStatus } from "@/components/booking-format";
+import { BookingLogistics } from "@/components/booking-logistics";
 import { GuestCancel } from "@/components/guest-cancel";
 export default async function Page({
   params,
@@ -61,18 +62,26 @@ export default async function Page({
             )}
           </>
         )}
-        {b.status === "confirmed" && (
-          <p>
-            Your stay is confirmed. Saved address, contact and arrival details
-            are not available for this booking yet.
-          </p>
-        )}
+        {b.status === "confirmed" && <p>Your stay is confirmed.</p>}
         {["declined", "expired", "cancelled"].includes(b.status) && (
           <Link href="/stays" className="block text-primary underline">
             Explore stays for a new request
           </Link>
         )}
       </section>
+      {b.status === "confirmed" &&
+        (b.logistics ? (
+          <BookingLogistics
+            details={b.logistics}
+            heading="Your address, contact and arrival details"
+            acceptedAt={b.logistics.acceptedAt}
+          />
+        ) : (
+          <p>
+            Saved address, contact and arrival details are unavailable for this
+            earlier booking. Current property details have not been substituted.
+          </p>
+        ))}
       <section className="space-y-4 rounded-xl border p-6">
         <h2 className="text-xl font-semibold">Rooms and price</h2>
         <ul className="space-y-3">
