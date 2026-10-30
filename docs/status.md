@@ -4,7 +4,7 @@
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
+**Last source verification:** 30 October 2026, merged main [4cf4e14](https://github.com/kimsourly1912/root-of-cambodia/commit/4cf4e1405cd707e1c266b2c893aa274676f74b8c); documentation-only booking-journey planning. Application results below are historical unless explicitly identified otherwise.
 
 **Sources:** [.github/workflows/verify.yml](../.github/workflows/verify.yml), [apps/web/app/](../apps/web/app), [apps/jobs/src/index.ts](../apps/jobs/src/index.ts), [apps/web/src/runtime.ts](../apps/web/src/runtime.ts), [apps/jobs/src/runtime.ts](../apps/jobs/src/runtime.ts).
 
@@ -158,9 +158,9 @@ Fresh local Linux checks use Node 24.22.1 and pnpm 12.15.0, synthetic accounts a
 | Native fresh/populated migrations | Fresh 12-migration application/foreign keys and populated 0011→0012 history/receipt/booking preservation passed; no old-row disclosure backfill |
 | Built-Worker HTTP/jobs journeys | Passed; all 12 historical HTTP checks retained, plus anonymous JSON/SSR/media/private-field/cache/cookie/read-only/paused/error checks |
 | Protected source/whitespace/document links | Prior booking operation SQL, migrations 0001–0011, runtime configs and dependency pins/lockfile unchanged; whitespace passed; link count in PR |
-| Matching-browser desktop/phone | Expanded owner/reviewer/visitor journey and new anonymous search/unavailable checks prepared; matching-head CI execution pending |
+| Matching-browser desktop/phone | Final matching-head CI passed all 18 checks; see merged-tree evidence below. No fresh local browser pass |
 
-Final matching-head CI/run evidence belongs in the candidate PR. No fresh local browser pass is claimed: matching Chromium remains unavailable after the previously documented truncated download. No manual visual/accessibility, real-device, staging or live-service pass is established. Production resource/cost, live image fidelity, abuse, recovery and pilot policy gates remain open.
+[PR #23](https://github.com/kimsourly1912/root-of-cambodia/pull/23) merged at main 4cf4e1405cd707e1c266b2c893aa274676f74b8c. Its tree 8d6351356ccc804a136717536c2d5c3ee6883eb7 exactly matches final tested head 6e25f9381735622ab2c00a2956acdb2ac3d3b810. [CI run 40914854898](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40914854898), job 123592239245, succeeded on that head: frozen install, local initialization/bindings/types, both builds, 173 Vitest tests and all 18 matching-Chromium desktop/phone checks. The run status/head and actual merge/tree were rechecked on 30 October; these remain historical execution results, not new application tests in this planning task. No fresh local browser pass is claimed: matching Chromium was unavailable in the implementation session after the previously documented truncated download. No manual visual/accessibility, real-device, staging or live-service pass is established. Production resource/cost, live image fidelity, abuse, recovery and pilot policy gates remain open.
 
 ## Follow-ups requiring separate scope or decisions
 
@@ -173,4 +173,10 @@ Final matching-head CI/run evidence belongs in the candidate PR. No fresh local 
 | Pilot quality | Khmer copy, accessibility, slow-device/performance and real-service validation | No full accessibility, cross-engine/device or capacity certification |
 | Guest booking journey | Define D17 booking-state logistics/snapshot timing and scope request/detail screens next | Anonymous browsing is accepted/implemented locally; published re-consent/editing and public-pilot gates remain open |
 
-Next: review this browsing implementation and its matching-head CI. Then scope guest request/detail screens and explicitly settle D17 before exposing private logistics. Deliberate reviewer-account selection, actual approved terms, published re-consent/editing and staged/live release gates remain open.
+Next: agree with or amend the [booking journey proposal](product/booking-journey-proposal.md), especially D17 confirmation-only disclosure, acceptance-time copy and the explicit legacy/terminal-state behavior, then implement the guest request/tracking slice. Deliberate reviewer-account selection, actual approved terms, published re-consent/editing and staged/live release gates remain open.
+
+## Current next-step planning — 30 October 2026
+
+Branch docs/booking-journey-plan starts from clean updated main 4cf4e14 after confirming PR #23 merged. Source inspection confirms booking quote/detail/action APIs exist, collection reads and guest/owner booking screens are missing, and no property logistics copy exists in the booking projection. The [proposal](product/booking-journey-proposal.md) explains the two focused slices, existing architecture, alternatives, acceptance-time privacy/snapshot tradeoffs, compatibility, failure/retry checks and the decision needed before implementation. D17 stays proposed.
+
+This task changes only five canonical Markdown files. No application/schema/dependency/runtime configuration or data changes, install, local initialization/migration, application tests/build, merge, remote service/data mutation or deployment were performed. Verification covers source accuracy, the docs-only diff allowlist, local Markdown targets/anchors and whitespace; final results and planning commit/PR belong in the handoff. Staging and production readiness are not established.

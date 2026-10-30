@@ -69,6 +69,8 @@ A matching receipt returns the original successful operation after later state/c
 
 ## Planned UI and acceptance
 
+The [30 October booking journey proposal](../product/booking-journey-proposal.md) prepares guest request/tracking and owner response slices, with a concrete D17 recommendation. It is not an implemented endpoint, approved disclosure policy or permission to change acceptance behavior.
+
 The [screen brief](../design/screen-brief.md) describes review/request, pending/confirmed/declined/expired/cancelled detail and booking lists as planned screens. Show full price and exact Cambodia-time deadline; distinguish Pending from Confirmed and booking state from payment. Expose loading, session/verification, changed-price/unavailable, stale and uncertain retry states. Mock controls cannot represent a real booking.
 
 Regressions cover last-room and multi-night/room races, missing coverage, rollback, current authorization, exact deadlines/lead time/cancellation cutoff, replay after later changes, immutable quotes and notification recovery. [Testing](../development/testing.md) specifies the layers; [status](../status.md) identifies observed environment evidence.
