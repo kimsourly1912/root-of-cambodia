@@ -1,6 +1,6 @@
 # Cloudflare staging setup
 
-**Status:** interactive fixture testing prepared; evidence in [status](../status.md).
+**Status:** live interactive fixture testing verified; evidence in [status](../status.md).
 **Responsible role:** maintainer for staging; project owner for account authorization.
 **Verified source date:** 30 October 2026.
 

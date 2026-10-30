@@ -1,6 +1,6 @@
 # Current implementation and verification status
 
-**Status:** interactive Cloudflare fixture testing prepared; email and full pilot/production readiness remain deferred.
+**Status:** live interactive Cloudflare fixture testing verified; email and full pilot/production readiness remain deferred.
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
@@ -31,9 +31,37 @@ The [staging contract](operations/staging.md) records safeguards and limitations
 Strict types and both Worker builds passed locally. The full suite passed
 **221 tests across 29 files**, including four focused staging built-Worker tests: real fictional-account sessions, publication/media/booking
 services, wrong-owner refusal, disabled mail endpoints, sign-out, idempotent seed
-preservation and absence of remote capture/delivery. Exact-source CI, remote population and live verification are pending for this
-candidate. Local matching Chromium remains unavailable after the earlier truncated
-download; matching-browser CI supplies separate browser evidence when complete.
+preservation and absence of remote capture/delivery. [CI 41054931388](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41054931388),
+job 124059956588, passed frozen install, setup/bindings/types, both builds, all 221
+Vitest cases and all **26 matching-Chromium desktop/phone checks** for source
+5d1fa9290cb95acb4f61ee32949877eec6436260, tree
+4ca155f6050b17b3e8a1718e5e2e0f09316f216b. Local matching Chromium remains
+unavailable after the earlier truncated download; browser automation evidence
+comes from that CI run, not a claimed local browser pass.
+
+That runtime is deployed at [staging](https://staging.rootsofcambodia.com/testing),
+version f1b9c633-0d01-4ebc-b6f9-9fd8d3d650ff, deployment
+634f6df2-a628-4dfb-8c39-392872f52092 at 100%. The build upload message references
+local commit 98a2bcb; its tree was verified identical to published source 5d1fa92.
+The isolated fixture bootstrap and normal live HTTPS population completed: four
+properties, three ready photos in private R2, two published stays, one review
+submission, one draft, and Pending/Confirmed guest bookings. Initial room calendar
+range is 2 November through 6 December 2026 (checkout by 7 December).
+
+**58 real HTTPS smoke checks passed** after population: guide/catalog/stay pages,
+normal three-account login/session/Secure-HttpOnly cookies, private owner/reviewer/
+guest reads and cross-role refusal, public processed JPEGs, safe public projection,
+noindex/no-store, disabled registration/recovery/verification/account edits, wrong
+Origin refusal and sign-out/session invalidation. Population additionally exercised
+actual property/information/logistics/room/calendar/photo/disclosure/review/quote/
+request/accept APIs. Remote integrity/FK checks passed; no capture tables or
+email delivery attempts exist. Public desktop visual inspection confirmed the
+populated catalog, images, stay detail and guide. This does not claim manual
+signed-in browser testing, phone hardware, load/restore or email delivery.
+
+Passwords were supplied in a separate private file, never git or public HTML.
+No paid upgrade or account-wide Access resource was created. Final source edits
+only record this evidence; deployed runtime remains the green source above.
 
 An optional Access organization creation was rejected by automatic review because
 it would change account-wide identity settings. No retry or Access resource was
