@@ -133,7 +133,7 @@ export default async function Page({
               )}
               {data.disclosure && (
                 <p className="text-xs text-muted-foreground">
-                  Public display confirmed · {data.disclosure.version}
+                  {data.publication === "draft" ? "Previous submission public display confirmed" : "Public display confirmed"} · {data.disclosure.version}
                 </p>
               )}
               {!data.reviewerConfigured && (
@@ -147,7 +147,7 @@ export default async function Page({
               )}
               {data.publication === "draft" && (
                 <PublicationAction
-                  key={`submit-${data.propertyRevision}-${data.latest?.id}`}
+                  key={`submit-${data.propertyRevision}-${data.latest?.id}-${data.publicPreview?.previewHash}`}
                   url={`/api/owner/properties/${id}/review`}
                   body={{
                     propertyRevision: data.propertyRevision,
