@@ -68,3 +68,9 @@ After the concrete proposal and privacy question, the owner replied “Ok” and
 ## Two stay-operation steps — 30 October 2026
 
 The owner delegated decisions to the stated recommendations and requested merging PRs #24–#26 and starting two more steps. The [selected local scope](stay-operations.md) records the exact schedule window, manual departure/completion, preserved stock/price and full-payment attestation/correction rules, alternatives and open exceptions. D01 is only partially resolved; no-show, overrides, late cancellation, infant/age, privileged support, actual legal/provider/retention and release policies are not invented. This is delegated implementation authority, not a claim of separate literal approval of each rule or permission to deploy/spend.
+
+## Published-listing controls proposal — 30 October 2026
+
+After booking-filter PR #31 merged, the owner requested continuing to the next step. The [concrete D05 proposal](published-listing-controls-proposal.md) recommends two focused stages: owner-attributed pause/resume of an unchanged approval, then offline correction through existing draft editors and fresh explicit public-display acknowledgement/manual review. It preserves existing booking snapshots/actions and explains the absence of automatic updates to Confirmed guests' saved logistics.
+
+These publication transitions and the offline-review policy are **proposed**, not accepted by the continuation request. The recommendation includes fail-closed recovery for unknown/historical pauses, reuse of existing public eligibility without adding calendar/reviewer revocation rules, immutable history, atomic revision/event/receipt and guarded same-attempt recovery. It compares the more complex live parallel-draft alternative. D05 remains open for these choices until explicit agreement; no application/schema/provider/deployment change is authorized by this planning PR.

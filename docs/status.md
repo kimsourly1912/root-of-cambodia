@@ -4,7 +4,7 @@
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 30 October 2026; main abe6ee4c13fbf755c8f0e9d3e67d106a5c5d0edb after authorized PRs #29/#30 merges; subsequent owner-list work is described below.
+**Last source verification:** 30 October 2026; main 42e8c294cacc3a1658d2447cfb8825d9305a911a after PR #31 merged; the next D05 proposal is described below.
 
 **Sources:** [.github/workflows/verify.yml](../.github/workflows/verify.yml), [apps/web/app/](../apps/web/app), [apps/jobs/src/index.ts](../apps/jobs/src/index.ts), [apps/web/src/runtime.ts](../apps/web/src/runtime.ts), [apps/jobs/src/runtime.ts](../apps/jobs/src/runtime.ts).
 
@@ -267,3 +267,11 @@ Branch feat/owner-booking-status-filters starts from that main. The next focused
 Native, actual built-Worker and matching desktop/phone regression checks are included. Fresh execution is pending this branch's PR CI; source inspection alone is not an application pass. The older Windows checkout and unrelated untracked safeguards test are preserved. No deployment, remote migration, provider provisioning, settings change or spending is performed. D01 exceptions, D02/D03/D04/D05/D06 and live email/operations/release gates remain open. The next recommendation after this focused slice is a concrete decision proposal for safe published-listing corrections and owner pause/resume controls (D05), before implementing those policy-sensitive writes.
 
 The first filter run [40991361355](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40991361355) applied fresh migrations through 0018, then correctly failed strict web types: a mutable selected-filter variable captured by the authorized-read callback needed an explicit union type. That declaration is corrected; no type check, runtime guard or assertion is bypassed. A revised full run is required.
+
+## Merged booking filters and proposed listing controls — 30 October 2026
+
+PR #31 is merged at [42e8c294cacc3a1658d2447cfb8825d9305a911a](https://github.com/kimsourly1912/root-of-cambodia/commit/42e8c294cacc3a1658d2447cfb8825d9305a911a). Main's tree 59bb1cc9b118b09b7655581e53c8a00693d70f07 exactly matches tested source d9bafc6cd44d7c88097597a6d63c18372cfb35cc. Its inspected [CI 40991495545](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40991495545), job 123854719441, passed frozen installation, fresh local migrations through 0018, binding generation, strict types, web/jobs builds, **205 Vitest tests across 26 files and all 26 matching-Chromium desktop/phone checks**. These are the prior implementation's Ubuntu/emulator results, not a new execution in this planning task. They supersede the historical filter pending/type-failure notes above.
+
+The owner requested the next step. Branch docs/published-listing-controls-proposal starts from that updated main and prepares the [D05 decision](product/published-listing-controls-proposal.md), with recommendation, alternatives, proposed state/booking/privacy/retry boundaries and future acceptance checks. Scope is documentation only. The recommendation is unchanged-approval pause/resume first, then offline correction/fresh acknowledgement/manual review. These policy-sensitive writes require agreement under the owner's instructions before implementation; no approval is inferred from continuation or a planning PR.
+
+Source review confirms draft-only content/logistics editing, immutable approved public projections, paused-state public refusal and preserved booking access. It is not an executed pause/resume/correction journey. Only documentation scope, relative targets and whitespace are checked for this step; no application install, initialization/migration, build/test, provider operation, merge, deployment or spending is performed by the planning task. The older Windows checkout/untracked test remains untouched. Step 6, real-service staging and pilot readiness remain incomplete.

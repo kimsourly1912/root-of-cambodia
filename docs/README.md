@@ -31,6 +31,7 @@ Report material disagreement. Do not silently rewrite approved policy to match a
 - [Open decisions](product/open-decisions.md)
 - [Accepted publication checklist](product/publication-checklist-proposal.md): approved D05 minimum and remaining boundaries
 - [Accepted guest-browsing slice](product/guest-browsing-proposal.md): public field/media boundary and explicit owner acknowledgement
+- [Proposed published-listing controls and corrections](product/published-listing-controls-proposal.md): D05 decision, two staged slices and alternatives; awaiting agreement
 - [Owner availability and external reservation steps](product/owner-inventory-operations.md): missing owner interfaces over existing stock rules
 - [Selected arrival/completion and payment-record scope](product/stay-operations.md): two local steps under delegated recommendations; money is paid outside the platform
 - [Accepted booking journey](product/booking-journey-proposal.md): guest request/tracking, owner response and D17 privacy/copy decision
