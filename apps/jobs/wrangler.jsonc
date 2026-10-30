@@ -34,4 +34,34 @@
   "observability": {
     "enabled": true,
   },
+  // No Cron, public route or live provider is enabled by this preparation.
+  "env": {
+    "staging": {
+      "account_id": "dcfd514b7e29898cd93e1bbb17b1aa22",
+      "name": "roc-jobs-staging",
+      "workers_dev": false,
+      "preview_urls": false,
+      "routes": [],
+      "vars": { "APP_MODE": "staging" },
+      "d1_databases": [{
+        "binding": "DB",
+        "database_name": "roc-staging",
+        "database_id": "169e1c39-c59a-40c8-8646-b82bbad08a2c",
+        "migrations_dir": "../../packages/backend/migrations",
+      }],
+      "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "roc-media-staging", "remote": false }],
+      "queues": {
+        "producers": [{ "binding": "NOTIFICATIONS", "queue": "roc-notifications-staging" }],
+        "consumers": [{
+          "queue": "roc-notifications-staging",
+          "max_batch_size": 10,
+          "max_batch_timeout": 1,
+        }],
+      },
+      "send_email": [{
+        "name": "EMAIL",
+        "allowed_destination_addresses": ["rootsofcambodia@gmail.com"],
+      }],
+    },
+  },
 }

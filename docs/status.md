@@ -4,11 +4,47 @@
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 30 October 2026; main abe6ee4c13fbf755c8f0e9d3e67d106a5c5d0edb after authorized PRs #29/#30 merges; subsequent owner-list work is described below.
+**Last source verification:** 30 October 2026; main 40f7ffa553a14005f622aa5c846f0f9dc5e70f42 after merged PRs #33/#34. The current handoff below supersedes older pending-CI/merge paragraphs, which remain historical evidence.
 
 **Sources:** [.github/workflows/verify.yml](../.github/workflows/verify.yml), [apps/web/app/](../apps/web/app), [apps/jobs/src/index.ts](../apps/jobs/src/index.ts), [apps/web/src/runtime.ts](../apps/web/src/runtime.ts), [apps/jobs/src/runtime.ts](../apps/jobs/src/runtime.ts).
 
 This is the single current delivery/evidence page. Feature docs define contracts; archive reviews retain older results without becoming additional roadmaps.
+
+## Current handoff — Cloudflare staging preparation
+
+PR #33 (owner pause/resume) and #34 (offline corrections/fresh review) are merged.
+Main 40f7ffa553a14005f622aa5c846f0f9dc5e70f42 has tree
+2d3029c627cbc1035ebeba853a4edcbd23d140de, identical to tested #34 head
+e763dcc6f6987258cc313a889c238db8eeb7ca22. Inspected
+[CI 41017754998](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41017754998)
+and all job steps succeeded; its PR reports 217 Vitest and 26 desktop/phone
+browser checks. These are inspected historical CI results, not new staging or
+local execution. No open PR remained at the start of this setup task.
+
+The owner now authorizes staging and email setup using only Cloudflare products.
+Account inspection found the active rootsofcambodia.com zone, but R2 requires
+dashboard activation and Email Sending API reads reject the connection (401).
+Created an isolated empty roc-staging D1 and roc-notifications-staging queue.
+[Staging setup](operations/staging.md) is the canonical resource inventory and
+continuation sequence, including IDs, authentication/entitlement gaps and
+prepared env.staging configuration. No Worker deployment, route, Cron, email,
+remote migration, legal approval or production mutation occurred.
+
+Next action: resolve the account activation/email access blockers, then complete
+the real Cloudflare provider adapters, secure staging access, ordered database
+setup, deployment and controlled service verification. Runtime local-only guards
+remain intact. Verification of this preparation is recorded in its PR handoff.
+
+Fresh preparation checks on Linux with pinned Node 24.22.1/pnpm 12.15.0 passed
+frozen installation, local-only initialization through 0020, generated runtime/
+binding types, strict backend/web/jobs/test types, five existing tooling tests,
+the OpenNext web build and explicit staging web/jobs Wrangler dry runs. Parsed
+staging configs confirmed the selected account, shared isolated D1, disabled
+public/preview routes and project-only email allowlist. Whitespace and 93
+relative documentation targets passed. Full backend/HTTP/browser suites were
+not rerun for this config/docs-only preparation; no live email or deployed
+service verification is claimed. Browser access to dashboard activation
+requires separate sign-in; connected API access is not a dashboard session.
 
 ## Baseline and evidence
 

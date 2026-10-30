@@ -62,6 +62,7 @@ Report material disagreement. Do not silently rewrite approved policy to match a
 - [Testing](development/testing.md): runtime layers, focused/full checks and fidelity
 - [Contributing/handoff/definition of done](development/contributing.md)
 - [Release and recovery](operations/release-and-recovery.md): local-only configuration, unverified live gates and recovery gaps
+- [Cloudflare staging setup](operations/staging.md): actual isolated resource IDs, account blockers and continuation sequence
 - [Current status and next scope](status.md)
 - [Historical archive and all-original disposition map](archive/README.md)
 
