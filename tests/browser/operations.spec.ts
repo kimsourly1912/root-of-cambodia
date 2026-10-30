@@ -83,7 +83,11 @@ test("owner manages configured nights with protected reservations, exact retry a
   const other = await page.context().browser()!.newContext({baseURL: origin, extraHTTPHeaders: {"X-Test-Client": "availability-other-" + info.project.name}});
   try {
     await account(other.request, `availability-other-${info.project.name}@example.invalid`);
-    expect((await other.request.get(url)).status()).toBe(404);
+    const denied = await other.newPage();
+    await denied.goto(url);
+    await expect(denied.getByRole("heading", {name: "Property unavailable", exact: true})).toBeVisible();
+    await expect(denied.getByRole("heading", {name: "Nightly availability", exact: true})).toHaveCount(0);
+    await expect(denied.getByLabel("Capacity", {exact: true})).toHaveCount(0);
     expect((await other.request.get(api)).status()).toBe(404);
   } finally { await other.close(); }
 });
