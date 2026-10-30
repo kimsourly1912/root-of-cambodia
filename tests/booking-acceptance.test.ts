@@ -1,3 +1,4 @@
+import {atScheduledArrival} from "./stay-fixtures";
 import { test } from "vitest";
 import assert from "node:assert/strict";
 import { env } from "cloudflare:workers";
@@ -374,7 +375,7 @@ test("populated 0013 upgrade retains historical confirmed bookings and receipts 
   }
 });
 
-test("trusted arrival fixtures do not extend guest logistics visibility or enable the blocked arrival service", async () => {
+test("arrival window and later states do not extend guest logistics visibility", async () => {
   const p = await database();
   try {
     const db = p.db,
@@ -383,9 +384,10 @@ test("trusted arrival fixtures do not extend guest logistics visibility or enabl
     await accept(db, r.id);
     await assert.rejects(
       transition(db, owner, "blocked-arrival", r.id, "check_in"),
-      /arrival_policy_decision_required/,
+      /booking_conflict/,
     );
-    // Historical/trusted SQL data only, not an app arrival rule or a supported UI action.
+    // Scope the future schedule clock to this synthetic booking.
+    await atScheduledArrival(db,r.id);
     await operate(
       db,
       owner,

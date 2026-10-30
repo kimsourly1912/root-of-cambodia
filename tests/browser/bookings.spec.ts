@@ -403,6 +403,81 @@ test("guest and owner recover requests/responses and reveal logistics only while
     expect(await page.locator("main").textContent()).not.toContain(
       "PRIVATE_GUEST_ADDRESS",
     );
+    // A fourth stay follows the new arrival/completion UI, with only this fixture's DB clock adjusted.
+    const fourthURL = await anotherRequest(),
+      fourthId = new URL(fourthURL).pathname.split("/").at(-1)!;
+    await ownerPage.goto(
+      `/owner/properties/${property.id}/bookings/${fourthId}`,
+    );
+    await ownerPage.getByRole("checkbox").first().check();
+    await ownerPage
+      .getByRole("button", { name: "Review response", exact: true })
+      .click();
+    await ownerPage
+      .getByRole("button", { name: "Accept and confirm stay", exact: true })
+      .click();
+    await expect(
+      ownerPage.getByText("Confirmed", { exact: true }).first(),
+    ).toBeVisible();
+    await expect(
+      ownerPage.getByRole("button", {
+        name: "Mark guest checked in",
+        exact: true,
+      }),
+    ).toBeDisabled();
+    const instant = Math.floor(Date.parse(night + "T14:00:00+07:00") / 1000);
+    expect(
+      (
+        await owner.post("/__test/stay-clock", {
+          data: { bookingId: fourthId, instant },
+        })
+      ).status(),
+    ).toBe(200);
+    await ownerPage.clock.setFixedTime(new Date(instant * 1000));
+    await ownerPage.reload();
+    await ownerPage
+      .getByLabel("The guest has arrived at the property.", { exact: true })
+      .check();
+    await ownerPage.route(
+      `**/api/bookings/${fourthId}/check_in`,
+      async (route) => {
+        expect((await route.fetch()).status()).toBe(200);
+        await route.abort("failed");
+      },
+      { times: 1 },
+    );
+    await ownerPage
+      .getByRole("button", { name: "Mark guest checked in", exact: true })
+      .click();
+    await expect(
+      ownerPage.getByRole("button", {
+        name: "Retry same stay update",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await ownerPage.reload();
+    await expect(ownerPage).not.toHaveURL(/stayAttempt=/);
+    await expect(
+      ownerPage.getByText("Checked in", { exact: true }).first(),
+    ).toBeVisible();
+    await ownerPage
+      .getByLabel("The guest has left and this stay is finished.", {
+        exact: true,
+      })
+      .check();
+    await ownerPage
+      .getByRole("button", { name: "Mark stay completed", exact: true })
+      .click();
+    await expect(
+      ownerPage.getByText("Completed", { exact: true }).first(),
+    ).toBeVisible();
+    await page.goto(fourthURL);
+    await expect(
+      page.getByText("Completed", { exact: true }).first(),
+    ).toBeVisible();
+    expect(await page.locator("main").textContent()).not.toContain(
+      "PRIVATE_GUEST_ADDRESS",
+    );
     const outsider = await browser.newContext({
       baseURL: origin,
       extraHTTPHeaders: { "X-Test-Client": "guest-other-" + info.project.name },

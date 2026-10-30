@@ -188,7 +188,7 @@ test("private logistics does not change or disclose through booking snapshots, p
     assert.deepEqual(await db.prepare("SELECT * FROM property WHERE id='p'").first(), property);
     assert.deepEqual((await db.prepare("SELECT * FROM inventory_night ORDER BY room_type_id,night").all()).results, stock);
     assert.equal(await scalar(db, "SELECT count(*) n FROM notification_outbox"), outbox);
-    await assert.rejects(transition(db, owner, "arrival", booking.id, "check_in"), /arrival_policy_decision_required/);
+    await assert.rejects(transition(db, owner, "arrival", booking.id, "check_in"), /booking_conflict/);
   } finally { await p.dispose(); }
 });
 test("populated upgrade adds empty logistics tables while retaining existing records and retry receipts", async () => {

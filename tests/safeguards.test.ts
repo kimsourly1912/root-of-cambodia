@@ -1,3 +1,4 @@
+import {atScheduledArrival} from "./stay-fixtures";
 import { test } from "vitest";
 import assert from "node:assert/strict";
 import { database, catalog, request, scalar } from "./support";
@@ -80,6 +81,7 @@ test.each([
         await transition(db, { id: "owner" }, "accept-fixture", id, "accept");
       }
       if (status === "completed") {
+        await atScheduledArrival(db,id);
         const arrival = crypto.randomUUID();
         await db.batch([
           command(db, arrival, "check_in", "owner"),

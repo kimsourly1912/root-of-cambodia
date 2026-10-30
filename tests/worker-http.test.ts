@@ -1,3 +1,4 @@
+import {setStayClock} from "./stay-fixtures";
 import { test, expect } from "vitest";
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
@@ -359,7 +360,7 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
           "arrival",
         )
       ).status,
-      422,
+      409,
     );
     assert.equal(
       (
@@ -643,6 +644,20 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     await db.prepare("UPDATE place SET publication='paused' WHERE id=?").bind(draft.id).run();
     assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id)).status,404);
     assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id+"/photos/"+publicSupply.photoId)).status,404);
+    // Existing owner-only external allocation also supports the scoped arrival/completion actions while paused.
+    const externalPreview=await post("/api/external-reservations",{...selection,preview:true},owner.cookie);
+    assert.equal(externalPreview.status,200);
+    const externalHash=(await externalPreview.json() as {hash:string}).hash;
+    const stayResponse=await post("/api/external-reservations",{...selection,quoteHash:externalHash},owner.cookie,"stay-external");
+    assert.equal(stayResponse.status,200);const stayBooking=await stayResponse.json() as {id:string};
+    const stayRecord=await db.prepare("SELECT checkin_at FROM booking WHERE id=?").bind(stayBooking.id).first<{checkin_at:number}>();
+    assert.equal((await post("/api/bookings/"+stayBooking.id+"/check_in",{},owner.cookie,"stay-early")).status,409);
+    await setStayClock(db,stayBooking.id,stayRecord!.checkin_at);
+    assert.equal((await post("/api/bookings/"+stayBooking.id+"/check_in",{},guest.cookie,"stay-guest")).status,404);
+    assert.equal((await post("/api/bookings/"+stayBooking.id+"/check_in",{},owner.cookie,"stay-arrive")).status,200);
+    assert.equal((await post("/api/bookings/"+stayBooking.id+"/complete",{},owner.cookie,"stay-complete")).status,200);
+    assert.equal((await post("/api/bookings/"+stayBooking.id+"/check_in",{},owner.cookie,"stay-arrive")).status,200);
+    assert.equal((await db.prepare("SELECT status FROM booking WHERE id=?").bind(stayBooking.id).first<{status:string}>())!.status,"completed");
     // Keep newly populated calendar-history references intact while making the
     // application's expected table unavailable for this isolated failure test.
     await db.prepare("ALTER TABLE nightly_rate RENAME TO fault_unavailable_rates").run();
@@ -680,7 +695,7 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
         !diagnosticJson.includes(secret),
         "Private content in diagnostics",
       );
-    assert.equal(await scalar(db, "SELECT count(*) n FROM booking"), 3);
+    assert.equal(await scalar(db, "SELECT count(*) n FROM booking"), 4);
     assert.equal(checks, 12, "All historical built-Worker checks must execute");
     console.log(
       JSON.stringify({

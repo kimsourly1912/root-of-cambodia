@@ -6,6 +6,11 @@ import {
   ownerAttempt,
   type OwnerAttempt,
 } from "@root-of-cambodia/backend/owner-bookings";
+import { OwnerStayAction } from "@/components/owner-stay-action";
+import {
+  ownerStayReceipt,
+  stayIntent,
+} from "@root-of-cambodia/backend/stay-queries";
 import { DomainError } from "@root-of-cambodia/backend/errors";
 import { usd, cambodiaTime, bookingStatus } from "@/components/booking-format";
 import { BookingLogistics } from "@/components/booking-logistics";
@@ -15,17 +20,25 @@ export default async function Page({
   searchParams,
 }: {
   params: Promise<{ id: string; bookingId: string }>;
-  searchParams: Promise<{ response?: string }>;
+  searchParams: Promise<{
+    response?: string;
+    stayAction?: string;
+    stayAttempt?: string;
+  }>;
 }) {
   const { id, bookingId } = await params,
-    { response } = await searchParams,
+    { response, stayAction, stayAttempt } = await searchParams,
     base = `/owner/properties/${id}/bookings/${bookingId}`;
   const responseId =
     typeof response === "string" && /^[0-9a-f-]{36}$/.test(response)
       ? response
       : "";
+  const intent = stayIntent(stayAction, stayAttempt);
+  const stayQuery = intent
+    ? `?stayAction=${intent.action}&stayAttempt=${intent.attempt}`
+    : "";
   const { db, actor } = await ownerSession(
-    base + (responseId ? "?response=" + responseId : ""),
+    base + (responseId ? "?response=" + responseId : stayQuery),
   );
   let b,
     attempt: OwnerAttempt | null = null;
@@ -64,6 +77,11 @@ export default async function Page({
     throw error;
   }
   if (attempt?.receipt) redirect(base);
+  if (
+    intent &&
+    (await ownerRead(() => ownerStayReceipt(db, actor, bookingId, intent)))
+  )
+    redirect(base);
   return (
     <div className="space-y-7">
       <Link
@@ -119,6 +137,11 @@ export default async function Page({
         key={responseId || b.status}
         booking={b}
         attempt={attempt}
+      />
+      <OwnerStayAction
+        key={intent?.attempt || b.status}
+        booking={b}
+        intent={intent}
       />
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">Booking updates</h2>

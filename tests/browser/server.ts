@@ -1,6 +1,7 @@
 // Test-only loopback bridge to the actual built Worker. Never part of the bundle.
 import { createServer } from "node:http";
 import { randomBytes } from "node:crypto";
+import { setStayClock } from "../stay-fixtures.ts";
 import { createTestHarness } from "wrangler";
 const origin = "http://127.0.0.1:8787";
 const harness = createTestHarness({
@@ -57,6 +58,16 @@ const server = createServer(async (req, res) => {
         return;
       }
       chunks.push(chunk);
+    }
+    if (url.pathname === "/__test/stay-clock" && req.method === "POST") {
+      const input = JSON.parse(Buffer.concat(chunks).toString()) as {
+        bookingId: string;
+        instant: number;
+      };
+      await setStayClock(db, input.bookingId, input.instant);
+      res.writeHead(200, { "Cache-Control": "no-store" });
+      res.end();
+      return;
     }
     // Explicit fixture provisioning, solely in this loopback test process.
     if (url.pathname === "/__test/pilot-reviewer" && req.method === "POST") {

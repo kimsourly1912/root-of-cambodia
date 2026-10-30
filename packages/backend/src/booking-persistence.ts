@@ -148,7 +148,8 @@ export type BookingChange =
   | "decline"
   | "cancel_guest"
   | "cancel_owner"
-  | "complete";
+  | "complete"
+  | "check_in";
 const ownerSQL =
   "EXISTS(SELECT 1 FROM property p WHERE p.id=booking.property_id AND p.owner_id=?)";
 
@@ -180,6 +181,7 @@ export async function commitBookingTransition(
       where: "status IN ('pending','confirmed') AND checkin_at>unixepoch()",
     },
     complete: { status: "completed", where: "status='checked_in'" },
+    check_in: { status: "checked_in", where: "status='confirmed'" },
   }[action];
 
   return operate(

@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type {
@@ -20,26 +20,35 @@ export function OwnerBookingResponse({
   const router = useRouter(),
     busy = useRef(false),
     base = `/owner/properties/${b.propertyId}/bookings/${b.id}`;
-  const [action, setAction] = useState(
-      b.status === "pending" && b.expiresAt > Date.now() / 1000
-        ? "accept"
-        : "cancel_owner",
+  const [selectedAction, setAction] = useState(
+      b.status === "pending" ? "accept" : "cancel_owner",
     ),
     [pending, setPending] = useState(false),
     [error, setError] = useState(""),
     [uncertain, setUncertain] = useState(false),
     [blocked, setBlocked] = useState(false),
     [auth, setAuth] = useState(false),
-    [recovery, setRecovery] = useState("");
+    [recovery, setRecovery] = useState(""),
+    [now, setNow] = useState<number | null>(null);
+  useEffect(() => {
+    const tick = () => setNow(Date.now() / 1000);
+    tick();
+    const timer = setInterval(tick, 10000);
+    return () => clearInterval(timer);
+  }, []);
   const choices = [
-    ...(b.status === "pending" && b.expiresAt > Date.now() / 1000
+    ...(now !== null && b.status === "pending" && b.expiresAt > now
       ? ["accept", "decline"]
       : []),
-    ...(["pending", "confirmed"].includes(b.status) &&
-    b.checkinAt > Date.now() / 1000
+    ...(now !== null &&
+    ["pending", "confirmed"].includes(b.status) &&
+    b.checkinAt > now
       ? ["cancel_owner"]
       : []),
   ];
+  const action = choices.includes(selectedAction)
+    ? selectedAction
+    : (choices[0] ?? "cancel_owner");
   const label = (value: string) =>
     ({
       accept: "Accept and confirm stay",
@@ -132,11 +141,13 @@ export function OwnerBookingResponse({
       setPending(false);
     }
   }
+  if (now === null && !attempt)
+    return <p role="status">Loading booking actions…</p>;
   if (!attempt && !choices.length)
     return (
       <p className="text-sm text-muted-foreground">
-        No supported online response is available in this state. Arrival,
-        no-show and post-check-in handling are not available in this preview.
+        No acceptance, decline or pre-check-in cancellation is available in this
+        state.
       </p>
     );
   return (

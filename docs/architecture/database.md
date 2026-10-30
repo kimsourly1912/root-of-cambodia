@@ -28,6 +28,7 @@
 | [0012](../../packages/backend/migrations/0012_public_listing_disclosure.sql) | Immutable owner-attributed public-display version/digest, new submission seal/approval guards and latest-review index; no backfill of earlier approvals |
 | [0013](../../packages/backend/migrations/0013_guest_booking_journey.sql) | Immutable configured terms documents and account-bound request reviews; UI-path submission fencing; no old-data backfill |
 | [0014](../../packages/backend/migrations/0014_booking_acceptance_logistics.sql) | Atomic acceptance-time logistics copies, direct transition/receipt guards and immutable owner response reviews; no historical backfill |
+| [0015](../../packages/backend/migrations/0015_stay_lifecycle.sql) | Database-time owner arrival window; no data backfill or allocation change |
 
 Add a new ordered migration; do not rewrite an applied one. Verify both fresh application and populated upgrades using the configured migration loader/tracker. A failed preflight needs a reviewed repair plan, never deletion of a populated database to force success. The proof schema is independent and is not an application upgrade path.
 

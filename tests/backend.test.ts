@@ -1,3 +1,4 @@
+import {atScheduledArrival} from "./stay-fixtures";
 import { test } from "vitest";
 import assert from "node:assert/strict";
 import {
@@ -300,7 +301,7 @@ test("pending decline and guest cancellation never add stock; completion and arr
     );
     await assert.rejects(
       transition(db, owner, "arrival", b.id, "check_in"),
-      /arrival_policy/,
+      /booking_conflict/,
     );
     await assert.rejects(transition(db, owner, "complete", a.id, "complete"));
   }));
@@ -579,7 +580,8 @@ test("completion from an existing checked-in fixture retains occupied-night allo
   scenario(async (db, { input }) => {
     const r = await request(db, input);
     await transition(db, owner, "accept", r.id, "accept");
-    // Trusted import fixture only: the arrival endpoint remains blocked on policy.
+    // Scoped future schedule fixture; the real arrival guard remains active.
+    await atScheduledArrival(db,r.id);
     const op = crypto.randomUUID();
     await db.batch([
       db
