@@ -42,7 +42,7 @@ test("visibility inputs and current verified ownership are strict; historical/un
     const db=p.db,f=await listingFixture(db),body=await listingBody(db,f.id,"pause");
     for(const actor of [other,guest])await assert.rejects(changeListing(db,actor,"wrong",f.id,body),/not_found/);
     await assert.rejects(changeListing(db,unverified,"wrong",f.id,body),/verified_session_required/);
-    for(const changed of [{action:"reopen"},{action:"toggle"},{revision:-1},{revision:0.1},{revision:null},{reviewId:[]},{confirmed:false},{extra:true}])
+    for(const changed of [{action:["pause"]},{action:{}},{action:"reopen"},{action:"toggle"},{revision:-1},{revision:0.1},{revision:null},{reviewId:[]},{confirmed:false},{extra:true}])
       await assert.rejects(changeListing(db,owner,"bad",f.id,{...body,...changed}),/invalid_listing_control/);
     await db.prepare("UPDATE place SET publication='paused' WHERE id=?").bind(f.id).run();
     assert.equal((await listingControls(db,owner,f.id)).canResume,false);
