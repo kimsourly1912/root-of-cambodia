@@ -32,7 +32,7 @@ export async function submit(
   });
 }
 
-export type Action = BookingChange | "check_in";
+export type Action = BookingChange;
 export async function transition(
   db: D1Database,
   actor: Actor,
@@ -48,13 +48,15 @@ export async function transition(
   if (text && text.length > 2000) throw new DomainError("invalid_reason", 422);
   if (action === "cancel_owner" && !text)
     throw new DomainError("owner_reason_required", 422);
-  // Arrival cutoff/late-arrival procedure is not agreed. No inferred no-show transition.
-  if (action === "check_in")
-    throw new DomainError("arrival_policy_decision_required", 422);
   if (
-    !["accept", "decline", "cancel_guest", "cancel_owner", "complete"].includes(
-      action,
-    )
+    ![
+      "accept",
+      "decline",
+      "cancel_guest",
+      "cancel_owner",
+      "complete",
+      "check_in",
+    ].includes(action)
   )
     throw new DomainError("invalid_action", 422);
   if (

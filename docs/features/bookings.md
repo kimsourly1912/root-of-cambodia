@@ -1,6 +1,6 @@
 # Booking and inventory contract
 
-**Status:** guest request/tracking and owner response/confirmed logistics implemented locally; arrival blocked.
+**Status:** guest request/tracking and owner response/confirmed logistics implemented locally; ordinary arrival/completion added; exceptional handling remains open.
 
 **Responsible role:** booking maintainer; project owner for policy (responsibility, not an assigned person).
 
@@ -51,8 +51,8 @@ Representative codes: quote_required/invalid_request/invalid_dates/invalid_occup
 | System expire | Pending; now >= expiry | Expired; no stock addition |
 | cancel_guest | Same verified guest; Pending/Confirmed; now strictly before check-in | Cancelled; committed allocations released once |
 | cancel_owner | Verified property owner; Pending/Confirmed; now strictly before check-in; nonblank reason <=2,000 chars | Cancelled with attributable reason/outbox; one-time release |
-| check_in | Verified owner access is checked | Always decision-required 422; no arrival transition through service |
-| complete | Verified property owner; existing Checked-in | Completed; preserve history; no complete current arrival-to-stay flow |
+| check_in | Current verified owner; Confirmed; scheduled check-in <= database now < scheduled checkout | Checked-in; owner attests physical arrival; stock and quote unchanged |
+| complete | Current verified owner; Checked-in; manual report that the guest has left | Completed; retain booked dates/price/allocations and independent payment state |
 | External submit | Verified owner, owned property/catalog-priced selection | Immediate Confirmed allocation; anonymous external reservation, not a fabricated guest account |
 
 Optional nonblank reasons are trimmed and capped at 2,000 characters for action calls. The supported service action list is accept, decline, cancel_guest, cancel_owner, check_in and complete. No no-show action exists. The SQL recognizes checked_in but test fixtures/trusted SQL are not approval to bypass the service gate.
@@ -118,3 +118,9 @@ Migration 0014 adds acceptance copies and immutable owner response reviews. It b
 New guest details perform a final scoped status/snapshot read: logistics is allowlisted and returned only for the booking guest while Confirmed. No internal owner IDs, hashes, versions or operation metadata are included. Pending/Declined/Expired/Cancelled/legacy Checked-in/Completed reads omit it. Pausing does not revoke existing Confirmed access. Owners can distinguish the saved acceptance copy from current details. Subsequent property edits never rewrite the copy. Legacy Confirmed bookings without one remain readable with unavailable details. Hiding future responses cannot recall downloaded content; retention/erasure and later guest-notified corrections remain D09/D05/D07.
 
 Booking updates with the same second timestamp use insertion order as the tie-breaker, so Pending appears before its subsequent response/cancellation. No new arrival/no-show/late-cancellation/payment/completion or privileged support operation is enabled.
+
+## Ordinary stay actions — 30 October 2026
+
+The [selected stay scope](../product/stay-operations.md) partially resolves D01 under the owner's delegated recommendation authority. Owner booking detail now offers schedule-bounded check-in and manual completion, with an explicit physical-arrival/departure attestation. Existing action POSTs use the same atomic transition/history/outbox/receipt boundary. Migration 0015 adds a database-time arrival window guard without changing earlier migrations or backfilling arrival. A valid owner operation outside that window returns booking_conflict (409); the old arrival_policy_decision_required code remains a historical compatibility identifier, not the new normal path.
+
+Opaque stay action/attempt URL parameters preserve identical empty-body retries across reload/auth recovery. A private current-owner receipt query redirects a recovered successful result to current booking details. Client clocks guide controls and refresh periodically; server time/permissions remain decisive. Completion never releases originally booked nights early, recalculates prices or implies payment. Cancellation/no-show/overrides are not extended. D17 still hides guest logistics after check-in. Paused listings retain owned existing booking actions.

@@ -12,7 +12,7 @@ This log preserves open policy and operational choices. Options describe decisio
 
 | ID | Decision / options to assess | Consequence / blocking feature |
 | --- | --- | --- |
-| D01 | Arrival eligibility/time cutoff, early/late arrival, no-show, manual exceptions and post-check-in owner/guest cancellation | Blocks check-in, no-show, arrival UI and a complete request-to-stay claim; keep `arrival_policy_decision_required` |
+| D01 | [Selected normal stay flow](stay-operations.md): owner-attested arrival within the booked schedule and manual completion; early/late overrides, no-show and post-check-in cancellation remain open | Ordinary arrival/completion selected under delegated recommendations on 30 October 2026. Exceptions and a complete operational stay claim remain separate |
 | D02 | Adult/child age definitions, infant treatment, party distribution and pilot request/stay limits | Aggregate capacity enforcement exists; does not settle classification, infants or commercial limits |
 | D03 | Physical-unit assignment/continuity versus quantity-only inventory; validate with pilot owners | Nightly quantities cannot guarantee one particular physical room remains free throughout a stay |
 | D04 | External reservation contact/guest fields, negotiated prices and consent evidence | Current owner-only catalog-priced anonymous allocation is narrower than a full external booking workflow |
@@ -64,3 +64,7 @@ After PR #23 merged, the owner requested the next step. The [concrete proposal](
 ## Guest booking decision — 30 October 2026
 
 After the concrete proposal and privacy question, the owner replied “Ok” and expressly authorized finishing guest screens then starting owner responses, accepting the recommendations for this work. [Approval record](booking-journey-proposal.md#approval-record-and-next-action) resolves D17 for the stated matrix/copy/safeguards and authorizes local slices A/B. It is not inferred from a merge. Actual approved legal text, arrival/age/infant/support/corrections/retention/live release decisions remain separate. The accepted implementation uses account-bound server-saved reviews with opaque recovery IDs, immutable terms documents and existing atomic booking operations; no private request payload is persisted in browser storage.
+
+## Two stay-operation steps — 30 October 2026
+
+The owner delegated decisions to the stated recommendations and requested merging PRs #24–#26 and starting two more steps. The [selected local scope](stay-operations.md) records the exact schedule window, manual departure/completion, preserved stock/price and planned full-payment attestation/correction rules, alternatives and open exceptions. D01 is only partially resolved; no-show, overrides, late cancellation, infant/age, privileged support, actual legal/provider/retention and release policies are not invented. This is delegated implementation authority, not a claim of separate literal approval of each rule or permission to deploy/spend.
