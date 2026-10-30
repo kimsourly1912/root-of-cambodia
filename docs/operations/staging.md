@@ -1,6 +1,6 @@
 # Cloudflare staging setup
 
-**Status:** resources provisioned; read-only application prepared; deployment pending.
+**Status:** live read-only preview verified on 30 October 2026.
 **Responsible role:** maintainer for staging; project owner for account authorization.
 **Last account/source verification:** 30 October 2026, based on main
 [40f7ffa](https://github.com/kimsourly1912/root-of-cambodia/commit/40f7ffa553a14005f622aa5c846f0f9dc5e70f42)
@@ -31,15 +31,15 @@ mode, not disabling verification or disguising a remote runtime as local.
 | --- | --- |
 | Account | `dcfd514b7e29898cd93e1bbb17b1aa22`, project account |
 | Domain | `rootsofcambodia.com`, active; zone `ea10d4d2dd807cef27e6907d6ac1d4c5` |
-| Staging origin | `https://staging.rootsofcambodia.com`; route/DNS not yet created |
-| D1 | `roc-staging`, ID `169e1c39-c59a-40c8-8646-b82bbad08a2c`, APAC hint; no application migrations/data applied |
+| Staging origin | [Live staging preview](https://staging.rootsofcambodia.com/); custom domain enabled, alternative preview/Workers subdomains disabled |
+| D1 | `roc-staging`, ID `169e1c39-c59a-40c8-8646-b82bbad08a2c`, APAC hint; existing 0001–0020 applied and tracked; no business data seeded |
 | R2 | Created `roc-media-staging` in APAC after successful activation; managed public domain disabled; no objects uploaded |
 | Queue | `roc-notifications-staging`, ID `2fdbf2b65e5f4fd780a6deb1eb51c8d6`; retained without consumer or schedule |
-| Web | `roc-web-staging`, prepared source/config; not deployed |
+| Web | `roc-web-staging`, deployed and verified; runtime source `87052d21f01eec2c5550d7c839bac7c2c01106ed` |
 | Jobs | `roc-jobs-staging`, prepared inert config; no deployed consumer/Cron |
 | Email | Explicitly deferred by owner; no send binding, live sender, capture table or substitute delivery in staging |
 | Images | Staging binding omitted because uploads/processing are disabled; no entitlement upgrade needed for this slice |
-| CLI | Pinned Wrangler installed; authenticated CLI session not established |
+| CLI | Pinned Wrangler authenticated as the project account with scoped Workers/D1/route access |
 | Access | Account API reports Access not enabled; no organization/policies purchased or created |
 
 Existing apex DNS and unrelated Worker remain unchanged. Resource IDs are
@@ -63,8 +63,8 @@ authentication.
   their existing eligibility/privacy checks. No actual property is seeded and
   no original object is publicly exposed.
 - Staging pages have noindex/nofollow metadata. This is an indexing instruction,
-  not authentication. Public routes remain disabled in the committed config
-  until a matching deployment and its permitted access scope are verified.
+  not authentication. The explicit custom domain is enabled in the staging config. This is an empty
+  anonymous preview; workers.dev and preview URLs remain disabled.
 - Jobs retains its local-only runtime guard. No staged outbox is consumed,
   acknowledged or marked accepted, and no Cron is configured. No recurring
   expiry, cleanup, provider/recovery or inbox-delivery result is claimed.
@@ -82,44 +82,64 @@ On 30 October automatic approval review rejected the first attempt to create
 changes require explicit authorization and contrasted them with the read-only
 preview. The preview restriction concerns visitor actions; provisioning its
 schema is a separate operator write. No rejected mutation was retried through
-a different API, CLI or indirect path. The remote database remains without
-application tables.
+a different API, CLI or indirect path. That was the pre-approval state; the approved completion record below supersedes it.
 
-Before that operator step, obtain explicit approval to apply the existing
-ordered migrations **0001–0020** to this isolated staging database, including
-the standard migration-tracking table. No new SQL migration is introduced;
-no production database, business seed, verification state, terms, data deletion
-or reset is included. The release source already has historical fresh/populated
-upgrade evidence; rerun appropriate local regressions for this runtime change.
+## Approved completion — 30 October 2026
 
-After authorization and a supported secure CLI sign-in, the prepared operator
-command from the repository root is:
+The owner replied **“yes sure, I approve all the ways to finish our staging live
+preview”** to the explicit request to apply 0001–0020 to empty roc-staging and
+authorize Wrangler Workers/D1/route access. This resolved the earlier automatic
+approval blocks for this staging-only operation. Email remains deferred.
 
-```sh
-corepack pnpm --filter @root-of-cambodia/web exec wrangler d1 migrations apply DB --env staging --remote
-```
+- Applied each unchanged ordered SQL file plus its standard d1_migrations entry
+  through the connected Cloudflare D1 query API. This uses the same SQL-plus-
+  tracking batch as pinned Wrangler's buildMigrationQuery/remote query path.
+  No source migration, test fixture, local capture table or business seed was
+  added remotely. Each successful file was recorded before continuing.
+- Remote verification confirmed all 20 ordered entries, empty foreign-key check,
+  quick_check=ok and zero users, places, bookings and outbox records. Pinned
+  Wrangler's remote migration listing confirmed **No migrations to apply**.
+- Authorized Wrangler through its official device flow and verified the exact
+  project account. Generated a separate staging auth secret in process memory
+  and supplied it through stdin to secret bulk; its value was never printed,
+  stored in project files or committed.
+- Uploaded the built web Worker using pinned Wrangler with --env staging and
+  --no-autoconfig. The first framework-wrapper invocation rejected the deploy
+  message's arguments before upload; direct artifact deployment succeeded.
+  No source/dependency or runtime guard was changed to work around it.
+- Connected only staging.rootsofcambodia.com through the native custom-domain
+  API. Updated the staging route in source to match. Existing apex Worker/DNS
+  remained in place. Jobs/queue consumers/Cron remain inactive.
 
-This command has not been executed. The explicit staging environment fixes the
-account/database IDs above and uses the existing authoritative migration path.
-The intended continuation is:
+| Deployment evidence | Actual identifier/result |
+| --- | --- |
+| Tested/deployed runtime source | `87052d21f01eec2c5550d7c839bac7c2c01106ed`, tree `b14a361ebabcd22b12a1e7d72ff0d0f23201ca10` |
+| Matching CI | [41048026281](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41048026281), all install/setup/types/build/test/Chromium/browser steps passed |
+| Uploaded code version | `cc08dc4f-866e-4ef4-a124-523f230ab022` |
+| Active version after secret configuration | `9d04d48c-284a-4684-b217-19dd9a258eec`, 100% |
+| Active deployment | `de27e66e-8a31-4e8b-86aa-d6c1cbde9b3f` |
+| Staging custom domain | `df52751893e834f0fdadc23cc593ad7c2c2d942f`, enabled; preview routing off |
+| Upload | 70 new assets; 60 existing reused; 1667.01 KiB gzip Worker; reported startup 14ms |
+| Remote configuration | Correct D1/R2/ASSETS, exact staging mode/origin and secret binding; no Email/Images binding |
+| Live smoke | **18 passed** over real HTTPS, plus desktop browser catalog navigation/visual inspection |
 
-1. Recheck the account, exact staging database and migration history. Apply
-   committed migrations with pinned Wrangler, retaining its atomic file and
-   migration-history behavior. Do not run local capture-table initialization
-   remotely or wrap the real database in test fixtures.
-2. Generate a separate staging `BETTER_AUTH_SECRET` securely. Never reuse a
-   local secret, print it or commit it. Build and dry-run the final source and
-   explicit staging environment before deployment.
-3. Deploy the web Worker with no Email/Images dependency. Keep jobs inert.
-   Record source SHA, artifact/deployment IDs and resources before attaching
-   the staging hostname; do not change the apex or workers.dev exposure.
-4. Limit any initial anonymous deployment to this empty read-only preview.
-   Confirm account APIs/private routes/writes remain unavailable. A future
-   authenticated or data-bearing staging pilot needs controlled audience
-   access, real email and the existing release/privacy/operations gates.
-5. Check real HTTPS pages/assets, D1 catalog, auth/write/cache/robots behavior
-   and private R2 configuration. Record actual results in status/PR. A build or
-   isolated emulator pass is not live deployment evidence.
+The smoke verified homepage and empty catalog HTML/API, five unavailable account
+screens without credential forms, null session without a cookie, signup/sign-in/
+reset/booking/property mutation refusals, GET verification refusal, private read
+401s, no-store/noindex behavior and stylesheet delivery. Subsequent remote counts
+confirm no account/business/outbox side effects and no local capture tables.
+
+The code artifact remains the green runtime source above. The later handoff
+commit changes only the custom-domain declaration and documentation to reflect
+actual deployment; the runtime was not rebuilt or changed after verification.
+No staging content, full booking/auth flow, inbox delivery, live image processing,
+load/restore drill, manual Khmer/accessibility or real-device acceptance is claimed.
+
+For later releases, inspect account/resource/migration state first. Keep source
+route configuration aligned with the custom domain, preserve the distinct secret
+and apply any future approved additive migrations through the controlled release
+path. Do not reset staging to make migration history disappear. A code rollback
+does not undo database state; consult [release/recovery](release-and-recovery.md).
 
 ## Later email and pilot work
 

@@ -1,6 +1,6 @@
 # Current implementation and verification status
 
-**Status:** read-only staging prepared; remote schema/deployment pending; no pilot/production readiness established.
+**Status:** live read-only staging verified; no full pilot/production readiness established.
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
@@ -34,27 +34,41 @@ provider/table, fake verified user, Email/Images binding, notification consumer
 or Cron is introduced. Existing local account/booking behavior is preserved.
 The current draft PR contains this work; it is not merged by this task.
 
-Automatic approval review rejected creation of the remote migration-tracking
-table, requiring explicit approval for persistent remote schema changes. The
-rejected action was not retried by another path; no application migrations or
-business data were written remotely. Next operator action is explicit approval
-to apply existing ordered 0001–0020 to the isolated roc-staging D1, followed by
-secure CLI authentication, a matching web deployment and real service checks.
-No production mutation, paid upgrade, live email or deployed readiness is claimed.
-Fresh Linux verification with Node 24.22.1/pnpm 12.15.0 passed generated binding/
-runtime types, strict backend/web/jobs/test types, actual OpenNext web/jobs builds,
-explicit staging web/jobs dry runs and **219 tests across 29 files**, including
-all prior cases and two staging tests. The staging Worker test applied the real
-schema only to isolated local bindings and proved no auth/business/outbox changes
-or capture tables after rejected requests. Initial test setup incorrectly let
-the backend glob also load the Node harness; it now excludes the new HTTP test,
-matching the existing worker-test split. The original local and native checks
-remain intact. The new streamed owner-redirect assertion verifies the explicit
-sign-in refresh and absence of owner creation controls instead of assuming 307.
+The owner explicitly approved applying existing 0001–0020 to the empty staging
+D1 and Wrangler's deployment permissions, resolving the earlier automatic review
+blocks. All 20 files and standard tracking were applied; remote foreign-key and
+quick checks passed, with zero business records and no capture tables. Pinned
+Wrangler confirmed no unapplied migrations and deployed the tested web artifact.
 
-Matching Chromium installation failed with a truncated/invalid archive; no fresh
-local browser pass or executable override is claimed. PR CI is separate. No
-remote schema mutation, live HTTP, inbox or full pilot verification is claimed.
+**Live preview:** [staging.rootsofcambodia.com](https://staging.rootsofcambodia.com/).
+Runtime source 87052d21f01eec2c5550d7c839bac7c2c01106ed has matching successful
+[CI 41048026281](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41048026281),
+including frozen install, setup/types, both builds, full tests and matching
+Chromium desktop/phone checks. Local types/builds/dry runs and **219 tests across
+29 files** passed. Local matching-browser download failed with a truncated archive;
+CI supplies its own browser evidence. Initial staging-test harness placement and
+streamed-redirect expectations were corrected without weakening prior checks.
+
+The deployed app's secret was generated separately without printing/committing
+its value. Active deployment de27e66e-8a31-4e8b-86aa-d6c1cbde9b3f serves version
+9d04d48c-284a-4684-b217-19dd9a258eec at 100% after secret configuration. Only the
+staging custom domain was attached; workers.dev/preview URLs, Email/Images,
+queue consumer and Cron stay disabled. The [staging inventory](operations/staging.md)
+records full identifiers, migration/deployment method and future release steps.
+
+**18 real HTTPS smoke checks passed**, covering pages/styles, empty D1 catalog,
+noindex/no-store, unavailable account forms, null session, auth/write refusal and
+private read boundaries. Live desktop browser navigation and visual inspection
+confirmed the empty catalog. Post-smoke counts remain zero for users, sessions,
+verification/rate-limit rows, properties, bookings, operations/outbox/delivery
+attempts; no capture tables exist. No paid upgrade, real email, real business seed,
+production mutation or full authenticated/pilot-readiness result is claimed.
+
+The final handoff changes only source custom-domain config and docs to match
+live state; deployed runtime code remains the exact green source above. PR #35
+holds the implementation/handoff; it is not merged by this task. Next product
+work is evaluating this limited preview. Wait for the owner's Cloudflare upgrade
+before real Email Sending/auth/booking-provider work and the remaining pilot gates.
 
 ## Baseline and evidence
 
