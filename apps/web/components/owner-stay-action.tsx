@@ -40,7 +40,7 @@ export function OwnerStayAction({
   if (!action) return null;
   async function apply(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy.current || blocked || !action) return;
+    if (now === null || busy.current || blocked || !action) return;
     busy.current = true;
     setPending(true);
     setError("");
@@ -121,6 +121,7 @@ export function OwnerStayAction({
             className="mt-1 size-4 shrink-0"
             defaultChecked={!!intent}
             disabled={
+              now === null ||
               pending ||
               uncertain ||
               blocked ||
@@ -137,7 +138,7 @@ export function OwnerStayAction({
           <Button
             type="submit"
             disabled={
-              pending || (action === "check_in" && !inWindow && !intent)
+              now === null || pending || (action === "check_in" && !inWindow && !intent)
             }
           >
             {pending
