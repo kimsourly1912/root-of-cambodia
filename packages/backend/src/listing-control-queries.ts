@@ -38,7 +38,8 @@ export async function listingControls(db:D1Database,actor:Actor,propertyId:strin
   const current=await listingState(db,actor,propertyId);
   if (current.revision!==state.revision || current.publication!==state.publication || current.reviewId!==state.reviewId)
     throw new DomainError("listing_conflict");
-  return {...state,canPause:state.publication==="published",canResume,ownerPaused:!!ownerPaused,
+  return {...state,canPause:state.publication==="published",canResume,canReopen:!!ownerPaused,
+    correctionDraft:state.publication==="draft"&&last?.action==="reopen",ownerPaused:!!ownerPaused,
     history:history.map(({actorId:_actor,reviewId:_review,...event})=>event)};
 }
 export type ListingControls=Awaited<ReturnType<typeof listingControls>>;

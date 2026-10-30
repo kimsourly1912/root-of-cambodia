@@ -657,6 +657,38 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     assert.equal(resumeState.canResume,true);
     assert.equal((await post(visibilityPath,{action:"resume",revision:resumeState.revision,reviewId:resumeState.reviewId,confirmed:true},owner.cookie,"visibility-resume")).status,200);
     assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id)).status,200);
+    const confirmedBeforeCorrection=await(await server.fetch(baseURL+detailPath,{headers:{Cookie:guest.cookie}})).json() as {logistics:unknown};
+    const controlsBeforeCorrection=await(await server.fetch(baseURL+visibilityPath,{headers:{Cookie:owner.cookie}})).json() as {revision:number;reviewId:string};
+    assert.equal((await post(visibilityPath,{action:"pause",revision:controlsBeforeCorrection.revision,reviewId:controlsBeforeCorrection.reviewId,confirmed:true,unexpected:true},owner.cookie,"correction-extra")).status,422);
+    const ownerPauseForCorrection={action:"pause",revision:controlsBeforeCorrection.revision,reviewId:controlsBeforeCorrection.reviewId,confirmed:true};
+    assert.equal((await post(visibilityPath,ownerPauseForCorrection,owner.cookie,"correction-pause")).status,200);
+    const reopeningState=await(await server.fetch(baseURL+visibilityPath,{headers:{Cookie:owner.cookie}})).json() as {revision:number;reviewId:string};
+    const reopenBody={action:"reopen",revision:reopeningState.revision,reviewId:reopeningState.reviewId,confirmed:true};
+    const reopened=await post(visibilityPath,reopenBody,owner.cookie,"http-reopen");
+    assert.equal(reopened.status,200);assert.equal((await reopened.json() as {status:string}).status,"draft");
+    assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id)).status,404);
+    const stillConfirmed=await(await server.fetch(baseURL+detailPath,{headers:{Cookie:guest.cookie}})).json() as {logistics:unknown};
+    assert.deepEqual(stillConfirmed.logistics,confirmedBeforeCorrection.logistics);
+    const patchCorrection=async(path:string,body:unknown,key:string)=>server.fetch(baseURL+path,{method:"PATCH",headers:{Cookie:owner.cookie,Origin:baseURL,"Content-Type":"application/json","Idempotency-Key":key},body:JSON.stringify(body)});
+    const infoPath="/api/owner/properties/"+draft.id+"/information";
+    const savedInformation=await(await server.fetch(baseURL+infoPath,{headers:{Cookie:owner.cookie}})).json() as Record<string,unknown>;
+    assert.equal((await patchCorrection(infoPath,{...savedInformation,description:"Corrected HTTP public description"},"http-correct-information")).status,200);
+    const logisticsPath="/api/owner/properties/"+draft.id+"/logistics";
+    const savedLogistics=await(await server.fetch(baseURL+logisticsPath,{headers:{Cookie:owner.cookie}})).json() as Record<string,unknown>;
+    assert.equal((await patchCorrection(logisticsPath,{...savedLogistics,contactEmail:"corrected-http@example.invalid"},"http-correct-logistics")).status,200);
+    const correctionReady=await(await server.fetch(baseURL+reviewPath,{headers:{Cookie:owner.cookie}})).json() as {propertyRevision:number;publicPreview:{version:string;previewHash:string}};
+    const correctedSubmission=await post(reviewPath,{action:"submit",propertyRevision:correctionReady.propertyRevision,
+      publicDisclosure:{version:correctionReady.publicPreview.version,previewHash:correctionReady.publicPreview.previewHash}},owner.cookie,"http-corrected-submit");
+    assert.equal(correctedSubmission.status,200);const correctedRequest=await correctedSubmission.json() as {id:string};
+    const correctedReview=await(await server.fetch(baseURL+"/api/property-reviews/"+correctedRequest.id,{headers:{Cookie:other.cookie}})).json() as {configRevision:number};
+    assert.equal((await post("/api/property-reviews/"+correctedRequest.id,{action:"approve",revision:1,configRevision:correctedReview.configRevision},other.cookie,"http-corrected-approve")).status,200);
+    const correctedListing=await(await server.fetch(baseURL+"/api/stays/"+draft.id)).json() as {description:string};
+    assert.equal(correctedListing.description,"Corrected HTTP public description");
+    assert.ok(!JSON.stringify(correctedListing).includes("corrected-http@example.invalid"));
+    assert.deepEqual((await(await server.fetch(baseURL+detailPath,{headers:{Cookie:guest.cookie}})).json() as {logistics:unknown}).logistics,confirmedBeforeCorrection.logistics);
+    assert.equal((await post(visibilityPath,reopenBody,owner.cookie,"http-reopen")).status,200);
+    assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id)).status,200);
+
 
     const filteredBase=baseURL+"/api/owner/properties/"+draft.id+"/bookings";
     const filtered=await server.fetch(filteredBase+"?status=confirmed",{headers:{Cookie:owner.cookie}});
@@ -722,7 +754,11 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     assert.equal((await post(paymentPath,{action:"record",revision:0,amountCents:1},owner.cookie)).status,422);
     assert.equal((await post(paymentPath,{action:"record",revision:0},owner.cookie)).status,200);
     const recorded=await post(paymentPath+"/apply",{},owner.cookie);assert.equal(recorded.status,200);assert.ok(recorded.headers.get("cache-control")?.includes("no-store"));
-    assert.deepEqual(await (await post(paymentPath+"/apply",{},owner.cookie)).json(),await recorded.json());
+    assert.equal(recorded.bodyUsed,false);
+    const recordedReceipt=await recorded.json();
+    const replayedPayment=await post(paymentPath+"/apply",{},owner.cookie);
+    assert.equal(replayedPayment.status,200);assert.equal(replayedPayment.bodyUsed,false);
+    assert.deepEqual(await replayedPayment.json(),recordedReceipt);
     assert.equal((await server.fetch(baseURL+paymentPath,{headers:{Cookie:other.cookie}})).status,404);
     const correctionPath=paymentBase+"/attempts/"+crypto.randomUUID();
     assert.equal((await post(correctionPath,{action:"void",revision:1,reason:"PRIVATE_PAYMENT_CORRECTION"},owner.cookie)).status,200);

@@ -37,6 +37,9 @@ export default async function Page({
         Save your location, contact details and arrival instructions privately.
       </p>
       <PropertyNavigation propertyId={id} active="logistics" />
+      {data.property.publication==="draft"&&<p role="note" className="my-5 rounded-lg border p-4 text-sm">
+        Changes here do not update contact or arrival details already saved for confirmed bookings, and do not notify those guests.
+      </p>}
       <PropertyLogisticsForm
         key={id}
         propertyId={id}

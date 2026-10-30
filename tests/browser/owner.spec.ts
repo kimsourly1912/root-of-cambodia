@@ -1287,6 +1287,62 @@ test("sole pilot reviewer returns corrections and publishes only with configured
       await page.reload();
       await expect(page.getByRole("heading",{name:"Published",exact:true})).toBeVisible();
       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+      // Offline correction cannot restore the prior approval; explicit new acknowledgement/review is required.
+      await visibility.getByRole("checkbox").check();
+      await visibility.getByRole("button",{name:"Pause listing",exact:true}).click();
+      await expect(visibility.getByRole("status")).toContainText("paused");
+      await page.reload();
+      await expect(visibility.getByRole("button",{name:"Start corrections",exact:true})).toBeDisabled();
+      await expect(visibility.getByText(/cannot resume the old approval/)).toBeVisible();
+      await visibility.getByRole("checkbox").check();
+      let reopenKey="",reopenBody="";
+      await page.route("**"+listingApi,async route=>{
+        reopenKey=route.request().headers()["idempotency-key"];reopenBody=route.request().postData()!;
+        expect((await route.fetch()).status()).toBe(200);await route.abort("failed");
+      },{times:1});
+      await visibility.getByRole("button",{name:"Start corrections",exact:true}).click();
+      await expect(visibility.getByRole("button",{name:"Retry same visibility action",exact:true})).toBeVisible();
+      await page.route("**"+listingApi,async route=>{
+        expect(route.request().headers()["idempotency-key"]).toBe(reopenKey);expect(route.request().postData()).toBe(reopenBody);
+        await route.continue();
+      },{times:1});
+      await visibility.getByRole("button",{name:"Retry same visibility action",exact:true}).click();
+      await expect(visibility.getByRole("status")).toContainText("draft");
+      await page.reload();
+      await expect(visibility.getByRole("button",{name:"Resume listing",exact:true})).toHaveCount(0);
+      await expect(visibility.getByRole("link",{name:"Edit property draft",exact:true})).toBeVisible();
+      expect((await visitor.request.get("/api/stays/"+property.id)).status()).toBe(404);
+      await expect(page.getByLabel("I understand these listing details and processed photos will be visible publicly after approval.",{exact:true})).not.toBeChecked();
+      await page.goto(base+"/information");
+      await page.getByLabel("Property description",{exact:true}).fill("Corrected public description "+info.project.name);
+      await page.getByRole("button",{name:"Save property information",exact:true}).click();
+      await expect(page.getByRole("status")).toContainText("saved");
+      await page.goto(base+"/logistics");
+      await expect(page.getByRole("note")).toContainText("do not update contact or arrival details already saved for confirmed bookings");
+      await page.getByLabel("Contact email",{exact:true}).fill("corrected-reception@example.invalid");
+      await page.getByRole("button",{name:"Save location and contact",exact:true}).click();
+      await expect(page.getByRole("status")).toContainText("saved");
+      await page.goto(base+"/review");
+      await expect(page.getByRole("button",{name:"Submit saved draft",exact:true})).toBeDisabled();
+      await page.getByLabel("I understand these listing details and processed photos will be visible publicly after approval.",{exact:true}).check();
+      await page.getByRole("button",{name:"Submit saved draft",exact:true}).click();
+      await expect(page.getByRole("heading",{name:"Awaiting review",exact:true})).toBeVisible();
+      const corrected=(await(await page.request.get(api)).json()).latest;
+      expect(corrected.id).not.toBe(next.id);
+      expect((await visitor.request.get("/api/stays/"+property.id)).status()).toBe(404);
+      await reviewerPage.goto("/review/"+corrected.id);
+      await expect(reviewerPage.getByText("Corrected public description "+info.project.name,{exact:true}).first()).toBeVisible();
+      await reviewerPage.getByRole("button",{name:"Approve and publish",exact:true}).click();
+      await expect(reviewerPage).toHaveURL(/\/review$/);
+      const correctedPublic=await(await visitor.request.get("/api/stays/"+property.id)).json();
+      expect(correctedPublic.description).toBe("Corrected public description "+info.project.name);
+      expect(JSON.stringify(correctedPublic)).not.toContain("corrected-reception@example.invalid");
+      expect((await page.request.post(listingApi,{headers:{...headers,"Idempotency-Key":reopenKey},data:JSON.parse(reopenBody)})).status()).toBe(200);
+      expect((await visitor.request.get("/api/stays/"+property.id)).status()).toBe(200);
+      await page.goto(base+"/review");
+      await expect(page.getByRole("heading",{name:"Published",exact:true})).toBeVisible();
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+
 
     } finally { await visitorContext.close(); }
   } finally {

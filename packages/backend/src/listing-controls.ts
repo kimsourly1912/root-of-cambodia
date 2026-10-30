@@ -7,7 +7,7 @@ export async function changeListing(db:D1Database,actor:Actor,key:string,propert
   if(!raw || typeof raw!=="object" || Array.isArray(raw))throw new DomainError("invalid_listing_control",422);
   const b=raw as Record<string,unknown>;
   if(Object.keys(b).some(k=>!["action","revision","reviewId","confirmed"].includes(k)) ||
-    typeof b.action!=="string" || !["pause","resume"].includes(b.action) || !Number.isSafeInteger(b.revision) ||
+    typeof b.action!=="string" || !["pause","resume","reopen"].includes(b.action) || !Number.isSafeInteger(b.revision) ||
     Number(b.revision)<0 || Number(b.revision)>=2147483647 ||
     !(b.reviewId===null || typeof b.reviewId==="string" && /^[A-Za-z0-9_-]{1,128}$/.test(b.reviewId)) ||
     b.confirmed!==true) throw new DomainError("invalid_listing_control",422);

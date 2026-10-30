@@ -460,6 +460,20 @@ test("guest and owner recover requests/responses and reveal logistics only while
     await expect(
       ownerPage.getByText("Checked in", { exact: true }).first(),
     ).toBeVisible();
+    // Completion must not natively navigate when scripts have not hydrated its form.
+    let releaseStayScripts!:()=>void;
+    const stayScriptsReady=new Promise<void>(resolve=>{releaseStayScripts=resolve;});
+    await ownerPage.route("**/_next/static/**/*.js*",async route=>{await stayScriptsReady;await route.continue();});
+    try {
+      await ownerPage.reload({waitUntil:"commit"});
+      await expect(ownerPage.getByLabel("The guest has left and this stay is finished.",{exact:true})).toBeDisabled();
+      await expect(ownerPage.getByRole("button",{name:"Mark stay completed",exact:true})).toBeDisabled();
+    } finally {
+      releaseStayScripts();
+      // The one-shot lost check-in hook above has completed; drain only the delayed scripts.
+      await ownerPage.unrouteAll({behavior:"wait"});
+    }
+    await ownerPage.waitForLoadState("load");
     await ownerPage
       .getByLabel("The guest has left and this stay is finished.", {
         exact: true,
