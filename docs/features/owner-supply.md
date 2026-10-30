@@ -94,3 +94,11 @@ The UI supports empty, unsaved, saving, unavailable, uncertain retry and stale-c
 ## Public display boundary
 
 Draft uploads/originals and exact logistics remain private. The owner now previews the explicit [guest listing](guest-browsing.md) and confirms its public fields/processed photos when submitting for review. This does not release an earlier upload/approval, expose an original or define guest booking-state logistics. Approved newly authorized listings use the separate public reader; existing private owner/reviewer endpoints retain their access checks.
+
+## Configured-night operational availability
+
+The separate /owner/properties/:id/availability page lists owned room types with bounded pagination; /:roomId reads seven nights through the existing scoped calendar reader. It remains available across listing states. It exposes the existing /api/inventory versioned one-night update for configured rows, while the draft calendar continues to own initial rates/stock setup. No published content/price editing is added.
+
+Capacity and blocked are editable; reserved/price are read-only. Missing inventory has no save control. A loaded revision protects against concurrent bookings/edits; all authoritative stock/history/receipt guarantees remain in the existing service and named persistence. Successful saves require latest-week reload before another edit. Lost/5xx responses freeze the exact attempt in the open tab; retries preserve the key/body. Stale/definite conflicts require reload. Reload/navigation loses an uncertain in-memory attempt; sign-in opens another tab to preserve it. This slice adds no durable availability-attempt storage or multi-night atomic save.
+
+The [two-step scope](../product/owner-inventory-operations.md) records the authority, alternatives, external reservation follow-up and unchanged policy gates. Browser coverage includes saved counts, lost-response exact retry, stale tabs, reserved-unit protection, missing dates, invalid date links, owner isolation and desktop/phone overflow checks. Actual results belong in status/PR.
