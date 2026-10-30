@@ -1053,7 +1053,9 @@ test("sole pilot reviewer returns corrections and publishes only with configured
       await expect(page.getByRole("button", { name: "Submit saved draft", exact: true })).toBeDisabled();
     } finally {
       releaseScripts();
-      await page.unroute(scriptPattern, deferScripts);
+      // This is the only page route installed in this part of the journey.
+      // Drain released handlers before cleanup so requests are not continued twice.
+      await page.unrouteAll({ behavior: "wait" });
     }
     await page.waitForLoadState("load");
     await expect(page.getByRole("button", { name: "Submit saved draft", exact: true })).toBeDisabled();
