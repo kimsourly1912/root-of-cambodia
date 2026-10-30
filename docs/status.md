@@ -4,7 +4,7 @@
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 30 October 2026; main b9392de after authorized PRs #24–#26 merges, with the two stay/payment steps described at the end of this page.
+**Last source verification:** 30 October 2026; main badd76c9c2d541f12676235e46cc1f0579881090 after authorized PRs #27/#28 merges; subsequent owner-operations work is described below.
 
 **Sources:** [.github/workflows/verify.yml](../.github/workflows/verify.yml), [apps/web/app/](../apps/web/app), [apps/jobs/src/index.ts](../apps/jobs/src/index.ts), [apps/web/src/runtime.ts](../apps/web/src/runtime.ts), [apps/jobs/src/runtime.ts](../apps/jobs/src/runtime.ts).
 
@@ -45,10 +45,10 @@ Historical audit/photo evidence remains in the [archive](archive/README.md), wit
 | Accounts | Implemented locally | Email/password, email verification, recovery, verified private owner access; auth mail is local capture |
 | Owner supply | Implemented private draft subset | Property basics, room types, weekly USD prices/stock, information, private photos and private location/contact/arrival notes; [contract](features/owner-supply.md) |
 | Booking foundation | Implemented API/database subset | Quotes, submission/detail, accept/decline/cancel/expiry, external allocation and inventory; [contract](features/bookings.md) |
-| Arrival/completion | Blocked/incomplete | `check_in` rejects with decision-required; complete requires an already checked-in record; no complete stay lifecycle |
+| Arrival/completion | Implemented ordinary local flow | Schedule-bounded owner-attested check-in/manual completion; exceptional handling remains open |
 | Notifications | Implemented local substitute | Outbox, queues, lease fencing/backoff and capture; real sending/reminders/operations remain incomplete |
 | Guest stay browsing | Implemented local candidate | Anonymous allowlisted search/province/pagination/detail and processed-photo reads with explicit owner acknowledgement; [contract](features/guest-browsing.md). Destinations/maps and booking UI remain later work |
-| Guest and owner booking screens | Implemented locally in stacked PRs | Guest selection/review/recovery/list/detail/cancellation and owner list/detail/accept/decline/cancellation; arrival/payment/completion and broad admin remain unfinished |
+| Guest and owner booking screens | Implemented locally | Guest selection/review/recovery/list/detail/cancellation and owner responses, ordinary arrival/completion and full-payment records; broad admin/support and exceptional stays remain unfinished |
 | Publication review | Implemented local pilot subset | Owner submit/withdraw, configured sole reviewer, correction notes, immutable snapshots and terms-gated approval; [contract](features/publication-review.md) |
 | Partner/admin/support | Planned | No general partner/contact submission, broad account/moderation or support dashboard |
 | Other-category reservations/payments | Deferred | Accommodation-first, pay-at-property v1 remains accepted policy |
@@ -231,3 +231,15 @@ Payment [run 40984046472](https://github.com/kimsourly1912/root-of-cambodia/acti
 The test now releases delayed scripts and drains running handlers with Playwright's documented unrouteAll({ behavior: "wait" }) before proceeding. At this point the script hook is the page's only registered route; later lost-response hooks are installed afterward. This preserves errors, delayed-script disabled-control assertions, normal confirmation, stale-preview checks and retry/privacy coverage, with no retries, longer timeouts or product/schema/dependency changes.
 
 Validation for the repair is pending fresh matching-head GitHub CI. No local application execution is claimed from the older checkout. Final CI source/run and sequential merge results belong in the PR handoff. Stay #27's already-inspected run 40981344255 is green. Staging/live providers, deployment and remote migrations remain outside this repair.
+
+## Next two owner operations — 30 October 2026
+
+Main badd76c9c2d541f12676235e46cc1f0579881090 contains merged #27/#28 and exactly matches the repaired source whose [CI 40986054414](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40986054414) passed 195 Vitest and 20 matching-browser checks. Both merges and zero source differences were inspected in the prior task; these are historical CI/emulator results, not staging verification.
+
+The owner requested starting the next two steps. The [selected scope](product/owner-inventory-operations.md) implements missing interfaces for existing configured-night inventory updates, followed by existing catalog-priced anonymous external reservations. This does not settle wider D04 external contact/pricing or D05 published content policy.
+
+Step A branch feat/owner-availability-operations starts at that main. New private pages expose room pagination, seven-night reads and the existing one-night capacity/blocked update, preserving reserved counts, revision checks and atomic history/receipt. Draft-only rate/row setup remains unchanged. Uncertain saves retry the exact key/body in the same tab; stale saves require reload, and pending attempts do not survive tab closure. Only the bounded local availability return path is added to auth navigation.
+
+Source checks cover the focused diff and existing route/service contracts; fresh application validation is pending new PR CI. No application install/build/test is claimed in the preserved old Windows checkout. No migration, dependency/config/provider change, merge, deployment, remote operation or spending is performed by this step.
+
+Availability initial [CI 40987441421](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/40987441421) passed installation/types/builds, 196 Vitest tests and all 20 prior browser cases. Both new browser projects completed save/retry/stale/protected-stock/missing-date assertions, then failed an incorrect expectation that a streamed Next.js not-found page must use HTTP 404. The corrected assertion requires the denied Property unavailable screen and absence of nightly availability/edit controls; the API's exact 404 assertion remains. No product guard, timeout or retry was relaxed. Revised-head CI must still pass.

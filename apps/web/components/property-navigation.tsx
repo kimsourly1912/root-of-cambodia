@@ -11,7 +11,8 @@ export function PropertyNavigation({
     | "photos"
     | "logistics"
     | "review"
-    | "bookings";
+    | "bookings"
+    | "availability";
 }) {
   const base = `/owner/properties/${propertyId}`;
   return (
@@ -27,6 +28,7 @@ export function PropertyNavigation({
         ["logistics", "Location & contact", base + "/logistics"],
         ["review", "Publication review", base + "/review"],
         ["bookings", "Bookings", base + "/bookings"],
+        ["availability", "Availability", base + "/availability"],
       ].map(([key, label, href]) => (
         <Link
           key={key}
