@@ -659,7 +659,9 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     const newExternal=await post(externalPath+"/apply",{confirmed:true},owner.cookie);
     assert.equal(newExternal.status,200);const externalReceipt=await newExternal.json() as {id:string;status:string};
     assert.equal(externalReceipt.status,"confirmed");
+    assert.equal(await scalar(db,"SELECT count(*) n FROM booking"),beforeExternal+1);
     assert.deepEqual(await(await post(externalPath+"/apply",{confirmed:true},owner.cookie)).json(),externalReceipt);
+    assert.equal(await scalar(db,"SELECT count(*) n FROM booking"),beforeExternal+1);
     assert.equal((await server.fetch(baseURL+"/api/guest/bookings/"+externalReceipt.id,{headers:{Cookie:guest.cookie}})).status,404);
     assert.equal((await post("/api/bookings/"+externalReceipt.id+"/cancel_owner",{reason:"HTTP fixture correction"},owner.cookie,"cancel-new-external")).status,200);
     assert.deepEqual(await(await post(externalPath+"/apply",{confirmed:true},owner.cookie)).json(),externalReceipt);
@@ -731,7 +733,7 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
         !diagnosticJson.includes(secret),
         "Private content in diagnostics",
       );
-    assert.equal(await scalar(db, "SELECT count(*) n FROM booking"), 4);
+    assert.equal(await scalar(db, "SELECT count(*) n FROM booking"), 5);
     assert.equal(checks, 12, "All historical built-Worker checks must execute");
     console.log(
       JSON.stringify({
