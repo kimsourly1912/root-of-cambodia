@@ -129,6 +129,8 @@ test("owner reviews external rooms, recovers a lost confirmation after reload an
   await expect(page).toHaveURL(new RegExp("/bookings/"+confirmedId+"$"));
   await expect(page.getByText("Confirmed",{exact:true}).first()).toBeVisible();
   await expect(page.getByText("External reservation",{exact:true})).toBeVisible();
+  await expect(page.getByText("Recorded terms version: unconfigured",{exact:true})).toBeVisible();
+  await expect(page.getByText("Accepted terms version: unconfigured",{exact:true})).toHaveCount(0);
   expect((await (await page.request.get(calendar)).json()).nights[0].reserved).toBe(1);
   const packet=`/api/owner/properties/${p.id}/external/attempts/${attempt}`;
   const read=await page.request.get(packet);expect(read.status()).toBe(200);

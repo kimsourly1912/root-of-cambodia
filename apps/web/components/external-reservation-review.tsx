@@ -41,7 +41,7 @@ export function ExternalReservationReview({propertyId, review, base}: {
       {line.rates.map(rate => <p key={rate.night} className="text-sm">{rate.night} · {usd(rate.unitCents)} × {line.selection.quantity} = {usd(rate.unitCents * line.selection.quantity)}</p>)}
     </div>)}</div>
     {q.charges.map((charge, i) => <p key={i}>{charge.label}: {usd(charge.amountCents)}</p>)}
-    <p className="text-2xl font-semibold">Total: {usd(q.totalCents)} USD</p>
+    <p className="text-2xl font-semibold">Total: {usd(q.totalCents)}</p>
     <section className="space-y-2"><h2 className="font-semibold">Saved property rules</h2><p className="whitespace-pre-wrap">{q.policyText}</p><p className="text-sm">Recorded terms version: {q.input.termsVersion}. This owner stock record does not establish a guest’s agreement to legal terms.</p></section>
     <label className="flex items-start gap-3 text-sm"><input type="checkbox" className="mt-1 size-4 shrink-0" checked={confirmed} disabled={!hydrated || pending || uncertain || blocked} onChange={e => setConfirmed(e.target.checked)} /><span>I want to reserve these rooms immediately at this catalog total. This does not record a payment.</span></label>
     {!blocked && <Button onClick={apply} disabled={!hydrated || pending || !confirmed}>{pending ? "Confirming reservation…" : uncertain ? "Retry same external reservation" : "Confirm external reservation"}</Button>}
