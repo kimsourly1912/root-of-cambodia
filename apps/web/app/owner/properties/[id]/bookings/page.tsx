@@ -36,6 +36,7 @@ export default async function Page({
       <h1 className="text-3xl font-semibold">Property bookings</h1>
       <p>{property.nameEn || property.nameKm}</p>
       <PropertyNavigation propertyId={id} active="bookings" />
+      <Link href={base + "/external"} className="inline-block text-primary underline">Record an external reservation</Link>
       <p className="text-sm text-muted-foreground">
         Pending requests hold no rooms. Acceptance checks stock for every night.
         Existing bookings remain available when a listing is paused.

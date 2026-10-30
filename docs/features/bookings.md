@@ -129,3 +129,20 @@ Opaque stay action/attempt URL parameters preserve identical empty-body retries 
 ## Independent property payment records
 
 Owner booking details now provide the [full-payment bookkeeping contract](payments.md), and guest details render only its safe status/amount/timestamps. Recording or voiding does not transition the stay, release booked nights or recalculate the quote. Completion is allowed without a payment record; “Payment not recorded” never asserts actual nonpayment. The [selected scope](../product/stay-operations.md) explains delegated authority, alternatives and unsupported partial payments/deposits/refunds.
+
+## Saved owner external-reservation journey
+
+The owner booking list links to /owner/properties/:id/bookings/external. Owners choose check-in/checkout and one to ten room selections from a bounded twenty-room page; changing room pages discards unsaved selection. Selection is validated by the existing external catalog quote, with complete nightly rate/stock coverage and aggregate occupancy checks. External bookings keep the existing source behavior, including immediate confirmation/allocation and no online-only 24-hour submission rule. This screen creates neither guest identity/contact nor negotiated prices or legal consent.
+
+Preparing a review stores the current server-selected terms version, exact normalized input, safe itemized preview/hash and operation fingerprint; it allocates nothing. /bookings/external/:attemptId shows rooms/nightly rates/charges/total and saved house rules/terms identifier. An explicit owner acknowledgement applies exactly that review through existing submit(...,"external"). Review/receipt recovery survives reload and sign-in via an opaque ID. Current ownership/verification is checked again on reads/replays and in the atomic booking batch. Successful replay returns the original confirmed receipt after cancellation or catalog changes and redirects to current authorized detail.
+
+| New private route | Contract |
+| --- | --- |
+| /api/owner/properties/:id/external/attempts/:attemptId | POST checkin/checkout/lines only saves or recovers a same-ID selection review; GET explicit preview/receipt |
+| Same path /apply | POST confirmed:true applies the saved review with stable external-request:ID key; false/missing or extra input is refused |
+
+Prepared reviews are immutable and owner-bound. New additive migration 0017 does not backfill earlier bookings or change earlier migrations. It fences the reserved key namespace against a mismatched fingerprint/source even through older direct booking routes. Stock, booking lines/nights/history/outbox and receipt remain one transaction. Preparing uses a separate stored review, as in the accepted guest/owner-response architecture; no partial booking exists at this stage.
+
+An uncertain preparation provides a saved-review lookup; no booking command was sent. An uncertain confirmation retries/reopens the same review. A definite price/settings/stock refusal requires deliberate fresh selection/review. Recent unresolved reviews are bounded to five in the entry screen; older bookmarked IDs remain authorized/readable. No private review payload is stored in browser persistence. Retention/erasure remains D09.
+
+The [two-step scope](../product/owner-inventory-operations.md) retains D02/D03/D04, external guest contact/pricing, physical room assignment, no-show/late cancellation, live terms/providers and release gates. Native tests cover anonymous snapshots, last-room/multi-room rollback, current access, stale quote/reserved-key bypass, replay after cancellation and populated upgrades. Actual Worker/browser results belong in status and the PR.

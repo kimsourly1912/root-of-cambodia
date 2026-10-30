@@ -644,6 +644,27 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     await db.prepare("UPDATE place SET publication='paused' WHERE id=?").bind(draft.id).run();
     assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id)).status,404);
     assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id+"/photos/"+publicSupply.photoId)).status,404);
+    // Saved external review is private, does not allocate during preparation, and keeps the same commit receipt.
+    const externalId=crypto.randomUUID(),externalPath="/api/owner/properties/"+draft.id+"/external/attempts/"+externalId;
+    const externalBody={checkin:selection.checkin,checkout:selection.checkout,lines:selection.lines};
+    const beforeExternal=await scalar(db,"SELECT count(*) n FROM booking");
+    assert.equal((await post(externalPath,externalBody,owner.cookie)).status,200);
+    assert.equal(await scalar(db,"SELECT count(*) n FROM booking"),beforeExternal);
+    assert.equal((await server.fetch(baseURL+externalPath,{headers:{Cookie:other.cookie}})).status,404);
+    assert.equal((await post(externalPath+"/apply",{confirmed:true},owner.cookie,undefined,"https://wrong.invalid")).status,403);
+    assert.equal((await post(externalPath+"/apply",{confirmed:false},owner.cookie)).status,422);
+    const externalPacket=await server.fetch(baseURL+externalPath,{headers:{Cookie:owner.cookie}});
+    assert.equal(externalPacket.status,200);assert.ok(externalPacket.headers.get("cache-control")?.includes("no-store"));
+    const externalText=await externalPacket.text();for(const hidden of ["owner_id","guestEmail","operation_fingerprint","input_json"])assert.ok(!externalText.includes(hidden));
+    const newExternal=await post(externalPath+"/apply",{confirmed:true},owner.cookie);
+    assert.equal(newExternal.status,200);const externalReceipt=await newExternal.json() as {id:string;status:string};
+    assert.equal(externalReceipt.status,"confirmed");
+    assert.equal(await scalar(db,"SELECT count(*) n FROM booking"),beforeExternal+1);
+    assert.deepEqual(await(await post(externalPath+"/apply",{confirmed:true},owner.cookie)).json(),externalReceipt);
+    assert.equal(await scalar(db,"SELECT count(*) n FROM booking"),beforeExternal+1);
+    assert.equal((await server.fetch(baseURL+"/api/guest/bookings/"+externalReceipt.id,{headers:{Cookie:guest.cookie}})).status,404);
+    assert.equal((await post("/api/bookings/"+externalReceipt.id+"/cancel_owner",{reason:"HTTP fixture correction"},owner.cookie,"cancel-new-external")).status,200);
+    assert.deepEqual(await(await post(externalPath+"/apply",{confirmed:true},owner.cookie)).json(),externalReceipt);
     // Existing owner-only external allocation also supports the scoped arrival/completion actions while paused.
     const externalPreview=await post("/api/external-reservations",{...selection,preview:true},owner.cookie);
     assert.equal(externalPreview.status,200);
@@ -712,7 +733,7 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
         !diagnosticJson.includes(secret),
         "Private content in diagnostics",
       );
-    assert.equal(await scalar(db, "SELECT count(*) n FROM booking"), 4);
+    assert.equal(await scalar(db, "SELECT count(*) n FROM booking"), 5);
     assert.equal(checks, 12, "All historical built-Worker checks must execute");
     console.log(
       JSON.stringify({

@@ -5,6 +5,7 @@ export const ERROR_CODES = [
   "acceptance_preview_changed",
   "acceptance_incomplete",
   "booking_conflict",
+  "confirmation_required",
   "invalid_payment",
   "booking_terms_unavailable",
   "booking_terms_required",

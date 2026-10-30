@@ -47,6 +47,7 @@ Package exports currently expose low-level modules too. These are conceptual bou
 | Pilot publication review | publication.ts, publication-queries.ts, publication-persistence.ts, publication-readiness.ts; configured single reviewer, shared completeness predicates and explicit terms gate |
 | Guest browsing | public-listing.ts and catalog-queries.ts; explicit public projection, display-version/digest binding, current eligibility and processed-only media |
 | Booking/quotes | `bookings.ts`, `quotes.ts`, `quote-queries.ts`, `booking-persistence.ts`; `guest-bookings.ts`, `owner-bookings.ts`, `booking-logistics.ts` for private journey projections/recovery/acceptance copies |
+| Owner external reviews | external-bookings.ts, external-booking-queries.ts, external-booking-persistence.ts; saved catalog-priced anonymous allocation reviews/recovery over the existing booking engine |
 | Stay actions | `stay-queries.ts`, existing `bookings.ts`/`booking-persistence.ts`; exact scheduled arrival window and manual completion |
 | Property payment bookkeeping | `payments.ts`, `payment-queries.ts`, `payment-persistence.ts`; full immutable-total attestation, owner-private correction history and independent guest-safe summary |
 | Inventory | `inventory.ts`, `inventory-persistence.ts` |

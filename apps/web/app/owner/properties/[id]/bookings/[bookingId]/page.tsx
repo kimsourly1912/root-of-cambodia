@@ -154,7 +154,7 @@ export default async function Page({
         ))}
         <p className="whitespace-pre-wrap">{b.policyText}</p>
         <p>{b.cancellationText}</p>
-        <p className="text-xs">Accepted terms version: {b.termsVersion}</p>
+        <p className="text-xs">{b.source === "external" ? "Recorded terms version" : "Accepted terms version"}: {b.termsVersion}</p>
       </section>
       {b.saved && (
         <BookingLogistics
