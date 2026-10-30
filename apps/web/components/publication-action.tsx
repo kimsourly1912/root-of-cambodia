@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ export function PublicationAction({
       body: Record<string, unknown>;
     } | null>(null);
   const [reason, setReason] = useState(""),
+    [hydrated, setHydrated] = useState(false),
     [publicConfirmed, setPublicConfirmed] = useState(false),
     [pending, setPending] = useState(false),
     [uncertain, setUncertain] = useState(false),
@@ -39,8 +40,9 @@ export function PublicationAction({
     [conflict, setConflict] = useState(false),
     [error, setError] = useState(""),
     [signIn, setSignIn] = useState(false);
+  useEffect(() => setHydrated(true), []);
   async function act(action: string) {
-    if (busy.current || done || conflict) return;
+    if (!hydrated || busy.current || done || conflict) return;
     setError("");
     setSignIn(false);
     if (!attempt.current) {
@@ -157,7 +159,7 @@ export function PublicationAction({
               type="checkbox"
               className="mt-1 h-4 w-4 shrink-0 accent-primary"
               checked={publicConfirmed}
-              disabled={pending || uncertain || done || conflict}
+              disabled={!hydrated || pending || uncertain || done || conflict}
               onChange={(event) => setPublicConfirmed(event.target.checked)}
             />
             <span>
@@ -177,7 +179,7 @@ export function PublicationAction({
             rows={5}
             maxLength={2000}
             value={reason}
-            disabled={pending || uncertain || done || conflict}
+            disabled={!hydrated || pending || uncertain || done || conflict}
             onChange={(e) => setReason(e.target.value)}
             aria-describedby="review-reason-help"
           />
@@ -208,7 +210,7 @@ export function PublicationAction({
         </Button>
       ) : uncertain ? (
         <Button
-          disabled={pending}
+          disabled={!hydrated || pending}
           onClick={() => act(String(attempt.current?.body.action))}
         >
           {pending ? "Checking…" : "Retry same action"}
@@ -224,6 +226,7 @@ export function PublicationAction({
                 : "default"
             }
             disabled={
+              !hydrated ||
               c.disabled ||
               pending ||
               done ||

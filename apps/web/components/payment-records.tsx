@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { OwnerPayments } from "@root-of-cambodia/backend/payment-queries";
@@ -21,12 +21,14 @@ export function PaymentRecords({
 }) {
   const router = useRouter(),
     busy = useRef(false);
-  const [pending, setPending] = useState(false),
+  const [hydrated, setHydrated] = useState(false),
+    [pending, setPending] = useState(false),
     [error, setError] = useState(""),
     [uncertain, setUncertain] = useState(false),
     [auth, setAuth] = useState(false),
     [blocked, setBlocked] = useState(false),
     [recovery, setRecovery] = useState("");
+  useEffect(() => setHydrated(true), []);
   const action =
     attempt?.action ?? (state.status === "recorded" ? "void" : "record");
   const eligible =
@@ -37,7 +39,7 @@ export function PaymentRecords({
   const currentAttempt = attempt?.id ?? recovery;
   async function review(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (busy.current) return;
+    if (!hydrated || busy.current) return;
     busy.current = true;
     setPending(true);
     setError("");
@@ -83,7 +85,7 @@ export function PaymentRecords({
     }
   }
   async function apply() {
-    if (!attempt || busy.current || blocked) return;
+    if (!hydrated || !attempt || busy.current || blocked) return;
     busy.current = true;
     setPending(true);
     setError("");
@@ -156,7 +158,7 @@ export function PaymentRecords({
             </p>
           )}
           {!blocked && (
-            <Button onClick={apply} disabled={pending}>
+            <Button onClick={apply} disabled={!hydrated || pending}>
               {pending
                 ? "Saving payment update…"
                 : uncertain
@@ -179,7 +181,7 @@ export function PaymentRecords({
               required
               type="checkbox"
               className="mt-1 size-4 shrink-0"
-              disabled={pending || !!recovery}
+              disabled={!hydrated || pending || !!recovery}
             />
             <span>
               {action === "record"
@@ -197,12 +199,12 @@ export function PaymentRecords({
                 maxLength={2000}
                 id="payment-correction-reason"
                 name="reason"
-                disabled={pending || !!recovery}
+                disabled={!hydrated || pending || !!recovery}
               />
             </div>
           )}
           {!recovery && (
-            <Button type="submit" disabled={pending}>
+            <Button type="submit" disabled={!hydrated || pending}>
               {pending
                 ? "Preparing review…"
                 : action === "record"
