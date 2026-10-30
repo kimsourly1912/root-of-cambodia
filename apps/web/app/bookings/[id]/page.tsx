@@ -6,6 +6,7 @@ import { guestBooking } from "@root-of-cambodia/backend/guest-bookings";
 import { DomainError } from "@root-of-cambodia/backend/errors";
 import { usd, cambodiaTime, bookingStatus } from "@/components/booking-format";
 import { BookingLogistics } from "@/components/booking-logistics";
+import { GuestPaymentRecord } from "@/components/payment-records";
 import { GuestCancel } from "@/components/guest-cancel";
 export default async function Page({
   params,
@@ -62,6 +63,7 @@ export default async function Page({
             )}
           </>
         )}
+        <GuestPaymentRecord payment={b.payment} />
         {b.status === "confirmed" && <p>Your stay is confirmed.</p>}
         {["declined", "expired", "cancelled"].includes(b.status) && (
           <Link href="/stays" className="block text-primary underline">

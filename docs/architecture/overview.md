@@ -43,14 +43,16 @@ Package exports currently expose low-level modules too. These are conceptual bou
 | Draft properties | `property-drafts.ts`, `property-queries.ts`, `property-persistence.ts` |
 | Rooms/calendar | `room-types.ts`, `room-queries.ts`, `room-persistence.ts`; `calendar.ts`, `calendar-dates.ts`, `calendar-queries.ts`, `calendar-persistence.ts` |
 | Property information/media | `property-information*.ts`; `media.ts`, `media-queries.ts`, `media-persistence.ts` |
-| Private location/contact/arrival | property-logistics.ts, property-logistics-queries.ts, property-logistics-persistence.ts; no public disclosure or arrival action |
+| Private location/contact/arrival | property-logistics.ts, property-logistics-queries.ts, property-logistics-persistence.ts; private source details, separately authorized acceptance copies |
 | Pilot publication review | publication.ts, publication-queries.ts, publication-persistence.ts, publication-readiness.ts; configured single reviewer, shared completeness predicates and explicit terms gate |
 | Guest browsing | public-listing.ts and catalog-queries.ts; explicit public projection, display-version/digest binding, current eligibility and processed-only media |
 | Booking/quotes | `bookings.ts`, `quotes.ts`, `quote-queries.ts`, `booking-persistence.ts`; `guest-bookings.ts`, `owner-bookings.ts`, `booking-logistics.ts` for private journey projections/recovery/acceptance copies |
+| Stay actions | `stay-queries.ts`, existing `bookings.ts`/`booking-persistence.ts`; exact scheduled arrival window and manual completion |
+| Property payment bookkeeping | `payments.ts`, `payment-queries.ts`, `payment-persistence.ts`; full immutable-total attestation, owner-private correction history and independent guest-safe summary |
 | Inventory | `inventory.ts`, `inventory-persistence.ts` |
 | Delivery/diagnostics | `jobs.ts`, `outbox.ts`, `diagnostics.ts`, `errors.ts` |
 
-Use straightforward typed functions and existing patterns. Do not introduce generic table repositories, services, a new framework/ORM or feature folders just to match a proposed tree. Future discovery, broader support/admin and payments need separately approved contracts; do not scaffold speculative modules.
+Use straightforward typed functions and existing patterns. Do not introduce generic table repositories, services, a new framework/ORM or feature folders just to match a proposed tree. Broader support/admin and money-moving payment processing need separately approved contracts; do not scaffold speculative modules.
 
 ## Consistency, growth and operations
 

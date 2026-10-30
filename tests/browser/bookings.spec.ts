@@ -475,6 +475,81 @@ test("guest and owner recover requests/responses and reveal logistics only while
     await expect(
       page.getByText("Completed", { exact: true }).first(),
     ).toBeVisible();
+    await expect(
+      page.getByText("Payment not recorded", { exact: true }),
+    ).toBeVisible();
+    // Completion is independent of payment. Recording is owner bookkeeping with recoverable reviews.
+    const paymentPanel = ownerPage
+      .getByRole("heading", { name: "Payment at the property", exact: true })
+      .locator("..");
+    await paymentPanel.getByRole("checkbox").check();
+    await ownerPage
+      .getByRole("button", { name: "Review payment record", exact: true })
+      .click();
+    await expect(ownerPage).toHaveURL(/paymentAttempt=/);
+    await expect(
+      ownerPage.getByRole("heading", {
+        name: "Review saved payment update",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await ownerPage.route(
+      `**/api/owner/bookings/${fourthId}/payments/attempts/*/apply`,
+      async (route) => {
+        expect((await route.fetch()).status()).toBe(200);
+        await route.abort("failed");
+      },
+      { times: 1 },
+    );
+    await ownerPage
+      .getByRole("button", { name: "Record full payment", exact: true })
+      .click();
+    await expect(
+      ownerPage.getByRole("button", {
+        name: "Retry same payment update",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await ownerPage.reload();
+    await expect(ownerPage).not.toHaveURL(/paymentAttempt=/);
+    await expect(
+      ownerPage.getByText("Payment recorded", { exact: true }),
+    ).toBeVisible();
+    await page.reload();
+    await expect(
+      page.getByText("Property marked full payment recorded", { exact: true }),
+    ).toBeVisible();
+    await paymentPanel.getByRole("checkbox").check();
+    await ownerPage
+      .getByLabel("Correction reason (owner-private)", { exact: true })
+      .fill("PRIVATE_PAYMENT_CORRECTION");
+    await ownerPage
+      .getByRole("button", { name: "Review correction", exact: true })
+      .click();
+    await ownerPage
+      .getByRole("button", { name: "Void mistaken record", exact: true })
+      .click();
+    await expect(ownerPage).not.toHaveURL(/paymentAttempt=/);
+    await expect(
+      ownerPage.getByText("Mistaken record voided", { exact: false }),
+    ).toBeVisible();
+    await expect(
+      ownerPage.getByText("Full payment recorded", { exact: false }),
+    ).toBeVisible();
+    await page.reload();
+    await expect(
+      page.getByText("Payment not recorded", { exact: true }),
+    ).toBeVisible();
+    expect(await page.locator("main").textContent()).not.toContain(
+      "PRIVATE_PAYMENT_CORRECTION",
+    );
+    const guestPayment = await page.request.get(
+      `/api/guest/bookings/${fourthId}`,
+    );
+    expect(guestPayment.status()).toBe(200);
+    expect(await guestPayment.text()).not.toContain(
+      "PRIVATE_PAYMENT_CORRECTION",
+    );
     expect(await page.locator("main").textContent()).not.toContain(
       "PRIVATE_GUEST_ADDRESS",
     );

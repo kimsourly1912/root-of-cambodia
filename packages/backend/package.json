@@ -46,7 +46,10 @@
     "./guest-bookings": "./src/guest-bookings.ts",
     "./booking-logistics": "./src/booking-logistics.ts",
     "./owner-bookings": "./src/owner-bookings.ts",
-    "./stay-queries": "./src/stay-queries.ts"
+    "./stay-queries": "./src/stay-queries.ts",
+    "./payment-persistence": "./src/payment-persistence.ts",
+    "./payment-queries": "./src/payment-queries.ts",
+    "./payments": "./src/payments.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

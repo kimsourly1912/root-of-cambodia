@@ -658,6 +658,22 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     assert.equal((await post("/api/bookings/"+stayBooking.id+"/complete",{},owner.cookie,"stay-complete")).status,200);
     assert.equal((await post("/api/bookings/"+stayBooking.id+"/check_in",{},owner.cookie,"stay-arrive")).status,200);
     assert.equal((await db.prepare("SELECT status FROM booking WHERE id=?").bind(stayBooking.id).first<{status:string}>())!.status,"completed");
+    const paymentBase="/api/owner/bookings/"+stayBooking.id+"/payments",paymentId=crypto.randomUUID(),paymentPath=paymentBase+"/attempts/"+paymentId;
+    const paymentStock=await scalar(db,"SELECT sum(reserved) n FROM inventory_night");
+    assert.equal((await server.fetch(baseURL+paymentBase,{headers:{Cookie:guest.cookie}})).status,404);
+    assert.equal((await post(paymentPath,{action:"record",revision:0},owner.cookie,undefined,"https://elsewhere.invalid")).status,403);
+    assert.equal((await post(paymentPath,{action:"record",revision:0,amountCents:1},owner.cookie)).status,422);
+    assert.equal((await post(paymentPath,{action:"record",revision:0},owner.cookie)).status,200);
+    const recorded=await post(paymentPath+"/apply",{},owner.cookie);assert.equal(recorded.status,200);assert.ok(recorded.headers.get("cache-control")?.includes("no-store"));
+    assert.deepEqual(await (await post(paymentPath+"/apply",{},owner.cookie)).json(),await recorded.json());
+    assert.equal((await server.fetch(baseURL+paymentPath,{headers:{Cookie:other.cookie}})).status,404);
+    const correctionPath=paymentBase+"/attempts/"+crypto.randomUUID();
+    assert.equal((await post(correctionPath,{action:"void",revision:1,reason:"PRIVATE_PAYMENT_CORRECTION"},owner.cookie)).status,200);
+    assert.equal((await post(correctionPath+"/apply",{},owner.cookie)).status,200);
+    const paymentHistory=await server.fetch(baseURL+paymentBase,{headers:{Cookie:owner.cookie}});assert.equal(paymentHistory.status,200);assert.ok(paymentHistory.headers.get("cache-control")?.includes("no-store"));
+    const paymentBody=await paymentHistory.json() as {status:string;events:unknown[]};assert.equal(paymentBody.status,"not_recorded");assert.equal(paymentBody.events.length,2);
+    assert.equal(await scalar(db,"SELECT sum(reserved) n FROM inventory_night"),paymentStock);
+    assert.equal((await db.prepare("SELECT status FROM booking WHERE id=?").bind(stayBooking.id).first<{status:string}>())!.status,"completed");
     // Keep newly populated calendar-history references intact while making the
     // application's expected table unavailable for this isolated failure test.
     await db.prepare("ALTER TABLE nightly_rate RENAME TO fault_unavailable_rates").run();
@@ -687,6 +703,7 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
       password,
       "private-query",
       "private-client-reference",
+      "PRIVATE_PAYMENT_CORRECTION",
       "nightly_rate",
       "public_listing_disclosure",
       guest.email,
