@@ -11,6 +11,12 @@ import {
   ownerStayReceipt,
   stayIntent,
 } from "@root-of-cambodia/backend/stay-queries";
+import { PaymentRecords } from "@/components/payment-records";
+import { ownerPayments } from "@root-of-cambodia/backend/payment-queries";
+import {
+  paymentAttempt as readPaymentAttempt,
+  type PaymentAttempt,
+} from "@root-of-cambodia/backend/payments";
 import { DomainError } from "@root-of-cambodia/backend/errors";
 import { usd, cambodiaTime, bookingStatus } from "@/components/booking-format";
 import { BookingLogistics } from "@/components/booking-logistics";
@@ -24,10 +30,18 @@ export default async function Page({
     response?: string;
     stayAction?: string;
     stayAttempt?: string;
+    paymentAttempt?: string;
+    paymentCursor?: string;
   }>;
 }) {
   const { id, bookingId } = await params,
-    { response, stayAction, stayAttempt } = await searchParams,
+    {
+      response,
+      stayAction,
+      stayAttempt,
+      paymentAttempt: paymentId,
+      paymentCursor,
+    } = await searchParams,
     base = `/owner/properties/${id}/bookings/${bookingId}`;
   const responseId =
     typeof response === "string" && /^[0-9a-f-]{36}$/.test(response)
@@ -37,25 +51,39 @@ export default async function Page({
   const stayQuery = intent
     ? `?stayAction=${intent.action}&stayAttempt=${intent.attempt}`
     : "";
+  const paymentAttemptId =
+    typeof paymentId === "string" && /^[0-9a-f-]{36}$/.test(paymentId)
+      ? paymentId
+      : "";
+  const paymentQuery = paymentAttemptId
+    ? "?paymentAttempt=" + paymentAttemptId
+    : "";
   const { db, actor } = await ownerSession(
-    base + (responseId ? "?response=" + responseId : stayQuery),
+    base + (responseId ? "?response=" + responseId : stayQuery || paymentQuery),
   );
+  let paymentReview: PaymentAttempt | null = null;
+  let paymentState;
   let b,
     attempt: OwnerAttempt | null = null;
   try {
     b = await ownerRead(() => ownerBooking(db, actor, id, bookingId));
+    paymentState = await ownerRead(() =>
+      ownerPayments(db, actor, bookingId, paymentCursor),
+    );
+    if (paymentAttemptId)
+      paymentReview = await ownerRead(() =>
+        readPaymentAttempt(db, actor, bookingId, paymentAttemptId),
+      );
     if (responseId)
       attempt = await ownerRead(() =>
         ownerAttempt(db, actor, bookingId, responseId),
       );
   } catch (error) {
     if (error instanceof DomainError && error.code === "not_found") {
-      if (responseId)
+      if (responseId || paymentAttemptId)
         return (
           <section className="space-y-5">
-            <h1 className="text-2xl font-semibold">
-              Saved response unavailable
-            </h1>
+            <h1 className="text-2xl font-semibold">Saved review unavailable</h1>
             <p>
               This response is not available to your account. If preparation was
               interrupted, reload to check again. Preparing a review never
@@ -63,7 +91,9 @@ export default async function Page({
             </p>
             <a
               className="block text-primary underline"
-              href={base + "?response=" + responseId}
+              href={
+                base + (responseId ? "?response=" + responseId : paymentQuery)
+              }
             >
               Check again
             </a>
@@ -76,7 +106,7 @@ export default async function Page({
     }
     throw error;
   }
-  if (attempt?.receipt) redirect(base);
+  if (attempt?.receipt || paymentReview?.receipt) redirect(base);
   if (
     intent &&
     (await ownerRead(() => ownerStayReceipt(db, actor, bookingId, intent)))
@@ -142,6 +172,13 @@ export default async function Page({
         key={intent?.attempt || b.status}
         booking={b}
         intent={intent}
+      />
+      <PaymentRecords
+        key={paymentAttemptId || String(paymentState.revision)}
+        bookingId={bookingId}
+        base={base}
+        state={paymentState}
+        attempt={paymentReview}
       />
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">Booking updates</h2>

@@ -8,7 +8,7 @@
 
 **Sources:** [package.json](package.json), [apps/web/app/](apps/web/app), [packages/backend/src/](packages/backend/src).
 
-A Cambodia discovery and accommodation platform in development. Guests request stays and pay the property directly. Current code provides verified owner access, private property/room/calendar/information/photo setup and booking APIs. Anonymous stay browsing now shows only explicitly authorized, reviewed listing content and processed photos. Guest request/tracking and owner response screens are implemented locally; broader moderation, complete arrival journeys and live providers remain unfinished; see current status for verification limits.
+A Cambodia discovery and accommodation platform in development. Guests request stays and pay the property directly. Current code provides verified owner access, private property/room/calendar/information/photo setup and booking APIs. Anonymous stay browsing now shows only explicitly authorized, reviewed listing content and processed photos. Guest request/tracking, owner responses, schedule-bounded arrival/completion and full external-payment bookkeeping are implemented locally; exceptional stay handling, broader moderation and live providers remain unfinished; see current status for verification limits.
 
 Start with the [documentation map](docs/README.md) and [current status/evidence](docs/status.md). For development use [setup](docs/development/setup.md) and [testing](docs/development/testing.md); agents must read [AGENTS.md](AGENTS.md).
 

@@ -4,6 +4,7 @@ import {
   devices,
   type Page,
   type APIRequestContext,
+  type Route,
 } from "@playwright/test";
 import photoFixtures from "../photo-fixtures.json" with { type: "json" };
 test.beforeEach(async ({ page }, info) => {
@@ -1040,7 +1041,23 @@ test("sole pilot reviewer returns corrections and publishes only with configured
     await page.getByLabel("Photo file").setInputFiles({ name: "stay.jpg", mimeType: "image/jpeg", buffer: Buffer.from(photoFixtures.jpeg, "base64") });
     await page.getByRole("button", { name: "Upload photo", exact: true }).click();
     await expect(page.getByRole("status")).toHaveText("Photo saved privately.");
-    await page.goto(base + "/review");
+    // Slow script loading must not allow an acknowledgement that hydration then loses.
+    let releaseScripts!: () => void;
+    const scriptsReady = new Promise<void>(resolve => { releaseScripts = resolve; });
+    const deferScripts = async (route: Route) => { await scriptsReady; await route.continue(); };
+    const scriptPattern = "**/_next/static/**/*.js*";
+    await page.route(scriptPattern, deferScripts);
+    try {
+      await page.goto(base + "/review", { waitUntil: "commit" });
+      await expect(page.getByLabel("I understand these listing details and processed photos will be visible publicly after approval.", {exact:true})).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Submit saved draft", exact: true })).toBeDisabled();
+    } finally {
+      releaseScripts();
+      // This is the only page route installed in this part of the journey.
+      // Drain released handlers before cleanup so requests are not continued twice.
+      await page.unrouteAll({ behavior: "wait" });
+    }
+    await page.waitForLoadState("load");
     await expect(page.getByRole("button", { name: "Submit saved draft", exact: true })).toBeDisabled();
     await expect(page.getByText("Guest listing preview", {exact:true})).toBeVisible();
     await page.getByLabel("I understand these listing details and processed photos will be visible publicly after approval.", {exact:true}).check();

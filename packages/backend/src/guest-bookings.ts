@@ -3,6 +3,7 @@ import { verified, digest, type Actor, type Receipt } from "./operations";
 import { publicStay } from "./catalog-queries";
 import { quote, normalize, type Quote } from "./quotes";
 import { submit } from "./bookings";
+import { paymentSummary } from "./payment-queries";
 import { logisticsDetails } from "./booking-logistics";
 import { readBooking } from "./access";
 
@@ -245,13 +246,16 @@ export async function guestBooking(db: D1Database, actor: Actor, id: string) {
     throw new DomainError("not_found", 404);
   const current = await db
     .prepare(
-      "SELECT b.status,a.details_json,a.accepted_at FROM booking b JOIN user u ON u.id=b.guest_id LEFT JOIN booking_acceptance a ON a.booking_id=b.id WHERE b.id=? AND b.guest_id=? AND u.emailVerified=1",
+      "SELECT b.status,a.details_json,a.accepted_at,b.total_cents AS paymentTotal,pe.occurred_at AS paymentRecordedAt,pl.occurred_at AS paymentChangedAt FROM booking b JOIN user u ON u.id=b.guest_id LEFT JOIN booking_acceptance a ON a.booking_id=b.id LEFT JOIN booking_payment_state ps ON ps.booking_id=b.id LEFT JOIN booking_payment_event pe ON pe.id=ps.active_event_id LEFT JOIN booking_payment_event pl ON pl.id=ps.last_event_id WHERE b.id=? AND b.guest_id=? AND u.emailVerified=1",
     )
     .bind(id, actor.id)
     .first<{
       status: string;
       details_json: string | null;
       accepted_at: number | null;
+      paymentTotal: number;
+      paymentRecordedAt: number | null;
+      paymentChangedAt: number | null;
     }>();
   if (!current) throw new DomainError("not_found", 404);
   return {
@@ -289,6 +293,11 @@ export async function guestBooking(db: D1Database, actor: Actor, id: string) {
       occurredAt: Number(e.occurred_at),
       reason: e.reason === null ? null : String(e.reason),
     })),
+    payment: paymentSummary(
+      current.paymentTotal,
+      current.paymentRecordedAt,
+      current.paymentChangedAt,
+    ),
     logistics:
       current.status === "confirmed" && current.details_json
         ? {
