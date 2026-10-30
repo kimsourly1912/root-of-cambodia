@@ -165,3 +165,74 @@ test("owner reviews external rooms, recovers a lost confirmation after reload an
     expect((await outsider.request.post(packet+"/apply",{headers:{Origin:origin},data:{confirmed:true}})).status()).toBe(404);
   }finally{await outsider.close();}
 });
+
+test("owner filters every saved booking status with stable pages, empty states and private access", async ({page}, info) => {
+  await page.context().setExtraHTTPHeaders({"X-Test-Client": "booking-filters-" + info.project.name});
+  await account(page.request, `booking-filters-${info.project.name}@example.invalid`);
+  const {p, room, night, checkout} = await setup(page.request);
+  await write(page.request, "/api/inventory", {roomId: room.id, night, capacity: 30, blocked: 0, revision: 1});
+  const selection = {propertyId: p.id, checkin: night, checkout, termsVersion: "unconfigured",
+    lines: [{roomId: room.id, quantity: 1, adults: 2, children: 0}]};
+  const bookings: string[] = [];
+  for (let i = 0; i < 22; i++) {
+    const preview = await write(page.request, "/api/external-reservations", {...selection, preview: true});
+    bookings.push((await write(page.request, "/api/external-reservations", {...selection, quoteHash: preview.hash})).id);
+  }
+  const cancelled = bookings[0];
+  await write(page.request, "/api/bookings/" + cancelled + "/cancel_owner", {reason: "Filter fixture"});
+  const base = `/owner/properties/${p.id}/bookings`, api = `/api/owner/properties/${p.id}/bookings`;
+  await page.goto(base);
+  const filters = page.getByRole("navigation", {name: "Booking status", exact: true});
+  await filters.getByRole("link", {name: "Confirmed", exact: true}).click();
+  await expect(filters.getByRole("link", {name: "Confirmed", exact: true})).toHaveAttribute("aria-current", "page");
+  await expect(page).toHaveURL(base + "?status=confirmed");
+  const cards = page.getByRole("link", {name: "View request", exact: true});
+  await expect(cards).toHaveCount(20);
+  const first = await cards.evaluateAll(links => links.map(a => a.getAttribute("href")));
+  const pages = page.getByRole("navigation", {name: "Property booking pages", exact: true});
+  await pages.getByRole("link", {name: "Older bookings", exact: true}).click();
+  await expect(page).toHaveURL(/status=confirmed&cursor=/);
+  await expect(cards).toHaveCount(1);
+  const last = await cards.first().getAttribute("href");
+  expect(first).not.toContain(last);
+  expect(new Set([...first, last]).size).toBe(21);
+  await page.reload();
+  await expect(cards).toHaveCount(1);
+  await pages.getByRole("link", {name: "Newest bookings", exact: true}).click();
+  await expect(page).toHaveURL(base + "?status=confirmed");
+  await filters.getByRole("link", {name: "Cancelled", exact: true}).click();
+  await expect(page).toHaveURL(base + "?status=cancelled");
+  await expect(cards).toHaveCount(1);
+  await expect(cards.first()).toHaveAttribute("href", base + "/" + cancelled);
+  for (const [label, value] of [["Pending confirmation", "pending"], ["Checked in", "checked_in"], ["Completed", "completed"], ["Declined", "declined"], ["Expired", "expired"]]) {
+    await filters.getByRole("link", {name: label, exact: true}).click();
+    await expect(page).toHaveURL(base + "?status=" + value);
+    await expect(cards).toHaveCount(0);
+    await expect(page.getByText(/No .* bookings on this page\./)).toBeVisible();
+  }
+  await filters.getByRole("link", {name: "All bookings", exact: true}).click();
+  await expect(page).toHaveURL(base);
+  await expect(cards).toHaveCount(20);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
+  const response = await page.request.get(api + "?status=confirmed");
+  expect(response.status()).toBe(200);
+  expect(response.headers()["cache-control"]).toContain("no-store");
+  expect(response.headers().vary.toLowerCase()).toContain("cookie");
+  for (const query of ["status=building", "status=", "status=pending&status=confirmed", "status[]=pending", "status=pending&cursor=bad", "status=pending&cursor=&cursor="])
+    expect((await page.request.get(api + "?" + query)).status()).toBe(422);
+  for (const query of ["status=building", "status=pending&status=confirmed", "status=pending&cursor=bad"]) {
+    await page.goto(base + "?" + query);
+    await expect(page.getByRole("link", {name: "Invalid filter or page. Open current bookings.", exact: true})).toBeVisible();
+  }
+  const outsider = await page.context().browser()!.newContext({baseURL: origin,
+    extraHTTPHeaders: {"X-Test-Client": "booking-filters-other-" + info.project.name}});
+  try {
+    expect((await outsider.request.get(api + "?status=confirmed")).status()).toBe(401);
+    await account(outsider.request, `booking-filters-other-${info.project.name}@example.invalid`);
+    expect((await outsider.request.get(api + "?status=confirmed")).status()).toBe(404);
+    const denied = await outsider.newPage();
+    await denied.goto(base + "?status=confirmed");
+    await expect(denied.getByRole("heading", {name: "Property unavailable", exact: true})).toBeVisible();
+    await expect(denied.getByRole("navigation", {name: "Booking status", exact: true})).toHaveCount(0);
+  } finally { await outsider.close(); }
+});

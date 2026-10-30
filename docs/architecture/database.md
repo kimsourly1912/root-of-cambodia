@@ -91,3 +91,9 @@ Owner-bound immutable `booking_payment_attempt` rows bind the saved review and o
 ## External review compatibility
 
 Additive 0017 stores immutable owner/property-bound external booking reviews and safe price previews without modifying older bookings or SQL. Preparation does not reserve stock. The existing atomic external submit owns all reservation writes, required history/outbox and the stable external-request:ID receipt. A migration trigger fences that reserved namespace to the saved operation fingerprint and external owner source, including calls through historical APIs. Current verified ownership is checked on prepare/read/replay and inside the booking write. Existing nonreserved external keys retain their protocol. No legal consent, guest personal data, negotiated price, retention duration or new payment processor is inferred.
+
+## Owner booking-list indexes
+
+Migration 0018 adds `booking_property_submitted` and `booking_property_status_submitted`, both partial on `status!='building'`. They support the existing descending submission-time/ID order with optional exact status filtering. The query chooses fixed SQL fragments, binds all property/actor/filter/cursor values, and uses the composite time/ID cursor comparison for subsequent pages. It never constructs a status literal from request text. Existing property/check-in and expiry indexes remain in place.
+
+The indexes add storage/write maintenance and initial migration work in exchange for avoiding per-property sorting/scanning for these lists; they are a query implementation choice within the accepted D1 architecture, not a throughput or cost guarantee. Tests inspect EXPLAIN plans for the actual application queries and preserve all populated 0017 business rows and earlier receipt replay. Future staging needs representative volume/latency and migration-window checks. No remote migration is authorized by this implementation.

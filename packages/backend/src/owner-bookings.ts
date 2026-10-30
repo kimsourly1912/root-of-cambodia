@@ -13,27 +13,35 @@ import {
   type AcceptancePreview,
 } from "./booking-logistics";
 import { transition } from "./bookings";
+export const ownerBookingStatuses = [
+  "pending", "confirmed", "checked_in", "completed", "cancelled", "declined", "expired",
+] as const;
+export function ownerBookingStatus(value: unknown) {
+  if (value === undefined || value === "all") return "all";
+  if (typeof value !== "string" || !ownerBookingStatuses.includes(value as typeof ownerBookingStatuses[number]))
+    throw new DomainError("invalid_request", 422);
+  return value as typeof ownerBookingStatuses[number];
+}
 export async function ownerBookings(
   db: D1Database,
   actor: Actor,
   propertyId: string,
   cursor?: unknown,
+  status?: unknown,
 ) {
   await verified(db, actor);
   await requireOwnedProperty(db, actor, propertyId);
-  const c = bookingCursor(cursor);
+  const c = bookingCursor(cursor), selected = ownerBookingStatus(status);
   const rows = (
     await db
       .prepare(
-        `SELECT b.id,b.property_name AS propertyName,b.guest_name AS guestName,b.status,b.checkin_date AS checkinDate,b.checkout_date AS checkoutDate,b.total_cents AS totalCents,b.submitted_at AS submittedAt,b.expires_at AS expiresAt FROM booking b JOIN property p ON p.id=b.property_id JOIN user u ON u.id=p.owner_id AND u.emailVerified=1 WHERE p.id=? AND p.owner_id=? AND b.status!='building' AND (? IS NULL OR b.submitted_at<? OR (b.submitted_at=? AND b.id<?)) ORDER BY b.submitted_at DESC,b.id DESC LIMIT 21`,
+        `SELECT b.id,b.property_name AS propertyName,b.guest_name AS guestName,b.status,b.checkin_date AS checkinDate,b.checkout_date AS checkoutDate,b.total_cents AS totalCents,b.submitted_at AS submittedAt,b.expires_at AS expiresAt FROM booking b JOIN property p ON p.id=b.property_id JOIN user u ON u.id=p.owner_id AND u.emailVerified=1 WHERE p.id=? AND p.owner_id=? AND b.status!='building' ${selected === "all" ? "" : "AND b.status=?"} ${c ? "AND (b.submitted_at,b.id)<(?,?)" : ""} ORDER BY b.submitted_at DESC,b.id DESC LIMIT 21`,
       )
       .bind(
         propertyId,
         actor.id,
-        c?.time ?? null,
-        c?.time ?? null,
-        c?.time ?? null,
-        c?.id ?? null,
+        ...(selected === "all" ? [] : [selected]),
+        ...(c ? [c.time, c.id] : []),
       )
       .all<{
         id: string;
