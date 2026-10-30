@@ -1244,6 +1244,50 @@ test("sole pilot reviewer returns corrections and publishes only with configured
       expect(await visitor.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
       expect((await visitor.request.get("/api"+base+"/logistics")).status()).toBe(401);
       expect((await visitor.request.get("/api/stays/"+property.id+"/photos/"+publicData.photos[0].id+"/original")).status()).toBe(404);
+      // Approved owner visibility controls reuse the real published/photo fixture.
+      const listingApi="/api"+base+"/listing";
+      const initialControls=await page.request.get(listingApi);
+      expect(initialControls.status()).toBe(200);expect(initialControls.headers()["cache-control"]).toContain("no-store");
+      expect((await visitor.request.get(listingApi)).status()).toBe(401);
+      expect((await reviewerContext.request.get(listingApi)).status()).toBe(404);
+      const original=await initialControls.json();
+      await page.goto(base+"/review");
+      const visibility=page.getByRole("region",{name:"Listing visibility",exact:true});
+      const ack=visibility.getByRole("checkbox");
+      await expect(visibility.getByRole("button",{name:"Pause listing",exact:true})).toBeDisabled();
+      await ack.check();
+      let visibilityKey="",visibilityBody="",retriedKey="",retriedBody="";
+      await page.route("**"+listingApi,async route=>{
+        visibilityKey=route.request().headers()["idempotency-key"];visibilityBody=route.request().postData()!;
+        expect((await route.fetch()).status()).toBe(200);await route.abort("failed");
+      },{times:1});
+      await visibility.getByRole("button",{name:"Pause listing",exact:true}).click();
+      await expect(visibility.getByRole("button",{name:"Retry same visibility action",exact:true})).toBeVisible();
+      await expect(ack).toBeDisabled();
+      await page.route("**"+listingApi,async route=>{
+        retriedKey=route.request().headers()["idempotency-key"];retriedBody=route.request().postData()!;
+        await route.continue();
+      },{times:1});
+      await visibility.getByRole("button",{name:"Retry same visibility action",exact:true}).click();
+      await expect(visibility.getByRole("status")).toContainText("paused");
+      expect(retriedKey).toBe(visibilityKey);expect(retriedBody).toBe(visibilityBody);
+      expect((await visitor.request.get("/api/stays/"+property.id)).status()).toBe(404);
+      expect((await visitor.request.get("/api/stays/"+property.id+"/photos/"+publicData.photos[0].id)).status()).toBe(404);
+      const hidden=await(await visitor.request.get("/api/stays?q="+encodeURIComponent("Guest stay "+info.project.name))).json();
+      expect(hidden.items.some((item:{id:string})=>item.id===property.id)).toBeFalsy();
+      expect((await page.request.post(listingApi,{headers:{...headers,"Idempotency-Key":"stale-visibility"},
+        data:{action:"pause",revision:original.revision,reviewId:original.reviewId,confirmed:true}})).status()).toBe(409);
+      await page.reload();
+      await expect(page.getByRole("heading",{name:"Paused",exact:true})).toBeVisible();
+      await expect(visibility.getByRole("button",{name:"Resume listing",exact:true})).toBeDisabled();
+      await ack.check();
+      await visibility.getByRole("button",{name:"Resume listing",exact:true}).click();
+      await expect(visibility.getByRole("status")).toContainText("published");
+      expect((await visitor.request.get("/api/stays/"+property.id)).status()).toBe(200);
+      await page.reload();
+      await expect(page.getByRole("heading",{name:"Published",exact:true})).toBeVisible();
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+
     } finally { await visitorContext.close(); }
   } finally {
     await reviewerContext.close();

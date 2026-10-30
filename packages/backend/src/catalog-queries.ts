@@ -9,14 +9,16 @@ import {
 
 // Approved history remains valid after a reviewer reassignment. Calendar dates
 // and free-stock counters deliberately do not decide catalog visibility.
-const eligibleFrom = `FROM property_review_request r
+export const approvedListingFrom = `FROM property_review_request r
  JOIN property p ON p.id=r.property_id JOIN place l ON l.id=p.id
  JOIN user u ON u.id=p.owner_id
  JOIN public_listing_disclosure d ON d.request_id=r.id AND d.owner_id=p.owner_id`;
-const eligibleWhere = ` WHERE l.publication='published' AND u.emailVerified=1 AND r.owner_id=p.owner_id
+export const approvedListingConditions = `u.emailVerified=1 AND r.owner_id=p.owner_id
  AND r.status='approved' AND p.terms_version=r.approved_terms_version
  AND d.policy_version='${PUBLIC_DISCLOSURE_VERSION}'
  AND r.sequence=(SELECT max(latest.sequence) FROM property_review_request latest WHERE latest.property_id=p.id)`;
+const eligibleFrom = approvedListingFrom;
+const eligibleWhere = " WHERE l.publication='published' AND " + approvedListingConditions;
 const eligibleSQL = eligibleFrom + eligibleWhere;
 const projectionSQL = `SELECT p.id,r.id AS requestId,d.preview_hash AS previewHash,${publicSourceSQL} AS publicSource ${eligibleSQL}`;
 type PublicRow = {

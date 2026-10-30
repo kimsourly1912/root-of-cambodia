@@ -68,3 +68,9 @@ After the concrete proposal and privacy question, the owner replied “Ok” and
 ## Two stay-operation steps — 30 October 2026
 
 The owner delegated decisions to the stated recommendations and requested merging PRs #24–#26 and starting two more steps. The [selected local scope](stay-operations.md) records the exact schedule window, manual departure/completion, preserved stock/price and full-payment attestation/correction rules, alternatives and open exceptions. D01 is only partially resolved; no-show, overrides, late cancellation, infant/age, privileged support, actual legal/provider/retention and release policies are not invented. This is delegated implementation authority, not a claim of separate literal approval of each rule or permission to deploy/spend.
+
+## Owner listing-control agreement — 30 October 2026
+
+The project owner explicitly agreed to the [two-stage proposal](published-listing-controls-proposal.md), replying “ok agree you can start all of them” after its recommendation/alternatives and agreement question. D05 is partially resolved for A owner-attributed unchanged-approval pause/resume, and B offline correction with fresh public acknowledgement/manual review, in that order. No silent update to Confirmed guests' saved logistics or notification is approved. [ADR 0007](../architecture/decisions/0007-owner-listing-controls.md) records the implementation boundary.
+
+The broader D05 additional-property/exemption/cache policy, unknown/moderation pause recovery, privileged support, actual terms, retention/live-service/release decisions remain open. This authorizes implementation and checks for both stages; it does not authorize merging the planning or code PRs, deployment, remote migration or spending.

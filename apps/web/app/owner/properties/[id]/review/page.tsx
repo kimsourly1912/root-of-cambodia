@@ -1,3 +1,5 @@
+import { listingControls } from "@root-of-cambodia/backend/listing-control-queries";
+import { ListingControls } from "@/components/listing-controls";
 import { notFound } from "next/navigation";
 import { ownerSession, ownerRead } from "@/src/owner-session";
 import { ownerPublication } from "@root-of-cambodia/backend/publication-queries";
@@ -28,6 +30,7 @@ export default async function Page({
     }
   });
   if (!data) notFound();
+  const controls=await ownerRead(()=>listingControls(db,actor,id));
   const snapshot = data.draft ?? data.latest?.snapshot;
   const pending =
     data.publication === "review" && data.latest?.status === "pending";
@@ -40,9 +43,10 @@ export default async function Page({
         Review your saved details before sending them to the pilot reviewer.
       </p>
       <PropertyNavigation propertyId={id} active="review" />
+      <ListingControls propertyId={id} state={controls} />
       <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0 space-y-6">
-          {data.publication !== "published" && (
+          {data.publication !== "published" && data.publication !== "paused" && (
             <PublicationChecklist
               readiness={data.readiness}
               ownerPropertyId={data.publication === "draft" ? id : undefined}
@@ -59,6 +63,8 @@ export default async function Page({
                 photoBase={
                   data.draft
                     ? `/api/owner/properties/${id}/photos`
+                    : data.publication === "paused"
+                      ? `/api/owner/properties/${id}/photos`
                     : pending
                       ? `/api/property-reviews/${data.latest!.id}/photos`
                       : data.disclosure
@@ -88,6 +94,7 @@ export default async function Page({
                 <h2>
                   {data.publication === "published"
                     ? "Published"
+                    : data.publication === "paused" ? "Paused"
                     : pending
                       ? "Awaiting review"
                       : "Prepare your submission"}
@@ -104,6 +111,8 @@ export default async function Page({
                   ? "Your saved details are frozen during review. Withdraw the submission if you need to edit them."
                   : data.publication === "draft"
                     ? "Save changes in each setup tab first. Submitting freezes the saved draft until you withdraw it or receive correction notes."
+                    : data.publication === "paused"
+                      ? "This listing is hidden from new guests. Existing booking records remain available."
                     : data.disclosure
                       ? "Your approved public listing is available to browse."
                       : "This earlier approval has no public-display confirmation and is not included in guest browsing."}
