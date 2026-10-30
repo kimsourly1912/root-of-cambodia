@@ -754,7 +754,11 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     assert.equal((await post(paymentPath,{action:"record",revision:0,amountCents:1},owner.cookie)).status,422);
     assert.equal((await post(paymentPath,{action:"record",revision:0},owner.cookie)).status,200);
     const recorded=await post(paymentPath+"/apply",{},owner.cookie);assert.equal(recorded.status,200);assert.ok(recorded.headers.get("cache-control")?.includes("no-store"));
-    assert.deepEqual(await (await post(paymentPath+"/apply",{},owner.cookie)).json(),await recorded.json());
+    assert.equal(recorded.bodyUsed,false);
+    const recordedReceipt=await recorded.json();
+    const replayedPayment=await post(paymentPath+"/apply",{},owner.cookie);
+    assert.equal(replayedPayment.status,200);assert.equal(replayedPayment.bodyUsed,false);
+    assert.deepEqual(await replayedPayment.json(),recordedReceipt);
     assert.equal((await server.fetch(baseURL+paymentPath,{headers:{Cookie:other.cookie}})).status,404);
     const correctionPath=paymentBase+"/attempts/"+crypto.randomUUID();
     assert.equal((await post(correctionPath,{action:"void",revision:1,reason:"PRIVATE_PAYMENT_CORRECTION"},owner.cookie)).status,200);
