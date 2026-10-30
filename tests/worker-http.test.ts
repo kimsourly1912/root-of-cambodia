@@ -636,6 +636,20 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     assert.equal((await post(responsePath+"/apply",{},owner.cookie)).status,200);
     const confirmedGuest=await server.fetch(baseURL+detailPath,{headers:{Cookie:guest.cookie}});assert.equal(confirmedGuest.status,200);assert.ok((await confirmedGuest.text()).includes("stay@example.invalid"));
     const ownerCollection=await server.fetch(baseURL+"/api/owner/properties/"+draft.id+"/bookings",{headers:{Cookie:owner.cookie}});assert.equal(ownerCollection.status,200);assert.equal((await server.fetch(baseURL+"/api/owner/properties/"+draft.id+"/bookings",{headers:{Cookie:other.cookie}})).status,404);
+    const filteredBase=baseURL+"/api/owner/properties/"+draft.id+"/bookings";
+    const filtered=await server.fetch(filteredBase+"?status=confirmed",{headers:{Cookie:owner.cookie}});
+    assert.equal(filtered.status,200);assert.ok(filtered.headers.get("cache-control")?.includes("no-store"));
+    assert.ok(filtered.headers.get("vary")?.toLowerCase().includes("cookie"));
+    const filteredBody=await filtered.json() as {items:{id:string;status:string}[]};
+    assert.ok(filteredBody.items.some(b=>b.id===newBooking.id));
+    assert.ok(filteredBody.items.every(b=>b.status==="confirmed"));
+    const emptyFilter=await server.fetch(filteredBase+"?status=completed",{headers:{Cookie:owner.cookie}});
+    assert.deepEqual((await emptyFilter.json() as {items:unknown[]}).items,[]);
+    for(const q of ["status=building","status=","status=pending&status=confirmed","status[]=pending","status=pending&cursor=bad","status=pending&cursor=&cursor="])
+      assert.equal((await server.fetch(filteredBase+"?"+q,{headers:{Cookie:owner.cookie}})).status,422);
+    assert.equal((await server.fetch(filteredBase+"?status=confirmed",{headers:{Cookie:other.cookie}})).status,404);
+    assert.equal((await server.fetch(filteredBase+"?status=confirmed")).status,401);
+
     await db.prepare("UPDATE place SET publication='paused' WHERE id=?").bind(draft.id).run();
     assert.ok((await (await server.fetch(baseURL+detailPath,{headers:{Cookie:guest.cookie}})).text()).includes("stay@example.invalid"));
     assert.equal((await post("/api/bookings/"+newBooking.id+"/cancel_guest",{},guest.cookie,"new-guest-cancel")).status,200);
