@@ -636,6 +636,28 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     assert.equal((await post(responsePath+"/apply",{},owner.cookie)).status,200);
     const confirmedGuest=await server.fetch(baseURL+detailPath,{headers:{Cookie:guest.cookie}});assert.equal(confirmedGuest.status,200);assert.ok((await confirmedGuest.text()).includes("stay@example.invalid"));
     const ownerCollection=await server.fetch(baseURL+"/api/owner/properties/"+draft.id+"/bookings",{headers:{Cookie:owner.cookie}});assert.equal(ownerCollection.status,200);assert.equal((await server.fetch(baseURL+"/api/owner/properties/"+draft.id+"/bookings",{headers:{Cookie:other.cookie}})).status,404);
+    const visibilityPath="/api/owner/properties/"+draft.id+"/listing";
+    const visibilityPacket=await server.fetch(baseURL+visibilityPath,{headers:{Cookie:owner.cookie}});
+    assert.equal(visibilityPacket.status,200);assert.ok(visibilityPacket.headers.get("cache-control")?.includes("no-store"));
+    const initialVisibility=await visibilityPacket.json() as {revision:number;reviewId:string};
+    const pauseBody={action:"pause",revision:initialVisibility.revision,reviewId:initialVisibility.reviewId,confirmed:true};
+    assert.equal((await post(visibilityPath,{...pauseBody,confirmed:false},owner.cookie,"visibility-no-confirm")).status,422);
+    assert.equal((await post(visibilityPath,pauseBody,other.cookie,"visibility-other")).status,404);
+    assert.equal((await post(visibilityPath,pauseBody,owner.cookie,"visibility-origin","https://wrong.invalid")).status,403);
+    const beforeVisibility=(await db.prepare("SELECT * FROM booking WHERE id=?").bind(newBooking.id).first());
+    const paused=await post(visibilityPath,pauseBody,owner.cookie,"visibility-pause");
+    assert.equal(paused.status,200);
+    assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id)).status,404);
+    assert.equal((await server.fetch(baseURL+detailPath,{headers:{Cookie:guest.cookie}})).status,200);
+    assert.deepEqual(await db.prepare("SELECT * FROM booking WHERE id=?").bind(newBooking.id).first(),beforeVisibility);
+    assert.deepEqual(await(await post(visibilityPath,pauseBody,owner.cookie,"visibility-pause")).json(),await paused.json());
+    assert.equal((await post(visibilityPath,pauseBody,owner.cookie,"visibility-stale")).status,409);
+    const resumePacket=await server.fetch(baseURL+visibilityPath,{headers:{Cookie:owner.cookie}});
+    const resumeState=await resumePacket.json() as {revision:number;reviewId:string;canResume:boolean};
+    assert.equal(resumeState.canResume,true);
+    assert.equal((await post(visibilityPath,{action:"resume",revision:resumeState.revision,reviewId:resumeState.reviewId,confirmed:true},owner.cookie,"visibility-resume")).status,200);
+    assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id)).status,200);
+
     const filteredBase=baseURL+"/api/owner/properties/"+draft.id+"/bookings";
     const filtered=await server.fetch(filteredBase+"?status=confirmed",{headers:{Cookie:owner.cookie}});
     assert.equal(filtered.status,200);assert.ok(filtered.headers.get("cache-control")?.includes("no-store"));

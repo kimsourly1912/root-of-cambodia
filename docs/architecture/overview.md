@@ -55,6 +55,8 @@ Package exports currently expose low-level modules too. These are conceptual bou
 
 Use straightforward typed functions and existing patterns. Do not introduce generic table repositories, services, a new framework/ORM or feature folders just to match a proposed tree. Broader support/admin and money-moving payment processing need separately approved contracts; do not scaffold speculative modules.
 
+Owner visibility uses listing-controls.ts, listing-control-queries.ts and listing-control-persistence.ts with the shared owner operation receipt and immutable listing_control_event ledger; [ADR 0007](decisions/0007-owner-listing-controls.md) records accepted pause/resume and later offline corrections.
+
 ## Consistency, growth and operations
 
 Keep booking status, allocations, immutable snapshots, history/outbox and success receipt atomic. Keep private responses out of shared caches and media private. Public catalog caching, when implemented, cannot replace authoritative booking-time price/availability checks.

@@ -105,7 +105,8 @@ test("0018 preserves populated 0017 data and actual first/next-page owner querie
     const {input} = await catalog(db);
     const b = await request(db, input, "retained-filter-request");
     const before = await businessSnapshot(db);
-    await migrate(db); await migrate(db);
+    const through0018=env.TEST_MIGRATIONS.filter(m=>m.name<"0019").map(m=>m.name);
+    await migrate(db,through0018); await migrate(db,through0018);
     assert.deepEqual(await businessSnapshot(db), before);
     assert.deepEqual(await request(db, input, "retained-filter-request"), b);
     let sql = "", values: unknown[] = [];
