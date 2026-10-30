@@ -91,3 +91,75 @@ test("owner manages configured nights with protected reservations, exact retry a
     expect((await other.request.get(api)).status()).toBe(404);
   } finally { await other.close(); }
 });
+
+test("owner reviews external rooms, recovers a lost confirmation after reload and rejects stale catalog prices", async ({page}, info) => {
+  await page.context().setExtraHTTPHeaders({"X-Test-Client": "external-ui-" + info.project.name});
+  await account(page.request, `external-ui-${info.project.name}@example.invalid`);
+  const {p,room,night,checkout}=await setup(page.request);
+  const second=await write(page.request,`/api/owner/properties/${p.id}/rooms`,{name:"River room",adultCapacity:2,childCapacity:0,totalCapacity:2});
+  await write(page.request,`/api/owner/properties/${p.id}/rooms/${second.id}/calendar`,
+    {roomRevision:1,nights:[{night,capacity:2,blocked:0,unitCents:3500,inventoryRevision:null,rateRevision:null}]},"patch");
+  const base=`/owner/properties/${p.id}/bookings/external`;
+  const calendar=`/api/owner/properties/${p.id}/rooms/${room.id}/calendar?start=${night}`;
+  const select=async()=>{
+    await page.goto(base);
+    await page.getByLabel("Check-in date",{exact:true}).fill(night);
+    await page.getByLabel("Checkout date",{exact:true}).fill(checkout);
+    await page.getByRole("group",{name:"Garden room",exact:true}).getByLabel("Rooms",{exact:true}).fill("1");
+    await page.getByRole("group",{name:"Garden room",exact:true}).getByLabel("Adults in these rooms",{exact:true}).fill("2");
+    await page.getByRole("group",{name:"River room",exact:true}).getByLabel("Rooms",{exact:true}).fill("1");
+    await page.getByRole("button",{name:"Review external reservation",exact:true}).click();
+    await expect(page).toHaveURL(/\/bookings\/external\/[0-9a-f-]+$/);
+    await expect(page.getByRole("heading",{name:"Review external reservation",exact:true})).toBeVisible();
+  };
+  await select();
+  const savedURL=page.url(), attempt=savedURL.split("/").at(-1)!;
+  expect((await (await page.request.get(calendar)).json()).nights[0].reserved).toBe(0);
+  await expect(page.getByText("Total: $70.00 USD",{exact:true})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Confirm external reservation",exact:true})).toBeDisabled();
+  await page.getByRole("checkbox").check();
+  let confirmedId="";
+  await page.route(`**/external/attempts/${attempt}/apply`,async route=>{
+    const r=await route.fetch();expect(r.status()).toBe(200);confirmedId=(await r.json()).id;
+    await route.abort("failed");
+  },{times:1});
+  await page.getByRole("button",{name:"Confirm external reservation",exact:true}).click();
+  await expect(page.getByRole("button",{name:"Retry same external reservation",exact:true})).toBeVisible();
+  await page.reload();
+  await expect(page).toHaveURL(new RegExp("/bookings/"+confirmedId+"$"));
+  await expect(page.getByText("Confirmed",{exact:true}).first()).toBeVisible();
+  await expect(page.getByText("External reservation",{exact:true})).toBeVisible();
+  expect((await (await page.request.get(calendar)).json()).nights[0].reserved).toBe(1);
+  const packet=`/api/owner/properties/${p.id}/external/attempts/${attempt}`;
+  const read=await page.request.get(packet);expect(read.status()).toBe(200);
+  expect(read.headers()["cache-control"]).toContain("no-store");
+  const packetText=await read.text();
+  for(const hidden of ["owner_id","guestEmail","guest_name","operation_fingerprint","input_json"])expect(packetText).not.toContain(hidden);
+  await write(page.request,"/api/bookings/"+confirmedId+"/cancel_owner",{reason:"Fixture correction"});
+  await page.goto(savedURL);
+  await expect(page).toHaveURL(new RegExp("/bookings/"+confirmedId+"$"));
+  await expect(page.getByText("Cancelled",{exact:true}).first()).toBeVisible();
+  expect((await (await page.request.get(calendar)).json()).nights[0].reserved).toBe(0);
+  await select();
+  const latest=(await (await page.request.get(calendar)).json()).nights[0];
+  await write(page.request,`/api/owner/properties/${p.id}/rooms/${room.id}/calendar`,
+    {roomRevision:1,nights:[{night,capacity:latest.capacity,blocked:latest.blocked,unitCents:3600,inventoryRevision:latest.inventoryRevision,rateRevision:latest.rateRevision}]},"patch");
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button",{name:"Confirm external reservation",exact:true}).click();
+  await expect(page.getByRole("alert")).toContainText("saved price, stock, settings or your access changed");
+  await expect(page.getByRole("button",{name:"Confirm external reservation",exact:true})).toHaveCount(0);
+  expect((await (await page.request.get(calendar)).json()).nights[0].reserved).toBe(0);
+  await select();
+  await expect(page.getByText("Total: $71.00 USD",{exact:true})).toBeVisible();
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button",{name:"Confirm external reservation",exact:true}).click();
+  await expect(page).not.toHaveURL(/\/external\//);
+  await expect(page.getByText("Confirmed",{exact:true}).first()).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
+  const outsider=await page.context().browser()!.newContext({baseURL:origin,extraHTTPHeaders:{"X-Test-Client":"external-other-"+info.project.name}});
+  try {
+    await account(outsider.request,`external-other-${info.project.name}@example.invalid`);
+    expect((await outsider.request.get(packet)).status()).toBe(404);
+    expect((await outsider.request.post(packet+"/apply",{headers:{Origin:origin},data:{confirmed:true}})).status()).toBe(404);
+  }finally{await outsider.close();}
+});

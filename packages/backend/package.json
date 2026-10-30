@@ -49,7 +49,10 @@
     "./stay-queries": "./src/stay-queries.ts",
     "./payment-persistence": "./src/payment-persistence.ts",
     "./payment-queries": "./src/payment-queries.ts",
-    "./payments": "./src/payments.ts"
+    "./payments": "./src/payments.ts",
+    "./external-bookings": "./src/external-bookings.ts",
+    "./external-booking-queries": "./src/external-booking-queries.ts",
+    "./external-booking-persistence": "./src/external-booking-persistence.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
