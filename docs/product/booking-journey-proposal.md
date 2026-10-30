@@ -1,6 +1,6 @@
 # Proposed guest request and owner response journey
 
-**Status:** proposed; D17 requires project-owner agreement before implementation.
+**Status:** accepted on 30 October 2026; staged implementation tracked in [status](../status.md).
 
 **Responsible role:** project owner (privacy/product decision); maintainer (implementation).
 
@@ -94,8 +94,10 @@ No new provider or subscription is proposed. D1 storage/reads increase modestly 
 5. Run the pinned frozen pnpm install, types, both Worker builds, full relevant Vitest/built-Worker checks and matching-browser desktop/phone journeys for each implementation tree. Add appropriate keyboard/focus and long Khmer/Latin layout review; record actual limits.
 6. Use only fictional local accounts/data and capture/emulation providers. Real email, HTTPS/service permissions, operating budgets, retention/recovery, Khmer usability, accessibility and staging/pilot verification remain [release gates](../operations/release-and-recovery.md).
 
-## Agreement and next action
+## Approval record and next action
 
 The requested decision is the recommended D17 matrix and acceptance-time copy, the new acceptance completeness/preview safeguard, honest legacy unavailable behavior and the two-slice local implementation scope above. After explicit agreement, record approval provenance, add the architecture decision/updated contracts and implement slice A first on a separate branch.
 
 D01 arrival/no-show/late cancellation, D02 age/infants, D03 physical-room continuity, D04 external details, D05 published editing/corrections, D06 support/suspension, D07 live delivery, D09 retention and all release approvals remain unresolved. No merge, deployment, remote migration, spend, new provider or repository-setting change is authorized by this proposal.
+
+The project owner replied “Ok” to the explicit plan/privacy agreement question, then instructed: “Please continue to finish this one and also when done this one you can start next and if have any decision please follow your suggestion I all accept and agree.” This accepts the recommended D17 matrix, acceptance-time copy and preview/completeness/legacy safeguards, and authorizes both local implementation slices in sequence. References to proposed choices above preserve the reviewed rationale; this approval record governs their status. It does not approve actual legal text, live service setup, spending, deployment or unrelated unresolved product rules. PR #24 remains an unmerged planning dependency; implementation branches/PRs stay independently reviewable.

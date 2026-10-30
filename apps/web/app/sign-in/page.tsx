@@ -2,7 +2,7 @@ import { AuthForm } from "@/components/auth-form";
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ verified?: string; error?: string }>;
+  searchParams: Promise<{ verified?: string; error?: string; next?: string }>;
 }) {
   const params = await searchParams;
   return (
@@ -17,6 +17,7 @@ export default async function Page({
       )}
       <AuthForm
         mode="sign-in"
+        next={params.next}
         verified={params.verified === "1" && !params.error}
       />
     </main>

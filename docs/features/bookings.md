@@ -1,6 +1,6 @@
 # Booking and inventory contract
 
-**Status:** implemented API/database foundation; guest/owner booking screens planned; arrival blocked.
+**Status:** guest request/tracking screens implemented locally; owner response/confirmed logistics is the next accepted slice; arrival blocked.
 
 **Responsible role:** booking maintainer; project owner for policy (responsibility, not an assigned person).
 
@@ -69,10 +69,32 @@ A matching receipt returns the original successful operation after later state/c
 
 ## Planned UI and acceptance
 
-The [30 October booking journey proposal](../product/booking-journey-proposal.md) prepares guest request/tracking and owner response slices, with a concrete D17 recommendation. It is not an implemented endpoint, approved disclosure policy or permission to change acceptance behavior.
+The [30 October booking journey](../product/booking-journey-proposal.md#approval-record-and-next-action) is accepted. Guest slice A is implemented; owner slice B and the acceptance-copy projection follow separately. [ADR 0006](../architecture/decisions/0006-booking-journey.md) records approval and architecture.
 
 The [screen brief](../design/screen-brief.md) describes review/request, pending/confirmed/declined/expired/cancelled detail and booking lists as planned screens. Show full price and exact Cambodia-time deadline; distinguish Pending from Confirmed and booking state from payment. Expose loading, session/verification, changed-price/unavailable, stale and uncertain retry states. Mock controls cannot represent a real booking.
 
 Regressions cover last-room and multi-night/room races, missing coverage, rollback, current authorization, exact deadlines/lead time/cancellation cutoff, replay after later changes, immutable quotes and notification recovery. [Testing](../development/testing.md) specifies the layers; [status](../status.md) identifies observed environment evidence.
 
 Arrival/no-show/late cancellation (D01), occupancy/physical-room continuity (D02/D03), external details (D04), support/suspension (D06), delivery/reminders (D07), retention/recovery (D09/D10) and snapshot disclosure (D17) remain open. Completion tests beginning with trusted Checked-in fixtures do not establish a complete app lifecycle.
+
+## Guest screens and recovery (slice A)
+
+The public stay links to `/stays/:id/request`; verified guests select dates/room quantities and aggregate party counts, then review full nightly/charge totals, configured booking terms and house/cancellation rules at `/bookings/requests/:attemptId`. Explicit submission leads to `/bookings/:id`. `/bookings` lists only the guest's own bookings with bounded cursor pagination and up to five recent unsent saved reviews. Pending never means confirmed or a stock hold. Details show Cambodia-time deadlines and support the existing pre-check-in cancellation action. Arrival/payment recording/owner responses are outside A.
+
+New private/no-store routes, separate from the historical APIs above:
+
+| Route | Method / behavior |
+| --- | --- |
+| /api/guest/quote | POST existing selection; returns explicit browser-safe quote, itemized rates, terms text/version and house/cancellation policy |
+| /api/guest/attempts/:id | POST selection + quoteHash creates/replays an immutable account-bound review; GET returns its safe preview and original successful receipt, if any |
+| /api/guest/attempts/:id/send | POST acceptedTerms:true submits exactly the saved selection/hash using guest-request:ID as its stable operation key |
+| /api/guest/bookings | GET bounded guest-only collection; optional submitted-time/ID cursor; rejects unknown/repeated query keys |
+| /api/guest/bookings/:id | GET guest-only safe detail; no owner/user IDs, raw internal rows or property logistics in slice A |
+
+Preparing/reloading a review never submits it. The opaque attempt UUID is not an authorization credential. Store normalized selection, quote hash, exact safe preview/immutable terms and expected submission fingerprint on the server; private payloads are not persisted in browser storage. Conflicting same-ID payloads fail. The reserved guest-request operation key is atomically fenced to its stored fingerprint even through direct booking APIs. Ambiguous save/send results use the same attempt; a successful receipt redirects to current authorized details after reload/auth recovery, even after cancellation/catalog changes. Definite quote/terms/state refusals require explicit fresh review. Cancellation retains an opaque key in the booking URL and uses the same body/key when retried after lost response or authentication recovery.
+
+Live public eligibility and current room membership/terms are checked for the new quote/request path, with commit-time publication/actor/revision and saved-review/terms guards. Engineering bounds and existing authoritative stock/lead-time/deadline checks remain. Dates/room selection can survive auth navigation in a bounded local return URL; account data/contact/terms content never goes in the URL. Invalid or external return destinations fall back to owner access.
+
+An immutable configured terms document must exist for the property/current selected pilot terms version. A version ID alone does not provide legal text. Missing text blocks new UI requests with a visible unavailable state. The trusted [local terms command](../development/setup.md#local-booking-terms-documents) accepts already approved content only. This work creates no real legal text or live delivery. Migration 0013 adds only empty terms/review tables, indexes and guards; preserves earlier bookings/receipts without backfill. D09 retention remains unresolved.
+
+Slice A deliberately renders Confirmed logistics as unavailable; it does not read current property contact as an invented historical snapshot. Slice B implements accepted D17. Infants/age definitions remain D02 and unsupported; no zero-infant or commercial age rule is inferred from an adults/children form. Broader post-cutoff support and arrival remain unavailable, rather than linked to an invented support channel.

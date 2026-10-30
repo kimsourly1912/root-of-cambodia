@@ -28,7 +28,7 @@ This log preserves open policy and operational choices. Options describe decisio
 | D14 | Who creates, claims, reviews and maintains informational non-accommodation listings | Blocks discovery content operations; reservations remain deferred |
 | D15 | Privacy/platform terms, support contacts, reports/moderation procedures and property responsibilities | Blocks public pilot approval; technical schemas do not settle business/legal policy |
 | D16 | Future revenue model, optional Riel conversion and pilot success targets | Pilot remains free and USD/pay-at-property; no new commission or conversion rule |
-| D17 | [Booking journey proposal](booking-journey-proposal.md): confirmation-only logistics, acceptance-time immutable copy, owner preview/completeness guard and legacy unavailable state | Proposed, awaiting agreement; blocks new guest disclosure and acceptance-copy implementation. No public address endpoint or historical backfill is authorized |
+| D17 | [Accepted booking journey](booking-journey-proposal.md): confirmation-only logistics, acceptance-time immutable copy, owner preview/completeness guard, terminal-state hiding and legacy unavailable state | Accepted 30 October 2026; staged implementation. No public address endpoint or historical backfill. Later published corrections/retention/support remain D05/D09/D06 |
 | D18 | Named maintainer/reviewer, required CI check, review and solo-maintainer emergency policy | Blocks CODEOWNERS and repository protection changes; no fictional reviewers assigned |
 
 ## Approval boundaries outside this phase
@@ -60,3 +60,7 @@ After the concrete field/media/owner-control proposal and an explicit agreement 
 ## Booking journey proposal — 30 October 2026
 
 After PR #23 merged, the owner requested the next step. The [concrete proposal](booking-journey-proposal.md) recommends guest request/tracking and owner response in two local implementation slices. D17 would reveal property logistics only to the booking guest while Confirmed, using the exact copy previewed and saved at owner acceptance. It includes terminal-state hiding, acceptance completeness/revision guards and honest unavailable behavior for legacy bookings without a copy. These new choices remain **proposed**, not accepted by the continuation instruction or a planning PR merge. Existing price/terms snapshots, booking rules, privacy boundaries and open arrival/support/retention/release decisions remain unchanged.
+
+## Guest booking decision — 30 October 2026
+
+After the concrete proposal and privacy question, the owner replied “Ok” and expressly authorized finishing guest screens then starting owner responses, accepting the recommendations for this work. [Approval record](booking-journey-proposal.md#approval-record-and-next-action) resolves D17 for the stated matrix/copy/safeguards and authorizes local slices A/B. It is not inferred from a merge. Actual approved legal text, arrival/age/infant/support/corrections/retention/live release decisions remain separate. The accepted implementation uses account-bound server-saved reviews with opaque recovery IDs, immutable terms documents and existing atomic booking operations; no private request payload is persisted in browser storage.

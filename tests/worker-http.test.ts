@@ -590,6 +590,35 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     assert.deepEqual(Buffer.from(await publicPhoto.arrayBuffer()),Buffer.from(photoFixtures.jpeg,"base64"));
     assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id+"/photos/not-a-member")).status,404);
     assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id+"/photos/"+publicSupply.photoId+"/original")).status,404);
+    // New guest screen adapters run against the actual Worker, retaining every earlier check.
+    assert.equal(await scalar(db,"SELECT count(*) n FROM booking"),2);
+    const selection={propertyId:draft.id,termsVersion:"http-approved-v1",checkin:publicSupply.night,checkout:new Date(Date.parse(publicSupply.night)+86400000).toISOString().slice(0,10),lines:[{roomId:publicSupply.roomId,quantity:1,adults:1,children:0}]};
+    assert.equal((await post("/api/guest/quote",selection,guest.cookie)).status,422);
+    await db.prepare("INSERT INTO booking_terms_document(version,content) VALUES ('http-approved-v1','Synthetic HTTP terms only.')").run();
+    assert.equal((await post("/api/guest/quote",selection)).status,401);
+    const guestQuoteResponse=await post("/api/guest/quote",selection,guest.cookie);
+    assert.equal(guestQuoteResponse.status,200);
+    const guestQuote=await guestQuoteResponse.json() as {input:typeof selection;hash:string};
+    for(const excluded of ['"owner_id"','"address"','"user"','"reserved"'])assert.ok(!JSON.stringify(guestQuote).includes(excluded),excluded);
+    const attemptId=crypto.randomUUID(),attemptPath="/api/guest/attempts/"+attemptId;
+    const reviewBody={...guestQuote.input,quoteHash:guestQuote.hash};
+    assert.equal((await post(attemptPath,reviewBody,guest.cookie)).status,200);
+    assert.equal((await server.fetch(baseURL+attemptPath,{headers:{Cookie:other.cookie}})).status,404);
+    assert.equal((await post(attemptPath+"/send",{acceptedTerms:false},guest.cookie)).status,422);
+    const reviewHTML=await server.fetch(baseURL+"/bookings/requests/"+attemptId,{headers:{Cookie:guest.cookie}});
+    assert.equal(reviewHTML.status,200);assert.ok(reviewHTML.headers.get("cache-control")?.includes("no-store"));
+    const reviewText=await reviewHTML.text();assert.ok(reviewText.includes("Synthetic HTTP terms only."));assert.ok(!reviewText.includes("stay@example.invalid"));
+    const guestSubmitted=await post(attemptPath+"/send",{acceptedTerms:true},guest.cookie);
+    assert.equal(guestSubmitted.status,200);const newBooking=await guestSubmitted.json() as {id:string;status:string};assert.equal(newBooking.status,"pending");
+    assert.deepEqual(await (await post(attemptPath+"/send",{acceptedTerms:true},guest.cookie)).json(),newBooking);
+    const detailPath="/api/guest/bookings/"+newBooking.id;
+    assert.equal((await server.fetch(baseURL+detailPath,{headers:{Cookie:owner.cookie}})).status,404);
+    const guestDetail=await server.fetch(baseURL+detailPath,{headers:{Cookie:guest.cookie}});assert.equal(guestDetail.status,200);assert.ok(guestDetail.headers.get("cache-control")?.includes("no-store"));assert.ok(!(await guestDetail.text()).includes("stay@example.invalid"));
+    const ownPage=await server.fetch(baseURL+"/bookings/"+newBooking.id,{headers:{Cookie:guest.cookie}});assert.equal(ownPage.status,200);assert.ok((await ownPage.text()).includes("Pending confirmation"));
+    const list=await server.fetch(baseURL+"/api/guest/bookings",{headers:{Cookie:guest.cookie}});assert.equal(list.status,200);assert.ok((await list.json() as {items:{id:string}[]}).items.some(item=>item.id===newBooking.id));
+    assert.equal((await server.fetch(baseURL+"/api/guest/bookings?cursor=a&cursor=b",{headers:{Cookie:guest.cookie}})).status,422);
+    assert.equal((await post("/api/bookings/"+newBooking.id+"/cancel_guest",{},guest.cookie,"new-guest-cancel")).status,200);
+    assert.equal((await post("/api/bookings/"+newBooking.id+"/cancel_guest",{},guest.cookie,"new-guest-cancel")).status,200);
     await db.prepare("UPDATE place SET publication='paused' WHERE id=?").bind(draft.id).run();
     assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id)).status,404);
     assert.equal((await server.fetch(baseURL+"/api/stays/"+draft.id+"/photos/"+publicSupply.photoId)).status,404);
@@ -630,7 +659,7 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
         !diagnosticJson.includes(secret),
         "Private content in diagnostics",
       );
-    assert.equal(await scalar(db, "SELECT count(*) n FROM booking"), 2);
+    assert.equal(await scalar(db, "SELECT count(*) n FROM booking"), 3);
     assert.equal(checks, 12, "All historical built-Worker checks must execute");
     console.log(
       JSON.stringify({

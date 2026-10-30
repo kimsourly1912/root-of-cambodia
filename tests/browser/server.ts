@@ -60,14 +60,48 @@ const server = createServer(async (req, res) => {
     }
     // Explicit fixture provisioning, solely in this loopback test process.
     if (url.pathname === "/__test/pilot-reviewer" && req.method === "POST") {
-      if (size > 32768) {res.writeHead(413);res.end();return;}
-      const input = JSON.parse(Buffer.concat(chunks).toString()) as {userId?:unknown;termsVersion?:unknown};
-      if(typeof input.userId !== "string" || (input.termsVersion !== null && input.termsVersion !== "browser-approved-v1")) {res.writeHead(422);res.end();return;}
-      const result=await db.prepare(`INSERT INTO pilot_publication_config(singleton,reviewer_user_id,terms_version)
+      if (size > 32768) {
+        res.writeHead(413);
+        res.end();
+        return;
+      }
+      const input = JSON.parse(Buffer.concat(chunks).toString()) as {
+        userId?: unknown;
+        termsVersion?: unknown;
+        termsDocument?: unknown;
+      };
+      if (
+        typeof input.userId !== "string" ||
+        (input.termsVersion !== null &&
+          input.termsVersion !== "browser-approved-v1")
+      ) {
+        res.writeHead(422);
+        res.end();
+        return;
+      }
+      const result = await db
+        .prepare(
+          `INSERT INTO pilot_publication_config(singleton,reviewer_user_id,terms_version)
         SELECT 1,?,? WHERE EXISTS(SELECT 1 FROM user WHERE id=? AND emailVerified=1)
-        ON CONFLICT(singleton) DO UPDATE SET reviewer_user_id=excluded.reviewer_user_id,terms_version=excluded.terms_version,revision=pilot_publication_config.revision+1`)
-        .bind(input.userId,input.termsVersion,input.userId).run();
-      res.writeHead(result.meta.changes===1?200:422,{"Cache-Control":"no-store"});res.end();return;
+        ON CONFLICT(singleton) DO UPDATE SET reviewer_user_id=excluded.reviewer_user_id,terms_version=excluded.terms_version,revision=pilot_publication_config.revision+1`,
+        )
+        .bind(input.userId, input.termsVersion, input.userId)
+        .run();
+      if (
+        result.meta.changes === 1 &&
+        input.termsDocument === true &&
+        input.termsVersion === "browser-approved-v1"
+      )
+        await db
+          .prepare(
+            "INSERT INTO booking_terms_document(version,content) VALUES ('browser-approved-v1','Synthetic browser-test terms only. Pay at the property.') ON CONFLICT(version) DO NOTHING",
+          )
+          .run();
+      res.writeHead(result.meta.changes === 1 ? 200 : 422, {
+        "Cache-Control": "no-store",
+      });
+      res.end();
+      return;
     }
     const headers = new Headers();
     for (const [key, value] of Object.entries(req.headers)) {
