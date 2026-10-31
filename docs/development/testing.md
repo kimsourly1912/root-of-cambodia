@@ -62,7 +62,7 @@ Use the browser matching pinned Playwright where possible. PLAYWRIGHT_CHROMIUM_E
 
 Phone emulation and no-horizontal-overflow checks are not real-device, manual visual, full accessibility, cross-browser or slow-network certification. Native local D1/emulated Images are stronger than standalone SQLite for runtime behavior, but are still not deployed-service tests. A dry-run build is not a deployment.
 
-CI runs on PR/manual events and currently includes frozen installation, initialization/binding/types, both builds, full Vitest, matching-browser install and Playwright. A passing run does not establish that GitHub requires it before merge. Required-check/protection changes need D18 authorization.
+CI runs on PRs, pushes to main and manual events and includes frozen installation, initialization/binding/types, both builds, full Vitest, matching-browser install and Playwright. Successful main push/manual runs additionally enter the [staging deployment pipeline](../operations/staging.md#automatic-web-deployments-from-main), with credentials confined to the deployment step. PR runs never deploy. A passing run does not establish that GitHub requires it before merge. Required-check/protection changes need D18 authorization.
 
 ## Report evidence precisely
 

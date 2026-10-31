@@ -1,14 +1,16 @@
 name: Verify application
 on:
   pull_request:
+  push:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
-concurrency:
-  group: verify-${{ github.ref }}
-  cancel-in-progress: true
 jobs:
   verify:
+    concurrency:
+      group: verify-${{ github.ref }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -26,3 +28,55 @@ jobs:
       - run: pnpm test
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:browser
+  deploy-staging:
+    name: Deploy staging
+    needs: verify
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: staging
+      url: https://staging.rootsofcambodia.com
+    concurrency:
+      group: deploy-staging
+      cancel-in-progress: false
+    env:
+      WRANGLER_SEND_METRICS: "false"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.22.1
+      - run: corepack enable && corepack prepare pnpm@12.15.0 --activate
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm types:bindings
+      - name: Build staging web Worker
+        run: pnpm --filter @root-of-cambodia/web exec opennextjs-cloudflare build --env staging
+      - name: Refuse an outdated main commit
+        id: candidate
+        shell: bash
+        run: |
+          current_main=$(git ls-remote origin refs/heads/main | cut -f1)
+          if [ "$current_main" = "$GITHUB_SHA" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "Staging deployment skipped: main has advanced beyond $GITHUB_SHA." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Check staging schema and deploy
+        if: steps.candidate.outputs.current == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: dcfd514b7e29898cd93e1bbb17b1aa22
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "Configure CLOUDFLARE_API_TOKEN in the staging GitHub environment."; exit 1; }
+          node scripts/check-staging-schema.ts
+          pnpm --filter @root-of-cambodia/web exec wrangler deploy --env staging --no-autoconfig --tag "$GITHUB_SHA" --message "GitHub Actions staging $GITHUB_SHA"
+      - name: Check live staging and record revision
+        if: steps.candidate.outputs.current == 'true'
+        run: |
+          node scripts/smoke-staging.ts "$GITHUB_SHA"
+          echo "Staging verified: https://staging.rootsofcambodia.com — commit $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
