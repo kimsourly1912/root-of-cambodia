@@ -153,6 +153,8 @@ Create a GitHub environment named `staging`, restrict deployment branches to
 `main`, and add the environment secret `CLOUDFLARE_API_TOKEN`. The account ID is
 already fixed in the workflow/config; no app password or `BETTER_AUTH_SECRET`
 belongs in GitHub. Keep the Cloudflare token out of source, chat and logs.
+The required auth secret name is declared in Wrangler so clean-checkout type
+generation/builds need no local `.dev.vars` or copy of its value.
 
 Use only the Cloudflare permissions/resources required to update the existing
 staging Worker/custom domain and read the existing D1/R2 bindings. It needs D1
