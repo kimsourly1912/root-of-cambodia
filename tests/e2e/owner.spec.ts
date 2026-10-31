@@ -1216,7 +1216,7 @@ test("sole pilot reviewer returns corrections and publishes only with configured
     await reviewerPage
       .getByRole("button", { name: "Return for changes" })
       .click();
-    await expect(reviewerPage).toHaveURL(/\/review$/);
+    await expect(reviewerPage).toHaveURL(/\/admin\/reviews$/);
     await page.goto(base + "/review");
     await expect(
       page.getByText("Please add arrival directions.", { exact: true }),
@@ -1254,7 +1254,7 @@ test("sole pilot reviewer returns corrections and publishes only with configured
     await reviewerPage
       .getByRole("button", { name: "Approve and publish" })
       .click();
-    await expect(reviewerPage).toHaveURL(/\/review$/);
+    await expect(reviewerPage).toHaveURL(/\/admin\/reviews$/);
     await expect(
       reviewerPage.getByText("No pending submissions on this page.", {
         exact: true,
@@ -1380,7 +1380,7 @@ test("sole pilot reviewer returns corrections and publishes only with configured
       await reviewerPage.goto("/review/"+corrected.id);
       await expect(reviewerPage.getByText("Corrected public description "+info.project.name,{exact:true}).first()).toBeVisible();
       await reviewerPage.getByRole("button",{name:"Approve and publish",exact:true}).click();
-      await expect(reviewerPage).toHaveURL(/\/review$/);
+      await expect(reviewerPage).toHaveURL(/\/admin\/reviews$/);
       const correctedPublic=await(await visitor.request.get("/api/stays/"+property.id)).json();
       expect(correctedPublic.description).toBe("Corrected public description "+info.project.name);
       expect(JSON.stringify(correctedPublic)).not.toContain("corrected-reception@example.invalid");
