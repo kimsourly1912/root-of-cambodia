@@ -42,6 +42,11 @@ policy disagree, report the conflict and its impact before changing behavior.
 - `proofs/foundation`: independent historical npm fixture; not the active app.
 - `application/` and `scripts/handoff-local.ts`: legacy local-state bridge; keep.
 
+A feature-based layout (one folder per business area for code, UI and tests) is
+**proposed** in [ADR 0008](docs/architecture/decisions/0008-feature-based-modules.md)
+and described in [feature structure](docs/architecture/feature-structure.md).
+Until it is accepted and migrated, follow the current flat layout above.
+
 ## Commands
 
 Use the pinned Node (24.22.1) and pnpm (12.15.0) with the committed lockfile.
@@ -50,7 +55,9 @@ Full sequence and side effects: [setup](docs/development/setup.md).
 ~~~sh
 pnpm install --frozen-lockfile
 pnpm init:local          # WRITES local state and applies migrations; only when the task allows it
+pnpm seed:local          # WRITES fictional local test accounts/data; only when the task allows it
 pnpm types:bindings
+pnpm dev                 # hot-reload app on 127.0.0.1:8787 (Node, not workerd)
 pnpm typecheck
 pnpm build:worker && pnpm build:jobs   # both are required before pnpm test
 pnpm test                # or: test:backend, test:worker, test:jobs
@@ -67,6 +74,9 @@ node scripts/check-doc-links.ts        # read-only Markdown link/anchor check
 - Browser code must not import runtime bindings, persistence or secrets.
 - Reuse existing typed patterns. No generic repositories, new frameworks or
   speculative modules. Preserve unrelated changes.
+- The web app uses Next.js 16, which differs from older versions. Check the
+  bundled docs in `apps/web/node_modules/next/dist/docs/` and heed deprecation
+  notices before using Next.js APIs.
 
 The import-direction test covers only part of this; see the
 [architecture overview](docs/architecture/overview.md) for known gaps.

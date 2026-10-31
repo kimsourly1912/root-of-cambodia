@@ -45,6 +45,8 @@ Report material disagreement. Do not silently rewrite approved policy to match a
 - [ADR 0005: Public listing boundary](architecture/decisions/0005-public-listing-boundary.md)
 - [ADR 0006: Booking journey and private disclosure](architecture/decisions/0006-booking-journey.md)
 - [ADR 0007: Owner listing visibility and reviewed corrections](architecture/decisions/0007-owner-listing-controls.md)
+- [ADR 0008: Feature-based code organization](architecture/decisions/0008-feature-based-modules.md): **proposed**, not applied
+- [Feature structure](architecture/feature-structure.md): target folder layout and import rules once ADR 0008 is accepted
 
 ## Feature contracts
 
@@ -65,6 +67,7 @@ Report material disagreement. Do not silently rewrite approved policy to match a
 - [CI failure repair](playbooks/ci-failure-repair.md): classify and fix failed runs without weakening checks
 - [Documentation change](playbooks/docs-change.md): docs-only work and link checks
 - [PR and handoff](playbooks/pr-and-handoff.md): verification, status update, PR and evidence wording
+- [Feature structure migration](playbooks/feature-structure-migration.md): staged, behavior-neutral moves for ADR 0008 (only after acceptance)
 
 ## Design, development and operations
 

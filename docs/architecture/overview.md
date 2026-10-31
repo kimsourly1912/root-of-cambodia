@@ -53,7 +53,7 @@ Package exports currently expose low-level modules too. These are conceptual bou
 | Inventory | `inventory.ts`, `inventory-persistence.ts` |
 | Delivery/diagnostics | `jobs.ts`, `outbox.ts`, `diagnostics.ts`, `errors.ts` |
 
-Use straightforward typed functions and existing patterns. Do not introduce generic table repositories, services, a new framework/ORM or feature folders just to match a proposed tree. Broader support/admin and money-moving payment processing need separately approved contracts; do not scaffold speculative modules.
+Use straightforward typed functions and existing patterns. Do not introduce generic table repositories, services, a new framework/ORM or feature folders just to match a proposed tree. A feature-based layout is **proposed** in [ADR 0008](decisions/0008-feature-based-modules.md) with its target in [feature structure](feature-structure.md); until it is accepted and applied, keep this flat layout. Broader support/admin and money-moving payment processing need separately approved contracts; do not scaffold speculative modules.
 
 Owner visibility uses listing-controls.ts, listing-control-queries.ts and listing-control-persistence.ts with the shared owner operation receipt and immutable listing_control_event ledger; [ADR 0007](decisions/0007-owner-listing-controls.md) records accepted pause/resume and later offline corrections.
 
@@ -75,6 +75,10 @@ Local, staging and production need distinct resources/secrets/data. Current runt
 - [0005: Public listing boundary](decisions/0005-public-listing-boundary.md): accepted allowlist, explicit owner display acknowledgement and routed processed-only reads; originals stay private.
 
 - [0006: Booking journey and private disclosure](decisions/0006-booking-journey.md): accepted D17 and staged guest/owner screens; server-saved request recovery, immutable configured terms and atomic acceptance-time logistics copies.
+
+- [0007: Owner listing visibility and reviewed corrections](decisions/0007-owner-listing-controls.md): accepted and implemented in PRs #33 and #34.
+
+- [0008: Feature-based code organization](decisions/0008-feature-based-modules.md): **proposed**; target layout in [feature structure](feature-structure.md), staged migration, no code moved yet.
 
 The [database contract](database.md), [features](../README.md#feature-contracts), [contributing standard](../development/contributing.md) and [open decisions](../product/open-decisions.md) provide detail.
 

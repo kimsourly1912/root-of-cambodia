@@ -69,6 +69,7 @@ Release requirements are in [release and recovery](operations/release-and-recove
 | 6 | Deployed jobs, abuse budgets, retention, recovery | D08, D09, D10, D11 |
 | 7 | Khmer copy, accessibility, real-device and performance review | D13 ownership |
 | 8 | Repository governance: required checks, reviewers | D18; settings changes need separate authorization |
+| — | Feature-based code organization (backend, web, tests) | Owner acceptance of [ADR 0008](architecture/decisions/0008-feature-based-modules.md); then five behavior-neutral stages, one PR each, with no other code PR open |
 
 Policy-sensitive items start with a decision proposal (see [playbooks](playbooks/README.md)), not code.
 
