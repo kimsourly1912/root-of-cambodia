@@ -2,7 +2,7 @@ import { requireStagingAccount } from "./staging-accounts";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { runtime } from "./runtime";
-import { guestReturn } from "./return-path";
+import { guestReturn } from "@/lib/return-path";
 import { verified } from "@root-of-cambodia/backend/shared";
 import { diagnostics } from "@root-of-cambodia/backend/shared";
 import { DomainError } from "@root-of-cambodia/backend/shared";
