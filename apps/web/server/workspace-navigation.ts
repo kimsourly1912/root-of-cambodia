@@ -7,7 +7,7 @@ import { runtime } from "./runtime";
 import type { WorkspaceNavigation } from "@/components/workspace-shell";
 
 // Navigation only, never authorization: pages and services still check the
-// session and ownership. Any failure shows the plain menu instead of an error,
+// session and ownership. Any failure shows only guest links instead of an error,
 // and never redirects, so each page keeps its own sign-in return path.
 export async function workspaceNavigation(): Promise<WorkspaceNavigation | null> {
   const context = diagnostics("http");

@@ -104,8 +104,11 @@ function WorkspaceMenu({
       </SidebarMenuButton>
     </SidebarMenuItem>
   );
+  // Without a usable session (signed out, read-only staging) only guest links
+  // show; the page itself redirects or refuses.
   return (
     <>
+      {navigation && (
       <SidebarGroup>
         <SidebarGroupLabel>Owner</SidebarGroupLabel>
         <SidebarGroupContent>
@@ -147,6 +150,7 @@ function WorkspaceMenu({
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>
+      )}
       {navigation?.reviewer && (
         <SidebarGroup>
           <SidebarGroupLabel>Reviewer</SidebarGroupLabel>
