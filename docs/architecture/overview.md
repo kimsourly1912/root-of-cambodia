@@ -83,6 +83,8 @@ Local, staging and production need distinct resources/secrets/data. Current runt
 
 - [0008: Feature-based code organization](decisions/0008-feature-based-modules.md): accepted and applied; layout and rules in [feature structure](feature-structure.md).
 
+- [0009: UI component standard](decisions/0009-ui-component-standard.md): accepted and applied; component-first screens, shared UI components and the [UI standard](../design/ui-standard.md).
+
 The [database contract](database.md), [features](../README.md#feature-contracts), [contributing standard](../development/contributing.md) and [open decisions](../product/open-decisions.md) provide detail.
 
 ## Temporary staging without email — 30 October 2026

@@ -20,7 +20,8 @@ A playbook is a step-by-step procedure for one recurring kind of task. The rules
 | A PR's CI run failed | [CI failure repair](ci-failure-repair.md) |
 | Docs-only edit, cleanup or status refresh | [Documentation change](docs-change.md) |
 | Finish any task: verify, update status, open the PR, hand off | [PR and handoff](pr-and-handoff.md) |
-| Reorganize code into feature folders (only after ADR 0008 is accepted) | [Feature structure migration](feature-structure-migration.md) |
+| Build or change a screen, or add a UI component | [UI change](ui-change.md) |
+| Reorganize code into feature folders (completed; reference for large moves) | [Feature structure migration](feature-structure-migration.md) |
 
 Most implementation tasks use three in order: decision proposal (if policy is open), feature slice, then PR and handoff.
 

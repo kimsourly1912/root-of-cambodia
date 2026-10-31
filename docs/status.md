@@ -69,6 +69,7 @@ Release requirements are in [release and recovery](operations/release-and-recove
 | 6 | Deployed jobs, abuse budgets, retention, recovery | D08, D09, D10, D11 |
 | 7 | Khmer copy, accessibility, real-device and performance review | D13 ownership |
 | 8 | Repository governance: required checks, reviewers | D18; settings changes need separate authorization |
+| — | UI component standard ([ADR 0009](architecture/decisions/0009-ui-component-standard.md)): applied on branch `feat/ui-standard` (stacked on `refactor/feature-structure`), not yet merged | PR with exact-head CI; browser journeys confirm unchanged roles and names |
 | — | Feature-based code organization ([ADR 0008](architecture/decisions/0008-feature-based-modules.md)): applied on branch `refactor/feature-structure`, not yet merged | PR with exact-head CI for the built-Worker and browser suites (not runnable on the Windows checkout); merge needs owner authorization |
 
 Policy-sensitive items start with a decision proposal (see [playbooks](playbooks/README.md)), not code.

@@ -87,6 +87,22 @@ node scripts/check-doc-links.ts        # read-only Markdown link/anchor check
   bundled docs in `apps/web/node_modules/next/dist/docs/` and heed deprecation
   notices before using Next.js APIs.
 
+## UI rules
+
+Before any screen or component work, read the [UI standard](docs/design/ui-standard.md)
+and look up what you need in the [component catalog](docs/design/components.md).
+
+- Build screens from `components/ui` primitives and shared `components/`
+  (PageContainer, PageTitle, SectionTitle, TextLink, StatusMessage, EmptyState…).
+  Never hand-style a native button, input, select, textarea, heading or link.
+- Theme tokens only (`primary`, `muted`, `destructive`…); no palette colors,
+  arbitrary values or inline styles. `className` on shared components is for layout.
+- Keep element roles, accessible names and heading levels stable: e2e tests use them.
+- Cover loading, empty, error, saving, stale and uncertain states
+  ([UX patterns](docs/design/ux-patterns.md)); use the [content](docs/design/content.md) terms.
+- Missing a component? Add it to `components/` first and to the catalog.
+  `pnpm exec vitest run --project tooling` enforces these rules.
+
 The import-direction test covers only part of this; see the
 [architecture overview](docs/architecture/overview.md) for known gaps.
 

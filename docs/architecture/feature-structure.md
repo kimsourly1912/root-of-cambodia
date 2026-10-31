@@ -43,7 +43,7 @@ apps/web/
 │   └── server.ts                     # optional: server-only entry (media, publication today)
 ├── components/
 │   ├── ui/                           # shadcn primitives (Button, Card, Input, …)
-│   └── sign-out.tsx                  # app-shell component used by several layouts
+│   └── *.tsx                         # shared UI: PageContainer, PageTitle, TextLink, StatusMessage… (docs/design/ui-standard.md)
 ├── lib/                              # shared pure helpers: utils, booking-format, return-path
 └── server/                           # shared server-only adapters: http, sessions, runtime, policy
 
@@ -83,7 +83,7 @@ Web folders use the same names as backend folders.
 
 | Feature | Backend files | Web | Routes / API | Docs contract |
 | --- | --- | --- | --- | --- |
-| `shared` | errors, operations, access, schema, diagnostics, outbox | `components/ui/`, `components/sign-out.tsx`, `lib/`, `server/` | — | [overview](overview.md), [database](database.md), [notifications](../features/notifications.md) |
+| `shared` | errors, operations, access, schema, diagnostics, outbox | `components/ui/` primitives, shared `components/` (see [UI standard](../design/ui-standard.md)), `lib/`, `server/` | — | [overview](overview.md), [database](database.md), [notifications](../features/notifications.md) |
 | `accounts` | auth | account-form, auth-form | `/sign-in`, `/sign-up`, `/verify-email`, `/forgot-password`, `/reset-password`, `/api/auth` | [setup](../development/setup.md), [staging](../operations/staging.md) |
 | `properties` | property-drafts, property-queries, property-persistence | property-form, property-navigation | `/owner`, `/owner/properties/[id]`, `/api/owner/properties` | [owner supply](../features/owner-supply.md) |
 | `property-information` | property-information, -queries, -persistence | property-information-form | `…/information` | [owner supply](../features/owner-supply.md) |

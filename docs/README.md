@@ -67,11 +67,17 @@ Report material disagreement. Do not silently rewrite approved policy to match a
 - [CI failure repair](playbooks/ci-failure-repair.md): classify and fix failed runs without weakening checks
 - [Documentation change](playbooks/docs-change.md): docs-only work and link checks
 - [PR and handoff](playbooks/pr-and-handoff.md): verification, status update, PR and evidence wording
+- [UI change](playbooks/ui-change.md): building or changing a screen or component
 - [Feature structure migration](playbooks/feature-structure-migration.md): staged, behavior-neutral moves for ADR 0008 (only after acceptance)
 
 ## Design, development and operations
 
-- [Screen brief](design/screen-brief.md): existing component reuse and explicitly planned flows
+- [UI standard](design/ui-standard.md): component-first rules, placement, accessibility baseline and enforcement ([ADR 0009](architecture/decisions/0009-ui-component-standard.md))
+- [Component catalog](design/components.md): "I need X → use Y", plus planned components
+- [Design foundations](design/foundations.md): color tokens, type scale, spacing, layout, Khmer text
+- [UX patterns](design/ux-patterns.md): page structure, states, forms, retries, confirmations, money and time
+- [UI content](design/content.md): voice, terms, button and message wording
+- [Screen brief](design/screen-brief.md): visual direction, product promises per screen and planned flows
 - [Local setup](development/setup.md): commands, side effects, capture and legacy-state handoff
 - [Testing](development/testing.md): runtime layers, focused/full checks and fidelity
 - [Contributing/handoff/definition of done](development/contributing.md)

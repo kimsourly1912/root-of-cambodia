@@ -26,7 +26,7 @@ Implementing behavior that [scope](../product/scope.md) or an accepted proposal 
 4. Retries: clients send an operation key. Same key and same body returns the original receipt; same key with a different body is a conflict. After an uncertain response, the UI retries with the identical key and body. It never creates a new attempt automatically.
 5. Routes in `apps/web/app/api/...` stay thin: session, Origin/JSON checks, body-size cap, call the service, map errors. New error codes must be registered in [errors.ts](../../packages/backend/src/shared/errors.ts).
 6. Private responses use no-store. Never log guest data, tokens or raw provider errors.
-7. UI: disable interactive controls until hydration completes (see the `hydrated` state in [listing-controls.tsx](../../apps/web/features/listing-controls/components/listing-controls.tsx)). Cover stale tabs, uncertain retry and phone width.
+7. UI: follow the [UI change](ui-change.md) playbook and the [UI standard](../design/ui-standard.md). Disable interactive controls until hydration completes (see the `hydrated` state in [listing-controls.tsx](../../apps/web/features/listing-controls/components/listing-controls.tsx)). Cover stale tabs, uncertain retry and phone width.
 8. Schema changes: follow [schema migration](schema-migration.md).
 9. Tests, as applicable from the [testing matrix](../development/testing.md#select-meaningful-checks):
    - native backend: `packages/backend/src/features/<feature>/tests/*.test.ts` covering permissions, races, replay, rollback and commit-time revocation (shared fixtures in `packages/backend/src/testing/`);
