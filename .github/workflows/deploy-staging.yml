@@ -1,0 +1,141 @@
+name: Deploy staging
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+env:
+  WRANGLER_SEND_METRICS: "false"
+  NEXT_TELEMETRY_DISABLED: "1"
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.ref == 'refs/heads/main'
+    outputs:
+      docs_only: ${{ steps.changes.outputs.docs_only }}
+      verified: ${{ steps.proof.outputs.verified }}
+      current: ${{ steps.current.outputs.current }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.22.1
+      - id: current
+        run: |
+          current_main=$(git ls-remote origin refs/heads/main | cut -f1)
+          if [ "$current_main" = "$GITHUB_SHA" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "Release skipped: main advanced beyond $GITHUB_SHA." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - id: changes
+        run: node scripts/ci.ts classify
+      - run: node scripts/check-doc-links.ts
+      - id: find
+        if: steps.current.outputs.current == 'true' && steps.changes.outputs.docs_only == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/ci.ts find
+      - name: Download only the small verification receipt
+        if: steps.find.outputs.run_id != ''
+        continue-on-error: true # Missing/expired proof triggers full verification below.
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ci-receipt-${{ steps.find.outputs.run_attempt }}
+          run-id: ${{ steps.find.outputs.run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/ci-receipt
+      - id: proof
+        if: steps.current.outputs.current == 'true' && steps.changes.outputs.docs_only == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CI_RUN_ID: ${{ steps.find.outputs.run_id }}
+          CI_RUN_ATTEMPT: ${{ steps.find.outputs.run_attempt }}
+          CI_PR_NUMBER: ${{ steps.find.outputs.pr_number }}
+          CI_HEAD_SHA: ${{ steps.find.outputs.head_sha }}
+        run: node scripts/ci.ts reuse
+  verify-fallback:
+    name: Full verification fallback
+    needs: plan
+    if: needs.plan.outputs.current == 'true' && needs.plan.outputs.docs_only == 'false' && needs.plan.outputs.verified != 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/verify.yml
+    with:
+      force_full: true
+  deploy:
+    name: Deploy staging
+    needs: [plan, verify-fallback]
+    if: >-
+      always() && github.ref == 'refs/heads/main' && needs.plan.result == 'success' &&
+      needs.plan.outputs.current == 'true' && needs.plan.outputs.docs_only == 'false' &&
+      (needs.plan.outputs.verified == 'true' || needs.verify-fallback.result == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    environment:
+      name: staging
+      url: https://staging.rootsofcambodia.com
+    concurrency:
+      group: deploy-staging
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Skip an outdated queued release before building
+        id: current
+        run: |
+          current_main=$(git ls-remote origin refs/heads/main | cut -f1)
+          if [ "$current_main" = "$GITHUB_SHA" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "Release skipped: main advanced beyond $GITHUB_SHA." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: ./.github/actions/setup
+        if: steps.current.outputs.current == 'true'
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+        if: steps.current.outputs.current == 'true'
+        with:
+          path: apps/web/.next/cache
+          key: ${{ runner.os }}-next-staging-node24-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-next-staging-node24-${{ hashFiles('pnpm-lock.yaml') }}-
+      - name: Build staging from trusted main source
+        if: steps.current.outputs.current == 'true'
+        run: pnpm --filter @root-of-cambodia/web exec opennextjs-cloudflare build --env staging
+      - name: Refuse a commit superseded during the build
+        id: candidate
+        if: steps.current.outputs.current == 'true'
+        run: |
+          current_main=$(git ls-remote origin refs/heads/main | cut -f1)
+          if [ "$current_main" = "$GITHUB_SHA" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "Release skipped: main advanced during build." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Check staging schema and deploy
+        if: steps.candidate.outputs.current == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "Configure CLOUDFLARE_API_TOKEN in the staging GitHub environment."; exit 1; }
+          node scripts/check-staging-schema.ts
+          pnpm --filter @root-of-cambodia/web exec wrangler deploy --env staging --no-autoconfig --tag "$GITHUB_SHA" --message "GitHub Actions staging $GITHUB_SHA"
+      - name: Check live staging and record revision
+        if: steps.candidate.outputs.current == 'true'
+        run: |
+          node scripts/smoke-staging.ts "$GITHUB_SHA"
+          echo "Staging verified: https://staging.rootsofcambodia.com — commit $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"

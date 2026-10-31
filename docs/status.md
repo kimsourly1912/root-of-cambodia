@@ -4,7 +4,7 @@
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 31 October 2026; main [237343d](https://github.com/kimsourly1912/root-of-cambodia/commit/237343d07d6ee611e3df573f933c9a1a95c7226f) after PR #39; automatic staging deployment and exact-revision HTTPS smoke passed in [CI 41178698696](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41178698696).
+**Last source verification:** 31 October 2026; main [91cd803](https://github.com/kimsourly1912/root-of-cambodia/commit/91cd803cbe7be7e996a2b456cac8eb03953430eb) after PR #40. Faster CI/CD is implemented on `feat/faster-ci`, pending exact-head checks, merge and owner protection setup. The previously verified staging release remains 237343d below.
 
 **Sources:** [.github/workflows/verify.yml](../.github/workflows/verify.yml), [apps/web/app/](../apps/web/app), [packages/backend/migrations/](../packages/backend/migrations/), [apps/web/server/runtime.ts](../apps/web/server/runtime.ts), [apps/jobs/src/runtime.ts](../apps/jobs/src/runtime.ts), [staging contract](operations/staging.md).
 
@@ -14,7 +14,7 @@ This is the single current delivery page: what exists, what evidence supports it
 
 | Item | Current value |
 | --- | --- |
-| Main | 237343d, merge of [PR #39](https://github.com/kimsourly1912/root-of-cambodia/pull/39); tree matches PR-tested head e5bbb00 |
+| Main | 91cd803, merge of docs-only [PR #40](https://github.com/kimsourly1912/root-of-cambodia/pull/40); last independently verified live release 237343d |
 | Migrations | 0001–0020 in [packages/backend/migrations](../packages/backend/migrations/); latest is 0020_reviewed_listing_corrections. Applied locally and to staging D1 |
 | Toolchain | Node 24.22.1, pnpm 12.15.0 ([setup](development/setup.md)) |
 | Environments | Local emulators, GitHub CI, and Cloudflare staging in `staging-test` mode ([staging contract](operations/staging.md)). No production |
@@ -43,7 +43,7 @@ CI results are GitHub Ubuntu/emulator runs. Staging evidence covers fictional fi
 | Arrival/completion | Implemented ordinary flow | Schedule-bounded owner check-in and manual completion; no-show, overrides and post-check-in cancellation open (D01) |
 | Payment records | Implemented | Full pay-at-property attestation with private correction history; no money movement; [payments](features/payments.md) |
 | Notifications and jobs | Local substitute only | Outbox, queue, leases, capture locally; jobs, queue consumer, Cron, expiry/cleanup sweeps and email not deployed (D07); [notifications](features/notifications.md) |
-| Automatic staging delivery | Active; first release verified | Main verification → serialized web deployment → revision-aware HTTPS smoke; [staging pipeline](operations/staging.md#automatic-web-deployments-from-main). Environment/token worked in the first successful release; migrations stay separately reviewed and fixtures persist |
+| Automatic staging delivery | Existing pipeline active; optimization pending merge | [CI/CD contract](operations/ci-cd.md): isolated parallel jobs, shared test build, docs-only gate, equivalent PR receipt reuse/full fallback, caches/reports. Current branch is not yet active staging evidence |
 | Partner/admin/support | Planned | No broad account, moderation or support dashboard (D06) |
 | Language/design | Partial | Khmer fonts/names and some labels; working UI mostly English (D13) |
 | Other-category reservations, online payment | Deferred by [scope](product/scope.md) | Reopen only by explicit scope decision |
@@ -69,7 +69,7 @@ Release requirements are in [release and recovery](operations/release-and-recove
 | 5 | Admin/support powers and suspended-owner handling | D06 decision |
 | 6 | Deployed jobs, abuse budgets, retention, recovery | D08, D09, D10, D11 |
 | 7 | Khmer copy, accessibility, real-device and performance review | D13 ownership |
-| 8 | Repository governance: required checks, reviewers | D18; settings changes need separate authorization |
+| 8 | Apply the accepted strict main protection with required CI gate | D18 partially accepted; [owner setup](operations/ci-cd.md#owner-setup-protect-main). New job must pass first; reviewer/emergency policy remains open |
 
 Policy-sensitive items start with a decision proposal (see [playbooks](playbooks/README.md)), not code.
 
