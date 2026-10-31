@@ -4,7 +4,7 @@
 
 **Responsible role:** backend maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 30 October 2026; owner-response implementation based on guest PR #25 head [a5bf41f](https://github.com/kimsourly1912/root-of-cambodia/commit/a5bf41ff6d54351358cd307b5ef4b9ded3f9d233).
+**Last source verification:** 30 October 2026; owner-response implementation based on guest PR #25 head [a5bf41f](https://github.com/kimsourly1912/root-of-cambodia/commit/a5bf41ff6d54351358cd307b5ef4b9ded3f9d233). Migration table rechecked against main [40f7ffa](https://github.com/kimsourly1912/root-of-cambodia/commit/40f7ffa553a14005f622aa5c846f0f9dc5e70f42) on 31 October 2026.
 
 **Sources:** [packages/backend/migrations/](../../packages/backend/migrations), [packages/backend/src/operations.ts](../../packages/backend/src/operations.ts), [packages/backend/src/booking-persistence.ts](../../packages/backend/src/booking-persistence.ts), [packages/backend/src/schema.ts](../../packages/backend/src/schema.ts), [tests/migrations.test.ts](../../tests/migrations.test.ts), [tests/safeguards.test.ts](../../tests/safeguards.test.ts).
 
@@ -31,6 +31,9 @@
 | [0015](../../packages/backend/migrations/0015_stay_lifecycle.sql) | Database-time owner arrival window; no data backfill or allocation change |
 | [0016](../../packages/backend/migrations/0016_property_payment_records.sql) | Immutable full-payment/correction ledger, guarded state projection and owner-bound saved reviews; no fabricated payments/backfill |
 | [0017](../../packages/backend/migrations/0017_external_booking_reviews.sql) | Immutable owner/property-bound external stock reviews, exact operation fingerprint fencing and bounded recovery index; no historical backfill |
+| [0018](../../packages/backend/migrations/0018_owner_booking_list_indexes.sql) | Partial indexes for owner newest-first booking lists with optional exact status filter; no data change |
+| [0019](../../packages/backend/migrations/0019_owner_listing_visibility.sql) | Immutable owner listing-control event ledger and guards for pause/resume; no backfilled control events |
+| [0020](../../packages/backend/migrations/0020_reviewed_listing_corrections.sql) | Replaces listing-control context/receipt triggers to admit guarded Paused-to-Draft reopen; no new tables or rewritten history |
 
 Add a new ordered migration; do not rewrite an applied one. Verify both fresh application and populated upgrades using the configured migration loader/tracker. A failed preflight needs a reviewed repair plan, never deletion of a populated database to force success. The proof schema is independent and is not an application upgrade path.
 

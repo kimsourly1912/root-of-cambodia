@@ -4,17 +4,18 @@
 
 **Responsible role:** maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
+**Last source verification:** 31 October 2026, main [40f7ffa](https://github.com/kimsourly1912/root-of-cambodia/commit/40f7ffa553a14005f622aa5c846f0f9dc5e70f42).
 
 **Sources:** [docs/status.md](status.md), [docs/product/scope.md](product/scope.md), [docs/architecture/overview.md](architecture/overview.md), [docs/archive/README.md](archive/README.md).
 
-Start with [current status](status.md), then [accepted product scope](product/scope.md) and the affected feature/architecture contract. Developers use [setup](development/setup.md) and [testing](development/testing.md); agents also read root [AGENTS](../AGENTS.md).
+Start with [current status](status.md), then [accepted product scope](product/scope.md) and the affected feature/architecture contract. Developers use [setup](development/setup.md) and [testing](development/testing.md). Agents start at root [AGENTS](../AGENTS.md) (Claude Code reaches it through [CLAUDE.md](../CLAUDE.md)) and follow the [playbook](playbooks/README.md) for their task type.
 
 ## Authority and conflicts
 
 | Information | Canonical authority / evidence |
 | --- | --- |
 | Task authorization | Current explicit user instructions and already granted approvals |
+| How to carry out a task type | [Playbooks](playbooks/README.md); procedures only, never policy or authorization |
 | Product policy | [Scope](product/scope.md); new decisions require owner approval |
 | Unsettled choices | [Open decisions](product/open-decisions.md), with IDs/decision owner/blocking impact |
 | Accepted architecture | [Overview](architecture/overview.md), [database contract](architecture/database.md) and accepted ADRs |
@@ -55,6 +56,16 @@ Report material disagreement. Do not silently rewrite approved policy to match a
 - [Property payment records](features/payments.md): full external-payment attestations, private correction history and independent booking state
 - [Notifications and diagnostics](features/notifications.md): recipient/outbox/lease/provider acceptance and privacy
 
+## Playbooks
+
+- [Playbook index and template](playbooks/README.md)
+- [Decision proposal](playbooks/decision-proposal.md): policy-sensitive next steps before code
+- [Feature slice](playbooks/feature-slice.md): implementing accepted behavior
+- [Schema migration](playbooks/schema-migration.md): additive SQL and upgrade tests
+- [CI failure repair](playbooks/ci-failure-repair.md): classify and fix failed runs without weakening checks
+- [Documentation change](playbooks/docs-change.md): docs-only work and link checks
+- [PR and handoff](playbooks/pr-and-handoff.md): verification, status update, PR and evidence wording
+
 ## Design, development and operations
 
 - [Screen brief](design/screen-brief.md): existing component reuse and explicitly planned flows
@@ -63,12 +74,12 @@ Report material disagreement. Do not silently rewrite approved policy to match a
 - [Contributing/handoff/definition of done](development/contributing.md)
 - [Release and recovery](operations/release-and-recovery.md): local-only configuration, unverified live gates and recovery gaps
 - [Current status and next scope](status.md)
-- [Historical archive and all-original disposition map](archive/README.md)
+- [Historical archive and all-original disposition map](archive/README.md), including the [status log through PR #34](archive/2026-10/status-log-2026-10-30.md)
 
 Package entrypoints remain short: [web](../apps/web/README.md), [jobs](../apps/jobs/README.md), [backend](../packages/backend/README.md). The [historical proof](../proofs/foundation/README.md) is independent; the [UI license](../apps/web/components/ui/LICENSE.md) stays verbatim in place.
 
 ## Maintenance conventions
 
-Canonical documents state status, responsible role, last source verification date/SHA and source links. Roles name responsibilities, not invented team assignments. Use lowercase kebab-case for new files, relative repo links and commit-pinned URLs for snapshot evidence. Update contracts alongside behavior and status when new evidence changes delivery claims; keep counts/versions centralized.
+Canonical documents state status, responsible role, last source verification date/SHA and source links. Roles name responsibilities, not invented team assignments. Use lowercase kebab-case for new files, relative repo links and commit-pinned URLs for snapshot evidence. Update contracts alongside behavior and status when new evidence changes delivery claims; keep counts/versions centralized. Run `node scripts/check-doc-links.ts` after any docs change.
 
-Old filenames are redirect pages for incoming references. Archived originals retain their dates/commits/results and relative links adjusted for relocation. Do not execute obsolete commands/prompts from them as current guidance. No CODEOWNERS is added until real reviewers and policy are assigned.
+Superseded documents move to the archive; the old docs-root redirect pages were removed on 31 October 2026 and their original paths are listed in the archive index. Archived originals retain their dates/commits/results and relative links adjusted for relocation. Do not execute obsolete commands/prompts from them as current guidance. No CODEOWNERS is added until real reviewers and policy are assigned.

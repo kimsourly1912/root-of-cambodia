@@ -1,16 +1,16 @@
 # ROOTS OF CAMBODIA
 
-**Status:** local owner-supply and guest-browsing foundation with booking APIs.
+**Status:** local-only accommodation booking foundation; no staging or production deployment.
 
 **Responsible role:** maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 30 October 2026; owner-response implementation based on guest PR #25 head [a5bf41f](https://github.com/kimsourly1912/root-of-cambodia/commit/a5bf41ff6d54351358cd307b5ef4b9ded3f9d233).
+**Last source verification:** 31 October 2026, main [40f7ffa](https://github.com/kimsourly1912/root-of-cambodia/commit/40f7ffa553a14005f622aa5c846f0f9dc5e70f42).
 
 **Sources:** [package.json](package.json), [apps/web/app/](apps/web/app), [packages/backend/src/](packages/backend/src).
 
-A Cambodia discovery and accommodation platform in development. Guests request stays and pay the property directly. Current code provides verified owner access, private property/room/calendar/information/photo setup and booking APIs. Anonymous stay browsing now shows only explicitly authorized, reviewed listing content and processed photos. Guest request/tracking, owner responses, schedule-bounded arrival/completion and full external-payment bookkeeping are implemented locally; exceptional stay handling, broader moderation and live providers remain unfinished; see current status for verification limits.
+A Cambodia discovery and accommodation platform in development. Guests request stays and pay the property directly. Current code provides verified owner access, private property/room/calendar/information/photo setup and booking APIs. Anonymous stay browsing now shows only explicitly authorized, reviewed listing content and processed photos. Guest request/tracking, owner responses, owner availability and external reservations, listing pause/corrections, schedule-bounded arrival/completion and full external-payment bookkeeping are implemented locally; exceptional stay handling, broader moderation and live providers remain unfinished; see current status for verification limits.
 
-Start with the [documentation map](docs/README.md) and [current status/evidence](docs/status.md). For development use [setup](docs/development/setup.md) and [testing](docs/development/testing.md); agents must read [AGENTS.md](AGENTS.md).
+Start with the [documentation map](docs/README.md) and [current status/evidence](docs/status.md). For development use [setup](docs/development/setup.md) and [testing](docs/development/testing.md); agents must read [AGENTS.md](AGENTS.md) (Claude Code loads it through [CLAUDE.md](CLAUDE.md)) and use the [playbooks](docs/playbooks/README.md).
 
 | Workspace | Role |
 | --- | --- |
