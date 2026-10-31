@@ -47,6 +47,15 @@ test("built staging Worker browses D1 but refuses auth, business writes and medi
       return result;
     };
     const before = await counts();
+    const health = await server.fetch(baseURL + "/api/health");
+    assert.equal(health.status, 200);
+    assert.equal(health.headers.get("cache-control"), "no-store");
+    assert.equal(health.headers.get("x-robots-tag"), "noindex, nofollow");
+    assert.equal(health.headers.get("set-cookie"), null);
+    const readiness = await health.json() as { status: string; revision: string | null };
+    assert.deepEqual(Object.keys(readiness).sort(), ["revision", "status"]);
+    assert.equal(readiness.status, "ok");
+    assert.equal(readiness.revision, env.WORKER_VERSION_METADATA.tag ?? null);
     const home = await server.fetch(baseURL);
     assert.equal(home.status, 200);
     const homeHTML = await home.text();

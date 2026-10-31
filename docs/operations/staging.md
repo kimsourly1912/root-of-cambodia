@@ -113,3 +113,65 @@ Pinned Wrangler builds/deploys with --env staging --no-autoconfig. Keep the
 already provisioned resource IDs/custom domain and separate secret. Never deploy
 local capture config to HTTPS. Record actual source SHA/version, smoke results
 and CI in status/PR; deploy/build success alone is not live behavior evidence.
+
+## Automatic web deployments from main
+
+The owner approved setting up merge-to-staging delivery on 31 October 2026.
+[verify.yml](../../.github/workflows/verify.yml) verifies PRs, pushes to `main`
+and manual runs. Only a successful push/manual run on `refs/heads/main` may
+start `deploy-staging`; PR verification never receives deployment credentials.
+Activation requires merging this workflow and configuring the GitHub environment
+below. [Status](../status.md) records whether an actual deployment is verified.
+
+The deployment job checks out the exact verified SHA, uses pinned Node/pnpm and
+the frozen lockfile, generates types and builds OpenNext with `--env staging`.
+It serializes staging releases without cancelling an in-flight deployment,
+skips outdated commits after checking current main, then:
+
+1. [Checks migration tracking](../../scripts/check-staging-schema.ts) with a
+   read-only query to staging D1. The applied filenames must exactly match the
+   candidate migration directory; pending, unknown or missing tracking refuses
+   deployment. Applied SQL must still never be edited. Filename matching alone
+   is not a content checksum or a schema-integrity/restore check.
+2. Deploys only `roc-web-staging` with the existing staging config and the commit
+   SHA as its version tag. It preserves the existing auth secret and resources.
+3. Runs [HTTPS smoke](../../scripts/smoke-staging.ts): the public, no-store
+   `/api/health` must report database readiness and the expected version tag;
+   home/stays/testing must retain the fixture-test/noindex state; catalog and
+   anonymous session reads must remain uncached and private APIs refuse access.
+   Only readiness reads are retried for propagation; no fixture writes occur.
+
+The GitHub run summary/environment history records success or a stale-commit
+skip. A failed check/deploy/smoke is reported as failure. Smoke failure does not
+automatically roll back code or data; an operator investigates before recovery.
+This smoke is anonymous and read-only, not the three-account interactive test
+or an email-delivery, real-device, restore or full production-readiness proof.
+
+### One-time credential setup
+
+Create a GitHub environment named `staging`, restrict deployment branches to
+`main`, and add the environment secret `CLOUDFLARE_API_TOKEN`. The account ID is
+already fixed in the workflow/config; no app password or `BETTER_AUTH_SECRET`
+belongs in GitHub. Keep the Cloudflare token out of source, chat and logs.
+The required auth secret name is declared in Wrangler so clean-checkout type
+generation/builds need no local `.dev.vars` or copy of its value.
+
+Use only the Cloudflare permissions/resources required to update the existing
+staging Worker/custom domain and read the existing D1/R2 bindings. It needs D1
+read access for the migration check, not schema/data write access. Scope Worker
+edit access to staging where supported and Routes access to this zone; never
+use a Global API Key or account-wide administrator token. GitHub branch/ruleset
+protection beyond this staging environment remains a separate D18 task.
+
+### Manual redeploy and schema changes
+
+In GitHub Actions, open **Verify application → Run workflow → main**. This reruns
+verification and redeploys only the current main commit. It is not a historical
+rollback control. A newer main commit causes an older queued release to skip.
+
+When migrations are added, automatic deployment stops before upload until an
+operator reviews compatibility/recovery and separately applies the approved
+staging migration. Then manually rerun on main. This pipeline never applies
+remote migrations, resets D1, seeds fixtures, rotates passwords, deploys jobs,
+enables email, or changes production. Tester edits and existing credentials
+remain in place across web releases.

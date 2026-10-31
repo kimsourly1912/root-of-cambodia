@@ -4,7 +4,7 @@
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 31 October 2026; main [77b992a](https://github.com/kimsourly1912/root-of-cambodia/commit/77b992a71ab4ceac8d9ba08abfa6c0133cc84c8a) after PR #35.
+**Last source verification:** 31 October 2026; main [fdcfdad](https://github.com/kimsourly1912/root-of-cambodia/commit/fdcfdad99876bb17f4cdd3cbf63824fbd6586e63) after PR #37; staging delivery prepared on `feat/staging-auto-deploy`, pending activation.
 
 **Sources:** [.github/workflows/verify.yml](../.github/workflows/verify.yml), [apps/web/app/](../apps/web/app), [packages/backend/migrations/](../packages/backend/migrations/), [apps/web/server/runtime.ts](../apps/web/server/runtime.ts), [apps/jobs/src/runtime.ts](../apps/jobs/src/runtime.ts), [staging contract](operations/staging.md).
 
@@ -14,7 +14,7 @@ This is the single current delivery page: what exists, what evidence supports it
 
 | Item | Current value |
 | --- | --- |
-| Main | 77b992a, merge of [PR #35](https://github.com/kimsourly1912/root-of-cambodia/pull/35); tree 31525b45 is identical to #35 head d66df68, which differs from CI-tested 5d1fa92 only in docs |
+| Main | fdcfdad, merge of [PR #37](https://github.com/kimsourly1912/root-of-cambodia/pull/37); tree matches CI-tested head 3101fed |
 | Migrations | 0001–0020 in [packages/backend/migrations](../packages/backend/migrations/); latest is 0020_reviewed_listing_corrections. Applied locally and to staging D1 |
 | Toolchain | Node 24.22.1, pnpm 12.15.0 ([setup](development/setup.md)) |
 | Environments | Local emulators, GitHub CI, and Cloudflare staging in `staging-test` mode ([staging contract](operations/staging.md)). No production |
@@ -23,7 +23,7 @@ This is the single current delivery page: what exists, what evidence supports it
 
 | Evidence | Scope | Result |
 | --- | --- | --- |
-| [CI 41054931388](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41054931388), #35 source 5d1fa92 | Current runtime source | Frozen install, setup/bindings/types, both builds, 221 Vitest across 29 files (including four staging built-Worker tests), 26/26 matching-Chromium desktop/phone checks |
+| [CI 41174032239](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41174032239), #37 source 3101fed | Current main source | Frozen install, setup/bindings/types, both builds, 225 Vitest across 30 files, 28/28 matching-Chromium desktop/phone checks; this is not deployed-staging evidence |
 | [CI 41017754998](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41017754998), #34 head e763dcc | Previous main 40f7ffa | All steps succeeded; 217 Vitest and 26 desktop/phone browser checks |
 | Staging HTTPS smoke, 30 October | Deployed 5d1fa92 runtime with fixture data | 58 real HTTPS checks passed: catalog/stay pages, three-account sessions and cookies, private reads and cross-role refusal, processed public photos, no-store/noindex, disabled registration/recovery, wrong-Origin refusal, sign-out. Remote integrity/FK checks passed |
 
@@ -43,6 +43,7 @@ CI results are GitHub Ubuntu/emulator runs. Staging evidence covers fictional fi
 | Arrival/completion | Implemented ordinary flow | Schedule-bounded owner check-in and manual completion; no-show, overrides and post-check-in cancellation open (D01) |
 | Payment records | Implemented | Full pay-at-property attestation with private correction history; no money movement; [payments](features/payments.md) |
 | Notifications and jobs | Local substitute only | Outbox, queue, leases, capture locally; jobs, queue consumer, Cron, expiry/cleanup sweeps and email not deployed (D07); [notifications](features/notifications.md) |
+| Automatic staging delivery | Prepared; activation unverified | Main verification → serialized web deployment → revision-aware HTTPS smoke; [staging pipeline](operations/staging.md#automatic-web-deployments-from-main). Needs GitHub staging environment/token, merge and first successful deployment |
 | Partner/admin/support | Planned | No broad account, moderation or support dashboard (D06) |
 | Language/design | Partial | Khmer fonts/names and some labels; working UI mostly English (D13) |
 | Other-category reservations, online payment | Deferred by [scope](product/scope.md) | Reopen only by explicit scope decision |
@@ -69,9 +70,7 @@ Release requirements are in [release and recovery](operations/release-and-recove
 | 6 | Deployed jobs, abuse budgets, retention, recovery | D08, D09, D10, D11 |
 | 7 | Khmer copy, accessibility, real-device and performance review | D13 ownership |
 | 8 | Repository governance: required checks, reviewers | D18; settings changes need separate authorization |
-| — | Navigation responsiveness on branch `feat/home-page-ux`, not yet merged: `loading.tsx` for the home/top-level pages and nested owner and stay segments, a `LinkPending` bar on the main and property navigation, `runtime()` built once per render, and independent owner page reads run together | PR with exact-head CI; browser journeys confirm unchanged roles and names |
-| — | UI component standard ([ADR 0009](architecture/decisions/0009-ui-component-standard.md)): applied on branch `feat/ui-standard` (stacked on `refactor/feature-structure`), not yet merged | PR with exact-head CI; browser journeys confirm unchanged roles and names |
-| — | Feature-based code organization ([ADR 0008](architecture/decisions/0008-feature-based-modules.md)): applied on branch `refactor/feature-structure`, not yet merged | PR with exact-head CI for the built-Worker and browser suites (not runnable on the Windows checkout); merge needs owner authorization |
+| — | Activate the prepared main-to-staging pipeline; feature layout, shared UI/forms and navigation work are merged in main | GitHub staging credentials/environment, reviewed workflow merge and first successful main deployment/smoke |
 
 Policy-sensitive items start with a decision proposal (see [playbooks](playbooks/README.md)), not code.
 
