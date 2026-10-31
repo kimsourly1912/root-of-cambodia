@@ -8,6 +8,11 @@ export async function catalog(db: D1Database, capacity = 2) {
   const days = Array.from({ length: 3 }, (_, i) =>
     new Date(Date.now() + (i + 3) * 86400000).toISOString().slice(0, 10),
   );
+  // The two fixture owners hold owner access, as the 0021 backfill gives existing
+  // owners; 0022 requires it before a property insert. Pre-0021 upgrade tests skip it.
+  const access = await db
+    .prepare("SELECT 1 ok FROM sqlite_master WHERE type='table' AND name='owner_access'")
+    .first();
   await db.batch([
     ...[guest, owner, other, unverified].map((u) =>
       db
@@ -26,6 +31,13 @@ export async function catalog(db: D1Database, capacity = 2) {
     db.prepare(
       "INSERT INTO owner_profile VALUES ('owner','Owner'),('other','Other')",
     ),
+    ...(access
+      ? [
+          db.prepare(
+            "INSERT INTO owner_access(user_id,status,source,decided_at) VALUES ('owner','approved','backfill',unixepoch()),('other','approved','backfill',unixepoch())",
+          ),
+        ]
+      : []),
     db.prepare(
       "INSERT INTO place(id,name_km,name_en,province,publication) VALUES ('p','ផ្ទះ','House','Kampot','published'),('other','ផ្សេង','Other','Kampot','published')",
     ),

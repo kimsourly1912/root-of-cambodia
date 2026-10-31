@@ -54,6 +54,7 @@ Report material disagreement. Do not silently rewrite approved policy to match a
 - [Guest browsing](features/guest-browsing.md): anonymous allowlisted stays, confirmation-bound approval and routed processed media
 
 - [Private owner supply](features/owner-supply.md): drafts/rooms/calendar/information/photos; actual fields/routes/revisions/retry boundaries
+- [Owner access and applications](features/owner-access.md): admin-approved owner applications, the property-creation gate and admin decisions
 - [Pilot publication review](features/publication-review.md): single reviewer, submission snapshots, corrections, terms gate and retries
 - [Bookings and stock](features/bookings.md): quotes/snapshots/actions/external allocation and ordinary stay screens
 - [Property payment records](features/payments.md): full external-payment attestations, private correction history and independent booking state

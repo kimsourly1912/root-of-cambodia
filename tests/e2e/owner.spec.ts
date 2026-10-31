@@ -54,7 +54,7 @@ async function signIn(page: Page, email: string, pass = password) {
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await expect(page).toHaveURL(/\/owner$/);
 }
-async function register(page: Page, email: string) {
+async function register(page: Page, email: string, ownerAccess = true) {
   await page.goto("/sign-up");
   await page.getByLabel("Your name").fill("Local Owner");
   await page.getByLabel("Email address").fill(email);
@@ -66,6 +66,14 @@ async function register(page: Page, email: string) {
   await page.goto(await emailLink(page.request, email));
   await expect(page).toHaveURL(/\/sign-in\?verified=1/);
   await signIn(page, email);
+  if (!ownerAccess) return;
+  await grantOwnerAccess(page.request);
+  await page.reload();
+}
+// Journeys that are not about the owner application get owner access directly (ADR 0010).
+async function grantOwnerAccess(request: APIRequestContext) {
+  const session = (await (await request.get("/api/auth/get-session")).json()) as { user: { id: string } };
+  expect((await request.post("/__test/owner-access", { data: { userId: session.user.id } })).status()).toBe(200);
 }
 test("sign-in password visibility control is accessible and reversible", async ({
   page,
@@ -1406,4 +1414,56 @@ test("signed-out visitors can search, clear and recover from invalid or unavaila
   await expect(page.getByRole("heading",{name:"Stay unavailable",exact:true})).toBeVisible();
   await page.getByRole("link",{name:"Explore other stays",exact:true}).click();
   await expect(page).toHaveURL(/\/stays$/);
+});
+
+test("a new account applies for owner access, an admin approves it, then drafts open", async ({ page, browser }, info) => {
+  test.setTimeout(90_000);
+  const business = "Applicant homestay " + info.project.name;
+  await register(page, `applicant-${info.project.name}@example.invalid`, false);
+  await expect(page.getByRole("heading", { name: "Apply to list your property", exact: true })).toBeVisible();
+  await page.goto("/owner/properties/new");
+  await expect(page.getByText("Creating a property draft needs approved owner access.")).toBeVisible();
+  await page.goto("/owner/apply");
+  await page.getByLabel("Business or owner name", { exact: true }).fill(business);
+  await page.getByLabel("Phone number", { exact: true }).fill("+855 12 345 678");
+  await page.getByLabel("Province of your property", { exact: true }).fill("Kampot");
+  await page.getByRole("button", { name: "Send application", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Application received", exact: true })).toBeVisible();
+  expect(
+    (
+      await page.request.post("/api/owner/properties", {
+        headers: { Origin: "http://127.0.0.1:8787", "Idempotency-Key": "applicant-early-" + info.project.name },
+        data: { ownerName: "Applicant", nameKm: "ផ្ទះ", nameEn: "Early", province: "Kampot", checkinTime: "14:00", checkoutTime: "11:00", policyText: "Quiet." },
+      })
+    ).status(),
+  ).toBe(403);
+
+  const adminContext = await browser.newContext({
+    ...devices[info.project.name.startsWith("mobile") ? "Pixel 7" : "Desktop Chrome"],
+    baseURL: "http://127.0.0.1:8787",
+    extraHTTPHeaders: { "X-Test-Client": info.project.name + ":owner-admin" },
+  });
+  const admin = await adminContext.newPage();
+  try {
+    await register(admin, `owner-admin-${info.project.name}@example.invalid`, false);
+    const session = (await (await admin.request.get("/api/auth/get-session")).json()) as { user: { id: string } };
+    expect(
+      (await admin.request.post("/__test/pilot-reviewer", { data: { userId: session.user.id, termsVersion: null } })).status(),
+    ).toBe(200);
+    await admin.goto("/admin/owners");
+    await expect(admin.getByRole("heading", { name: "Owner applications", exact: true })).toBeVisible();
+    const card = admin.getByRole("listitem").filter({ hasText: business });
+    await card.getByLabel("Reason for " + business, { exact: true }).fill("Confirmed by phone.");
+    await card.getByRole("button", { name: "Approve owner", exact: true }).click();
+    await expect(admin.getByRole("listitem").filter({ hasText: business })).toHaveCount(0);
+    expect(await admin.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
+  } finally {
+    await adminContext.close();
+  }
+
+  await page.reload();
+  await expect(page.getByText("Your owner access is approved.")).toBeVisible();
+  await page.goto("/owner");
+  await expect(page.getByRole("link", { name: "Create property draft", exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
 });

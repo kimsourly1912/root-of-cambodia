@@ -1,6 +1,6 @@
 import { requireStagingAccount } from "./staging-accounts";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { guestReturn } from "@/lib/return-path";
 import { runtime } from "./runtime";
 import { verified } from "@root-of-cambodia/backend/shared";
@@ -56,4 +56,19 @@ export async function readTogether<T extends unknown[]>(
   const results = [];
   for (const read of reads) results.push(await read);
   return results as T;
+}
+
+// A workspace read whose not_found becomes the area's not-found page, as for
+// reviewer and admin pages that hide whether a resource exists.
+export async function readOrNotFound<T>(read: () => Promise<T>): Promise<T> {
+  const result = await ownerRead(async () => {
+    try {
+      return { data: await read() };
+    } catch (error) {
+      if (error instanceof DomainError && error.code === "not_found") return null;
+      throw error;
+    }
+  });
+  if (!result) notFound();
+  return result.data;
 }

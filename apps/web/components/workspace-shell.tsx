@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, ClipboardCheck, House, Luggage, Plus, Search } from "lucide-react";
+import { Building2, ClipboardCheck, House, Luggage, Plus, Search, UserCheck } from "lucide-react";
 
 import {
   Sidebar,
@@ -27,6 +27,7 @@ import { SignOut } from "@/components/sign-out";
 
 // Read by server/workspace-navigation.ts; null when there is no usable session.
 type WorkspaceNavigation = {
+  owner: boolean;
   admin: boolean;
   properties: { id: string; nameKm: string; nameEn: string | null }[];
   moreProperties: boolean;
@@ -48,7 +49,11 @@ function WorkspaceShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  const area = pathname.startsWith("/review") ? "Publication review" : "Owner workspace";
+  const area = pathname.startsWith("/admin")
+    ? "Admin"
+    : pathname.startsWith("/review")
+      ? "Publication review"
+      : "Owner workspace";
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <Sidebar>
@@ -141,12 +146,9 @@ function WorkspaceMenu({
                 )}
               </SidebarMenuSub>
             ) : null}
-            {item(
-              "/owner/properties/new",
-              "New property",
-              <Plus aria-hidden="true" />,
-              pathname === "/owner/properties/new",
-            )}
+            {navigation.owner
+              ? item("/owner/properties/new", "New property", <Plus aria-hidden="true" />, pathname === "/owner/properties/new")
+              : item("/owner/apply", "Owner application", <Plus aria-hidden="true" />, pathname === "/owner/apply")}
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>
@@ -157,6 +159,7 @@ function WorkspaceMenu({
           <SidebarGroupContent>
             <SidebarMenu>
               {item("/review", "Review queue", <ClipboardCheck aria-hidden="true" />, pathname.startsWith("/review"))}
+              {item("/admin/owners", "Owner applications", <UserCheck aria-hidden="true" />, pathname.startsWith("/admin/owners"))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

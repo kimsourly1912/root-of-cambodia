@@ -18,6 +18,10 @@ async function account(page: Page, email: string) {
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await expect(page).toHaveURL(/\/owner$/);
+  // These journeys are not about the owner application (ADR 0010).
+  const session = (await (await page.request.get("/api/auth/get-session")).json()) as { user: { id: string } };
+  expect((await page.request.post("/__test/owner-access", { data: { userId: session.user.id } })).status()).toBe(200);
+  await page.reload();
 }
 async function property(page: Page, key: string) {
   const response = await page.request.post("/api/owner/properties", {

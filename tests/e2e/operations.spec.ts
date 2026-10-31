@@ -8,6 +8,9 @@ async function account(request: APIRequestContext, email: string) {
   const mail = await (await request.get("/__test/mail?email=" + encodeURIComponent(email))).json();
   expect((await request.get(mail.url)).ok()).toBeTruthy();
   expect((await request.post("/api/auth/sign-in/email", {headers: {Origin: origin}, data: {email, password}})).ok()).toBeTruthy();
+  // These journeys are not about the owner application (ADR 0010).
+  const session = await (await request.get("/api/auth/get-session")).json() as {user: {id: string}};
+  expect((await request.post("/__test/owner-access", {data: {userId: session.user.id}})).status()).toBe(200);
 }
 async function write(request: APIRequestContext, url: string, data: unknown, method: "post" | "patch" = "post") {
   const r = await request[method](url, {headers: {Origin: origin, "Idempotency-Key": crypto.randomUUID()}, data});

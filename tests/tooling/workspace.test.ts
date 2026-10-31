@@ -177,7 +177,7 @@ test("external review recovery returns stay local and bounded through authentica
 // Lower layers never import the same or a higher layer.
 const backendLayers: Record<string, number> = {
   shared: 0,
-  accounts: 1, properties: 1, "property-information": 1, "property-logistics": 1,
+  accounts: 1, "owner-access": 1, properties: 1, "property-information": 1, "property-logistics": 1,
   media: 1, rooms: 1, inventory: 1, quotes: 1, payments: 1,
   calendar: 2, publication: 2,
   catalog: 3,

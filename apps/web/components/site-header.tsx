@@ -59,7 +59,7 @@ function SiteHeader({ fixtureTest, readOnly, viewer }: SiteHeaderProps) {
                 </li>
                 <li>
                   <Link
-                    href="/owner"
+                    href={viewer && !viewer.owner ? "/owner/apply" : "/owner"}
                     className={buttonVariants({ variant: "ghost", size: "sm", className: "relative" })}
                   >
                     {viewer?.owner ? "Owner workspace" : "List your property"}

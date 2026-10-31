@@ -243,7 +243,7 @@ test("safeguards upgrade retains every populated row, old schema object and orig
     assert.deepEqual(afterDraftMigration.property_logistics_event, []);
     delete afterDraftMigration.property_logistics;
     delete afterDraftMigration.property_logistics_event;
-    for (const table of ["pilot_publication_config","property_review_command","property_review_request","property_review_event","public_listing_disclosure","booking_terms_document","guest_booking_attempt","booking_acceptance","owner_booking_attempt","booking_payment_event","booking_payment_state","booking_payment_attempt","external_booking_attempt","listing_control_event"]) {
+    for (const table of ["pilot_publication_config","property_review_command","property_review_request","property_review_event","public_listing_disclosure","booking_terms_document","guest_booking_attempt","booking_acceptance","owner_booking_attempt","booking_payment_event","booking_payment_state","booking_payment_attempt","external_booking_attempt","listing_control_event","owner_application","owner_access_command","owner_access_assert"]) {
       assert.deepEqual(afterDraftMigration[table], []);
       delete afterDraftMigration[table];
     }

@@ -16,6 +16,7 @@ export async function workspaceNavigation(): Promise<WorkspaceNavigation | null>
     const { env } = await runtime();
     const result = await ownerProperties(env.DB, current.actor, "");
     return {
+      owner: current.owner,
       admin: current.admin,
       properties: result.items.map(({ id, nameKm, nameEn }) => ({ id, nameKm, nameEn })),
       moreProperties: Boolean(result.nextCursor),

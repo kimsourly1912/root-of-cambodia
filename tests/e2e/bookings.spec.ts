@@ -68,7 +68,9 @@ test("guest and owner recover requests/responses and reveal logistics only while
     .context()
     .setExtraHTTPHeaders({ "X-Test-Client": "guest-ui-" + info.project.name });
   try {
-    await account(owner, `guest-owner-${info.project.name}@example.invalid`);
+    const ownerId = await account(owner, `guest-owner-${info.project.name}@example.invalid`);
+    // This journey is not about the owner application (ADR 0010).
+    expect((await owner.post("/__test/owner-access", { data: { userId: ownerId } })).status()).toBe(200);
     const reviewerId = await account(
       reviewer,
       `guest-reviewer-${info.project.name}@example.invalid`,
