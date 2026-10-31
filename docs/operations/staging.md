@@ -24,7 +24,7 @@ available as a conservative code/config fallback. A rollback does not undo data.
 | Account | dcfd514b7e29898cd93e1bbb17b1aa22 |
 | Domain | rootsofcambodia.com; zone ea10d4d2dd807cef27e6907d6ac1d4c5 |
 | Origin | [Testing guide](https://staging.rootsofcambodia.com/testing); only this custom domain, no workers.dev/preview URL |
-| D1 | roc-staging; 169e1c39-c59a-40c8-8646-b82bbad08a2c; existing migrations 0001–0020 tracked in d1_migrations |
+| D1 | roc-staging; 169e1c39-c59a-40c8-8646-b82bbad08a2c; migrations 0001–0022 tracked in d1_migrations |
 | R2 | roc-media-staging, APAC; private originals/previews; managed public domain disabled |
 | Web | roc-web-staging; DB, MEDIA, IMAGES and ASSETS, separate auth secret |
 | Images | Native binding; free transformation allowance, no paid Images storage subscription |
@@ -97,6 +97,13 @@ scopes. The owner explicitly replied “yes sure, I approve all the ways to fini
 our staging live preview” to those concrete staging-only steps. Migrations
 0001–0020 and standard tracking were then applied atomically per file; foreign-key
 and quick checks passed. No schema file has been changed by interactive testing.
+
+On 31 October 2026 the owner approved applying 0021–0022 (account capabilities,
+owner applications) once after the role slices merged. A Time Travel bookmark was
+recorded first, then `wrangler d1 migrations apply DB --env staging --remote`
+applied both. Foreign-key and quick checks passed; the configured fixture reviewer
+is the only active admin and the fixture owner holds backfilled approved access.
+The blocked main release (754495f) was then rerun and passed deployment and smoke.
 
 The initial read-only deployment used runtime source
 87052d21f01eec2c5550d7c839bac7c2c01106ed and passed 18 real HTTPS checks.
