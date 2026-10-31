@@ -64,7 +64,8 @@ export function RoomCalendarForm({
     busy = useRef(false),
     completed = useRef(false),
     attempt = useRef<{ key: string; body: CalendarEdit } | null>(null);
-  const [dirty, setDirty] = useState<string[]>([]),
+  const [hydrated, setHydrated] = useState(false),
+    [dirty, setDirty] = useState<string[]>([]),
     [pending, setPending] = useState(false),
     [settling, setSettling] = useState(false),
     [uncertain, setUncertain] = useState(false),
@@ -82,7 +83,7 @@ export function RoomCalendarForm({
     defaultValues,
     onSubmit: async ({ value }) => {
       setNeedsSignIn(false);
-      if (busy.current || completed.current) return;
+      if (!hydrated || busy.current || completed.current) return;
       if (!attempt.current) {
         const selected = value.rows.filter((row) => dirty.includes(row.night));
         if (!selected.length) return;
@@ -187,8 +188,9 @@ export function RoomCalendarForm({
     setDirty([]);
     completed.current = false;
     setSettling(false);
+    setHydrated(true);
   }, [versions, roomRevision]);
-  const frozen = !editable || pending || settling || uncertain || conflict;
+  const frozen = !hydrated || !editable || pending || settling || uncertain || conflict;
   function change(
     night: string,
     fieldName: "price" | "units" | "blocks",
@@ -428,7 +430,7 @@ export function RoomCalendarForm({
           <Button
             type="submit"
             formNoValidate
-            disabled={pending || settling || (!dirty.length && !uncertain)}
+            disabled={!hydrated || pending || settling || (!dirty.length && !uncertain)}
           >
             {pending
               ? "Saving…"

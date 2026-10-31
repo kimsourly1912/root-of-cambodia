@@ -21,6 +21,21 @@ const fields = {
   checkoutTime: "11:00",
   policyText: "Quiet hours after 22:00.",
 };
+async function assertFormHydration(page: Page, fieldLabel: string, saveLabel: string) {
+  let releaseScripts!: () => void;
+  const scriptsReady = new Promise<void>(resolve => { releaseScripts = resolve; });
+  const deferScripts = async (route: Route) => { await scriptsReady; await route.continue(); };
+  await page.route("**/_next/static/**/*.js*", deferScripts);
+  try {
+    await page.reload({ waitUntil: "commit" });
+    await expect(page.getByLabel(fieldLabel, { exact: true })).toBeDisabled();
+    await expect(page.getByRole("button", { name: saveLabel, exact: true })).toBeDisabled();
+  } finally {
+    releaseScripts();
+    await page.unrouteAll({ behavior: "wait" });
+  }
+  await expect(page.getByLabel(fieldLabel, { exact: true })).toBeEnabled();
+}
 async function emailLink(
   request: APIRequestContext,
   email: string,
@@ -491,6 +506,7 @@ test("owner sets weekly prices and units with exact cents, atomic retry and stal
   await expect(page).toHaveURL(/start=2027-01-03/);
   const first = page.getByRole("group", { name: "2027-01-03", exact: true });
   await expect(first).toBeVisible();
+  await assertFormHydration(page, "Total units for week", "Save changed nights");
   await page
     .getByLabel("Nightly price for week (USD)", { exact: true })
     .fill("19.99");
@@ -703,6 +719,7 @@ test("owner saves private descriptions, addresses and facilities with safe retry
   ).toBeVisible();
   const description = "ស្នាក់នៅជិតទន្លេ\nA quiet place to stay.";
   const address = "ផ្លូវភូមិ\nKampot";
+  await assertFormHydration(page, "Property description", "Save property information");
   await page
     .getByLabel("Property description", { exact: true })
     .fill(description);
@@ -905,6 +922,7 @@ test("owner saves private location/contact/arrival details with same-attempt rec
   await page.goto(base);
   await page.getByRole("link", { name: "Location & contact", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Location & contact", exact: true })).toBeVisible();
+  await assertFormHydration(page, "Latitude", "Save location and contact");
   await page.getByLabel("Latitude", { exact: true }).fill("10.606");
   await page.getByRole("button", { name: "Save location and contact", exact: true }).click();
   await expect(page.locator("main").getByRole("alert")).toContainText("Enter both valid coordinates");
