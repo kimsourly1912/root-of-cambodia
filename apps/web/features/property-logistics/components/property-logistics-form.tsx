@@ -40,7 +40,8 @@ export function PropertyLogisticsForm({
     busy = useRef(false),
     completed = useRef(false),
     attempt = useRef<{ key: string; body: PropertyLogistics } | null>(null);
-  const [dirty, setDirty] = useState(false),
+  const [hydrated, setHydrated] = useState(false),
+    [dirty, setDirty] = useState(false),
     [pending, setPending] = useState(false),
     [settling, setSettling] = useState(false),
     [uncertain, setUncertain] = useState(false),
@@ -51,7 +52,7 @@ export function PropertyLogisticsForm({
   const form = useForm({
     defaultValues: formFrom(logistics),
     onSubmit: async ({ value }) => {
-      if (busy.current || completed.current) return;
+      if (!hydrated || busy.current || completed.current) return;
       setNeedsSignIn(false);
       setError("");
       if (!attempt.current) {
@@ -144,8 +145,9 @@ export function PropertyLogisticsForm({
     setDirty(false);
     completed.current = false;
     setSettling(false);
+    setHydrated(true);
   }, [logistics.revision]);
-  const frozen = !editable || pending || settling || uncertain || conflict;
+  const frozen = !hydrated || !editable || pending || settling || uncertain || conflict;
   return (
     <form
       onSubmit={(event) => {
@@ -312,7 +314,7 @@ export function PropertyLogisticsForm({
               <Button
                 type="submit"
                 className="w-full"
-                disabled={pending || settling || (!dirty && !uncertain)}
+                disabled={!hydrated || pending || settling || (!dirty && !uncertain)}
               >
                 {pending
                   ? "Saving…"

@@ -4,7 +4,7 @@
 
 **Responsible role:** owner-supply maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
+**Last source verification:** 31 October 2026; owner-form initialization repair on `fix/owner-form-hydration`, based on main [010dc7f](https://github.com/kimsourly1912/root-of-cambodia/commit/010dc7f6b6fa40a698ae420ebe17d10f6863024e).
 
 **Sources:** [apps/web/app/owner/](../../apps/web/app/owner), [apps/web/app/api/owner/properties/](../../apps/web/app/api/owner/properties), [packages/backend/src/features/properties/property-drafts.ts](../../packages/backend/src/features/properties/property-drafts.ts), [packages/backend/src/features/rooms/room-types.ts](../../packages/backend/src/features/rooms/room-types.ts), [packages/backend/src/features/calendar/calendar.ts](../../packages/backend/src/features/calendar/calendar.ts), [packages/backend/src/features/property-information/property-information.ts](../../packages/backend/src/features/property-information/property-information.ts), [packages/backend/src/features/media/media.ts](../../packages/backend/src/features/media/media.ts).
 
@@ -84,6 +84,11 @@ Scheduled maintenance deletes both paths for at most 20 due tombstones per call 
 Every draft/room/calendar/information/gallery write commits data, attributable history and receipt together with current verification/owner/draft/revision checks. Expected absence is checked atomically; competing first saves/stale tabs cannot silently overwrite. A later-night/history failure rolls back the entire calendar save. Calendar updates never assign reserved or rewrite submitted booking prices.
 
 The UI supports empty, unsaved, saving, unavailable, uncertain retry and stale-conflict states. It freezes an uncertain attempt and reuses its exact key/body; upload also retains file/asset identity. Pending state lasts in the open tab; closing/reloading loses it. Committed data remains readable through owned lists/views. After closing an unfinished photo attempt, remove that pending asset and select the file again; automatic background resume is not implemented.
+
+Calendar, information and location/contact fields and save controls stay disabled
+until their client initialization finishes. This prevents early edits from being
+lost when the form initializes its values and expected revision. Browser journeys
+delay scripts to verify this boundary before exercising normal saves and recovery.
 
 ## Acceptance evidence and unresolved work
 
