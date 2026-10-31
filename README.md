@@ -10,7 +10,7 @@
 
 A Cambodia discovery and accommodation platform in development. Guests request stays and pay the property directly. Current code provides verified owner access, private property/room/calendar/information/photo setup and booking APIs. Anonymous stay browsing now shows only explicitly authorized, reviewed listing content and processed photos. Guest request/tracking, owner responses, owner availability and external reservations, listing pause/corrections, schedule-bounded arrival/completion and full external-payment bookkeeping are implemented locally; exceptional stay handling, broader moderation and live providers remain unfinished; see current status for verification limits.
 
-Start with the [documentation map](docs/README.md) and [current status/evidence](docs/status.md). For development use [setup](docs/development/setup.md) and [testing](docs/development/testing.md); agents must read [AGENTS.md](AGENTS.md) (Claude Code loads it through [CLAUDE.md](CLAUDE.md)) and use the [playbooks](docs/playbooks/README.md).
+Start with the [documentation map](docs/README.md) and [current status/evidence](docs/status.md). To run it locally from a fresh clone with test accounts, follow the [fresh clone steps](docs/development/setup.md#fresh-clone-run-the-app-locally-with-test-data). For development use [setup](docs/development/setup.md) and [testing](docs/development/testing.md); agents must read [AGENTS.md](AGENTS.md) (Claude Code loads it through [CLAUDE.md](CLAUDE.md)) and use the [playbooks](docs/playbooks/README.md).
 
 | Workspace | Role |
 | --- | --- |

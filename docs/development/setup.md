@@ -8,6 +8,45 @@
 
 **Sources:** [package.json](../../package.json), [.node-version](../../.node-version), [pnpm-workspace.yaml](../../pnpm-workspace.yaml), [.github/workflows/verify.yml](../../.github/workflows/verify.yml), [apps/web/scripts/init-local.mjs](../../apps/web/scripts/init-local.mjs), [scripts/handoff-local.ts](../../scripts/handoff-local.ts), [apps/web/package.json](../../apps/web/package.json), [apps/jobs/package.json](../../apps/jobs/package.json).
 
+## Fresh clone: run the app locally with test data
+
+Everything below writes only to your machine; nothing touches staging or any remote resource.
+
+1. Install [Node 24.22.1](https://nodejs.org/) (the version in [.node-version](../../.node-version)) and Git.
+2. Clone and enter the repository:
+
+   ~~~sh
+   git clone https://github.com/kimsourly1912/root-of-cambodia.git
+   cd root-of-cambodia
+   ~~~
+
+3. Activate the pinned pnpm, install dependencies, then create and fill the local database:
+
+   ~~~sh
+   corepack enable
+   corepack prepare pnpm@12.15.0 --activate
+   pnpm install --frozen-lockfile
+   pnpm init:local          # .dev.vars secret, migrations, email capture tables (safe to repeat)
+   pnpm types:bindings      # generated binding types (git-ignored)
+   pnpm seed:local          # fictional accounts, stays and bookings (safe to repeat)
+   ~~~
+
+4. Start the app and open <http://127.0.0.1:8787>. Use exactly this address: on `http://localhost:8787` the pages load, but sign-in fails with `INVALID_ORIGIN` because local auth trusts only the exact origin.
+
+   ~~~sh
+   pnpm dev
+   ~~~
+
+5. Sign in with a test account. Open `.wrangler/state/local-fixture-logins.txt`, which lists each account's role, email and password; a fresh seed gives all three the same randomly generated password (git-ignored; never commit or share it):
+
+   | Email | Role |
+   | --- | --- |
+   | `owner@roc-staging.invalid` | Owner with listings and bookings |
+   | `guest@roc-staging.invalid` | Guest with one Pending and one Confirmed booking |
+   | `reviewer@roc-staging.invalid` | Publication reviewer |
+
+Next time, only `pnpm dev` is needed. After pulling new commits, run `pnpm install --frozen-lockfile` and `pnpm init:local` again to pick up dependency and migration changes. To run tests, follow the [full verification sequence](#full-local-verification-sequence); Windows users who build the Worker should read the Windows note under [running the dev server](#running-the-dev-server-and-seeded-data).
+
 ## Prerequisites and command authority
 
 Run active application commands from the repository root. [package.json](../../package.json) owns the Node engine range and exact packageManager pin; [.node-version](../../.node-version) and [CI](../../.github/workflows/verify.yml) identify the reproducible Node version. The current CI tuple is Node **24.22.1**, pnpm **12.15.0**. Use the pinned manager on PATH or Corepack following that pin; an older global pnpm does not establish the selected version.
@@ -38,7 +77,7 @@ Both builds are required before the full Vitest suite: the Worker project loads 
 
 ## What initialization changes
 
-[init-local.mjs](../../apps/web/scripts/init-local.mjs) first runs the legacy handoff, creates apps/web/.dev.vars with a random BETTER_AUTH_SECRET if absent, applies the single [migration directory](../../packages/backend/migrations/) to local DB via the web config, and creates local_email/local_notification capture tables. It does not seed business properties; `pnpm seed:local` does (see the quick start above). Repeating initialization keeps data and skips applied migrations.
+[init-local.mjs](../../apps/web/scripts/init-local.mjs) first runs the legacy handoff, creates apps/web/.dev.vars with a random BETTER_AUTH_SECRET if absent, applies the single [migration directory](../../packages/backend/migrations/) to local DB via the web config, and creates local_email/local_notification capture tables. It does not seed business properties; `pnpm seed:local` does (see the [fresh clone steps](#fresh-clone-run-the-app-locally-with-test-data)). Repeating initialization keeps data and skips applied migrations.
 
 Generated binding declarations live in the backend and each app and are excluded from Git. The backend declaration supplies runtime types; each app has its own environment interface. Root types:bindings regenerates them.
 
@@ -50,20 +89,11 @@ Stop local previews before first handoff. [handoff-local.ts](../../scripts/hando
 
 Reconcile conflicts explicitly. Never delete a populated database or secret to force initialization. Preserve the application compatibility location and handoff script; they are not active source or disposable cosmetic leftovers.
 
-## Quick start: run the app locally with test data
-
-From the repository root, after a frozen install:
-
-~~~sh
-pnpm init:local          # migrations, capture tables, .dev.vars (safe to repeat)
-pnpm types:bindings
-pnpm seed:local          # fictional accounts, stays and bookings (safe to repeat)
-pnpm dev                 # hot reload at http://127.0.0.1:8787
-~~~
+## Running the dev server and seeded data
 
 `pnpm dev` runs `next dev` with the same local D1/R2/Images state through OpenNext's `initOpenNextCloudflareForDev` (see [next.config.ts](../../apps/web/next.config.ts)). It uses port 8787 because local auth only accepts the `http://127.0.0.1:8787` origin. It runs in Node, not workerd, so before a PR also check the real Worker with `pnpm build:worker` and `pnpm preview:worker` (same URL; stop one before starting the other). Tests and CI always use the built Worker.
 
-[seed-local.ts](../../scripts/seed-local.ts) loads the same fictional fixtures as staging into local state only, through the normal backend services: owner, guest and reviewer accounts (`owner@`, `guest@`, `reviewer@roc-staging.invalid`), two published stays with processed photos, one stay pending review, an empty draft, and one Pending and one Confirmed booking. It configures the demo reviewer and clearly fictional demo terms, so publication approval works locally. Generated passwords are written to `.wrangler/state/local-fixture-credentials.json`, which is git-ignored local state; never commit or share it. Re-running keeps existing data and passwords. It refuses when non-fixture accounts or a different reviewer/terms configuration already exist; it never touches staging or remote bindings.
+[seed-local.ts](../../scripts/seed-local.ts) loads the same fictional fixtures as staging into local state only, through the normal backend services: owner, guest and reviewer accounts (`owner@`, `guest@`, `reviewer@roc-staging.invalid`), two published stays with processed photos, one stay pending review, an empty draft, and one Pending and one Confirmed booking. It configures the demo reviewer and clearly fictional demo terms, so publication approval works locally. Passwords are generated once into `.wrangler/state/local-fixture-credentials.json` (keyed by fixture ID, the format the account seeder reads); every seed also rewrites `.wrangler/state/local-fixture-logins.txt` with role, email and password side by side. Both are git-ignored local state; never commit or share them. Re-running keeps existing data and passwords. It refuses when non-fixture accounts or a different reviewer/terms configuration already exist; it never touches staging or remote bindings.
 
 **Windows:** `pnpm dev` works without extra setup. The OpenNext build (`build:worker`) creates symlinks, which fails with `EPERM: operation not permitted, symlink` unless Windows Developer Mode is on (Settings → System → For developers → Developer Mode) or the terminal runs as Administrator. WSL with a Linux distribution also works.
 
