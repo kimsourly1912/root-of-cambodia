@@ -1,4 +1,4 @@
-import { verified, type Actor } from "../../shared/index";
+import { adminConfigured, adminSQL, verified, type Actor } from "../../shared/index";
 import { DomainError } from "../../shared/index";
 import { readPublicationReadiness } from "./publication-readiness";
 import {
@@ -86,6 +86,7 @@ export type ReviewEvent = {
   occurredAt: number;
 };
 export type ReviewConfig = {
+  // Retained from the pilot setting; review permission is "active admin" (ADR 0010).
   reviewerId: string;
   termsVersion: string | null;
   revision: number;
@@ -121,18 +122,12 @@ export async function reviewConfig(
 }
 export async function canReview(db: D1Database, actor: Actor) {
   await verified(db, actor);
-  return !!(await db
-    .prepare(
-      "SELECT 1 ok FROM pilot_publication_config c JOIN user u ON u.id=c.reviewer_user_id WHERE c.singleton=1 AND u.id=? AND u.emailVerified=1",
-    )
-    .bind(actor.id)
-    .first());
+  return !!(await db.prepare("SELECT 1 ok WHERE " + adminSQL).bind(actor.id).first());
 }
 export async function requireReviewer(db: D1Database, actor: Actor) {
   if (!(await canReview(db, actor))) throw new DomainError("not_found", 404);
   const config = await reviewConfig(db);
-  if (!config || config.reviewerId !== actor.id)
-    throw new DomainError("not_found", 404);
+  if (!config) throw new DomainError("not_found", 404);
   return config;
 }
 export async function readSnapshot(
@@ -216,12 +211,7 @@ export async function ownerPublication(
       ? (await readSnapshot(db, propertyId, actor.id)).data
       : null;
   const config = await reviewConfig(db);
-  const reviewerConfigured =
-    !!config &&
-    !!(await db
-      .prepare("SELECT 1 ok FROM user WHERE id=? AND emailVerified=1")
-      .bind(config.reviewerId)
-      .first());
+  const reviewerConfigured = !!config && (await adminConfigured(db));
   const events = latest ? await reviewEvents(db, latest.id) : [];
   const readiness = await readPublicationReadiness(db, propertyId, actor.id);
   const publicPreview = draft
@@ -321,7 +311,7 @@ export async function reviewPhotoAsset(
   await verified(db, actor);
   const asset = await db
     .prepare(
-      "SELECT m.id,m.property_id FROM property_review_request r JOIN property p ON p.id=r.property_id JOIN place l ON l.id=p.id JOIN property_media m ON m.property_id=p.id WHERE r.id=? AND m.id=? AND r.status='pending' AND l.publication='review' AND r.owner_id=p.owner_id AND m.state='ready' AND (p.owner_id=? OR EXISTS(SELECT 1 FROM pilot_publication_config WHERE singleton=1 AND reviewer_user_id=?)) AND EXISTS(SELECT 1 FROM json_each(r.snapshot_json,'$.photos') j WHERE json_extract(j.value,'$.id')=m.id AND json_extract(j.value,'$.state')='ready')",
+      "SELECT m.id,m.property_id FROM property_review_request r JOIN property p ON p.id=r.property_id JOIN place l ON l.id=p.id JOIN property_media m ON m.property_id=p.id WHERE r.id=? AND m.id=? AND r.status='pending' AND l.publication='review' AND r.owner_id=p.owner_id AND m.state='ready' AND (p.owner_id=? OR "+adminSQL+") AND EXISTS(SELECT 1 FROM json_each(r.snapshot_json,'$.photos') j WHERE json_extract(j.value,'$.id')=m.id AND json_extract(j.value,'$.state')='ready')",
     )
     .bind(requestId, photoId, actor.id, actor.id)
     .first<{

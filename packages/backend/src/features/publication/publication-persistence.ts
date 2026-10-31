@@ -1,4 +1,4 @@
-import { digest, verifiedSQL, type Actor } from "../../shared/index";
+import { adminSQL, anyAdminSQL, digest, verifiedSQL, type Actor } from "../../shared/index";
 import { DomainError } from "../../shared/index";
 import { publicationReadySQL } from "./publication-readiness";
 import {
@@ -87,7 +87,9 @@ export async function commitPublicationAction(
               verifiedSQL +
               " AND (" +
               snapshotSQL +
-              ")=? AND EXISTS(SELECT 1 FROM pilot_publication_config c JOIN user u ON u.id=c.reviewer_user_id WHERE c.singleton=1 AND u.emailVerified=1) AND EXISTS(" +
+              ")=? AND EXISTS(SELECT 1 FROM pilot_publication_config WHERE singleton=1) AND " +
+              anyAdminSQL +
+              " AND EXISTS(" +
               publicationReadySQL +
               ")",
           )
@@ -135,8 +137,11 @@ export async function commitPublicationAction(
             ? "approved"
             : "returned";
       const reviewer = write.action !== "withdraw";
+      // A reviewer is an active admin at commit time; the configuration
+      // revision still fences decisions made against changed terms or staff.
       const permission = reviewer
-        ? "EXISTS(SELECT 1 FROM pilot_publication_config WHERE singleton=1 AND reviewer_user_id=? AND revision=?)"
+        ? "EXISTS(SELECT 1 FROM pilot_publication_config WHERE singleton=1 AND revision=?) AND " +
+          adminSQL
         : "owner_id=?";
       const snapshotGuard =
         write.action === "approve"
@@ -178,7 +183,7 @@ export async function commitPublicationAction(
             write.requestId,
             write.revision,
             actor.id,
-            ...(reviewer ? [actor.id, write.config.revision] : [actor.id]),
+            ...(reviewer ? [write.config.revision, actor.id] : [actor.id]),
             ...(write.action === "approve" ? [terms] : []),
           ),
       );

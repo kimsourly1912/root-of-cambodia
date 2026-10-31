@@ -15,7 +15,7 @@ This is the single current delivery page: what exists, what evidence supports it
 | Item | Current value |
 | --- | --- |
 | Main | 91cd803, merge of docs-only [PR #40](https://github.com/kimsourly1912/root-of-cambodia/pull/40); last independently verified live release 237343d |
-| Migrations | 0001–0020 in [packages/backend/migrations](../packages/backend/migrations/); latest is 0020_reviewed_listing_corrections. Applied locally and to staging D1 |
+| Migrations | 0001–0021 in [packages/backend/migrations](../packages/backend/migrations/); latest is 0021_account_capabilities. 0001–0020 applied to staging D1; 0021 not applied remotely (needs explicit authorization, and the staging release inventory blocks until it is) |
 | Toolchain | Node 24.22.1, pnpm 12.15.0 ([setup](development/setup.md)) |
 | Environments | Local emulators, GitHub CI, and Cloudflare staging in `staging-test` mode ([staging contract](operations/staging.md)). No production |
 
@@ -44,6 +44,7 @@ CI results are GitHub Ubuntu/emulator runs. Staging evidence covers fictional fi
 | Payment records | Implemented | Full pay-at-property attestation with private correction history; no money movement; [payments](features/payments.md) |
 | Notifications and jobs | Local substitute only | Outbox, queue, leases, capture locally; jobs, queue consumer, Cron, expiry/cleanup sweeps and email not deployed (D07); [notifications](features/notifications.md) |
 | Automatic staging delivery | Existing pipeline active; optimization pending merge | [CI/CD contract](operations/ci-cd.md): isolated parallel jobs, shared test build, docs-only gate, equivalent PR receipt reuse/full fallback, caches/reports. Current branch is not yet active staging evidence |
+| Account capabilities | Slice 2 implemented: admin/owner rows, admin-only review, operator `admin:local`, role-based header | [ADR 0010](architecture/decisions/0010-account-capabilities.md); owner application gate and admin console are slices 3–4 |
 | Workspace shell | Implemented (#44) | Route groups: public `(site)` header frame, owner/reviewer `(workspace)` shadcn sidebar frame; URLs unchanged. Slice 1 of the roles and workspaces decision (PR #43); [UI standard](design/ui-standard.md) |
 | Partner/admin/support | Planned | No broad account, moderation or support dashboard (D06) |
 | Language/design | Partial | Khmer fonts/names and some labels; working UI mostly English (D13) |

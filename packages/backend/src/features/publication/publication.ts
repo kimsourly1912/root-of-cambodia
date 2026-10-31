@@ -1,4 +1,4 @@
-import { verified, type Actor } from "../../shared/index";
+import { adminConfigured, verified, type Actor } from "../../shared/index";
 import { requireOwnedProperty } from "../../shared/index";
 import { DomainError } from "../../shared/index";
 import {
@@ -65,14 +65,7 @@ export async function ownerReviewAction(
         ...(disclosure ? { publicDisclosure: disclosure } : {}),
       },
       async () => {
-        const config = await reviewConfig(db);
-        if (
-          !config ||
-          !(await db
-            .prepare("SELECT 1 ok FROM user WHERE id=? AND emailVerified=1")
-            .bind(config.reviewerId)
-            .first())
-        )
+        if (!(await reviewConfig(db)) || !(await adminConfigured(db)))
           throw new DomainError("reviewer_not_configured", 422);
         const snapshot = await readSnapshot(db, propertyId, actor.id);
         if (

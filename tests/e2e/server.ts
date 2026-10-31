@@ -2,6 +2,7 @@
 import { createServer } from "node:http";
 import { randomBytes } from "node:crypto";
 import { setStayClock } from "../../packages/backend/src/testing/stay-fixtures.ts";
+import { adminChangeStatements } from "../../scripts/platform-staff.ts";
 import { createTestHarness } from "wrangler";
 const origin = "http://127.0.0.1:8787";
 const harness = createTestHarness({
@@ -98,6 +99,9 @@ const server = createServer(async (req, res) => {
         )
         .bind(input.userId, input.termsVersion, input.userId)
         .run();
+      // Review permission is an active admin grant (ADR 0010).
+      if (result.meta.changes === 1)
+        await db.batch(adminChangeStatements(db, input.userId, true, "e2e", "Browser test reviewer"));
       if (
         result.meta.changes === 1 &&
         input.termsDocument === true &&

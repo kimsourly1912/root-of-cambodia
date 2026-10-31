@@ -1,4 +1,4 @@
-import { catalog,owner,other } from "./support";
+import { catalog,owner,other, configureReviewer } from "./support";
 import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
 import { readyPublicationFixture } from "./publication-fixtures";
 import { ownerPublication } from "@root-of-cambodia/backend/publication";
@@ -6,7 +6,7 @@ import { ownerReviewAction,decideReview } from "@root-of-cambodia/backend/public
 import { listingControls } from "@root-of-cambodia/backend/listing-controls";
 export async function listingFixture(db:D1Database) {
   await catalog(db);
-  await db.prepare("INSERT INTO pilot_publication_config VALUES(1,'other','approved-v1',1)").run();
+  await configureReviewer(db, "other", "approved-v1");
   const {id}=await createPropertyDraft(db,owner,"listing-fixture",{ownerName:"Owner",nameKm:"ផ្ទះសំណាក់",nameEn:"Listing stay",
     province:"Kampot",checkinTime:"14:00",checkoutTime:"11:00",policyText:"Quiet nights."});
   const supply=await readyPublicationFixture(db,owner,id);

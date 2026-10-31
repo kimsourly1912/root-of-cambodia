@@ -16,6 +16,7 @@ import { publicDisclosurePreview } from "@root-of-cambodia/backend/publication";
 import { guestQuote, saveGuestAttempt, sendGuestAttempt } from "@root-of-cambodia/backend/bookings";
 import { acceptancePreview } from "@root-of-cambodia/backend/bookings";
 import { transition } from "@root-of-cambodia/backend/bookings";
+import { adminChangeStatements } from "./platform-staff";
 
 export type StagingCredential = { id: string; password: string };
 export const STAGING_TERMS_VERSION = "staging-demo-terms-v1";
@@ -57,7 +58,13 @@ export async function seedStagingProperties(env: {DB:D1Database;MEDIA:R2Bucket;I
   await db.prepare("INSERT INTO booking_terms_document(version,content) VALUES(?,?) ON CONFLICT(version) DO NOTHING").bind(STAGING_TERMS_VERSION,STAGING_TERMS).run();
   const terms = await db.prepare("SELECT content FROM booking_terms_document WHERE version=?").bind(STAGING_TERMS_VERSION).first<{content:string}>();
   if (terms?.content !== STAGING_TERMS) throw new Error("Existing immutable demo terms differ");
-  await db.prepare("INSERT INTO pilot_publication_config(singleton,reviewer_user_id,terms_version) VALUES(1,?,?) ON CONFLICT(singleton) DO NOTHING").bind(reviewer.id,STAGING_TERMS_VERSION).run();
+  await db.batch([
+    db.prepare("INSERT INTO pilot_publication_config(singleton,reviewer_user_id,terms_version) VALUES(1,?,?) ON CONFLICT(singleton) DO NOTHING").bind(reviewer.id,STAGING_TERMS_VERSION),
+    // Fictional fixtures (ADR 0010): the demo reviewer is the demo admin, and the
+    // demo owner is an owner the demo admin approved.
+    ...adminChangeStatements(db,reviewer.id,true,"staging-fixtures","Fictional demo admin"),
+    db.prepare("INSERT INTO owner_access(user_id,status,source,decided_by,decided_at) VALUES(?,'approved','application',?,unixepoch()) ON CONFLICT(user_id) DO NOTHING").bind(owner.id,reviewer.id),
+  ]);
   const results: {id:string;roomId:string;name:string;state:string;start:string;end:string}[] = [];
   const fixtures = [
     {slug:"kampot",name:"Demo Riverside Homestay",km:"ផ្ទះស្នាក់នៅសាកល្បងកំពត",province:"Kampot",cents:2800,publish:true},

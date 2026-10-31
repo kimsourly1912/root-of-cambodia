@@ -8,8 +8,7 @@ import {
   other,
   guest,
   unverified,
-  scalar,
-} from "../../../testing/support";
+  scalar, configureReviewer } from "../../../testing/support";
 import { env } from "cloudflare:workers";
 import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
 import {
@@ -52,11 +51,7 @@ async function setup(
   calendarNight?: string | null,
 ) {
   await catalog(db);
-  await db
-    .prepare(
-      "INSERT INTO pilot_publication_config VALUES(1,'other','approved-v1',1)",
-    )
-    .run();
+  await configureReviewer(db, "other", "approved-v1");
   const { id } = await createPropertyDraft(db, owner, "draft", fields);
   return {
     id,

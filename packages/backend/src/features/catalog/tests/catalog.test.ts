@@ -9,8 +9,7 @@ import {
   other,
   guest,
   scalar,
-  request,
-} from "../../../testing/support";
+  request, configureReviewer } from "../../../testing/support";
 import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
 import {
   ownerReviewAction,
@@ -55,11 +54,7 @@ const fields = {
 };
 async function base(db: D1Database) {
   await catalog(db);
-  await db
-    .prepare(
-      "INSERT INTO pilot_publication_config VALUES(1,'other','approved-v1',1)",
-    )
-    .run();
+  await configureReviewer(db, "other", "approved-v1");
 }
 async function draft(db: D1Database, name = fields.nameEn) {
   const { id } = await createPropertyDraft(db, owner, crypto.randomUUID(), {

@@ -7,9 +7,12 @@ import { LinkPending } from "@/components/link-pending";
 type SiteHeaderProps = {
   fixtureTest: boolean;
   readOnly: boolean;
+  // Capabilities of the signed-in account (ADR 0010); null when signed out.
+  // Choosing links only: every destination checks access itself.
+  viewer: { owner: boolean; admin: boolean } | null;
 };
 
-function SiteHeader({ fixtureTest, readOnly }: SiteHeaderProps) {
+function SiteHeader({ fixtureTest, readOnly, viewer }: SiteHeaderProps) {
   return (
     <header className="border-b bg-card">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8">
@@ -59,10 +62,21 @@ function SiteHeader({ fixtureTest, readOnly }: SiteHeaderProps) {
                     href="/owner"
                     className={buttonVariants({ variant: "ghost", size: "sm", className: "relative" })}
                   >
-                    Owner workspace
+                    {viewer?.owner ? "Owner workspace" : "List your property"}
                     <LinkPending />
                   </Link>
                 </li>
+                {viewer?.admin && (
+                  <li>
+                    <Link
+                      href="/review"
+                      className={buttonVariants({ variant: "ghost", size: "sm", className: "relative" })}
+                    >
+                      Admin
+                      <LinkPending />
+                    </Link>
+                  </li>
+                )}
               </>
             )}
           </ul>

@@ -97,3 +97,24 @@ export async function findDueRequests(db: D1Database, limit: number) {
     .all<{ id: string }>();
   return due.results;
 }
+
+// Account capabilities (ADR 0010). Guest is every verified account. Admin and
+// approved owner are rows read per request; writes repeat these predicates in
+// their batch so a revocation takes effect at commit time.
+export const adminSQL =
+  "EXISTS(SELECT 1 FROM platform_staff s JOIN user u ON u.id=s.user_id WHERE s.user_id=? AND s.role='admin' AND s.active=1 AND u.emailVerified=1)";
+export const anyAdminSQL =
+  "EXISTS(SELECT 1 FROM platform_staff s JOIN user u ON u.id=s.user_id WHERE s.role='admin' AND s.active=1 AND u.emailVerified=1)";
+export const approvedOwnerSQL =
+  "EXISTS(SELECT 1 FROM owner_access WHERE user_id=? AND status='approved')";
+export async function capabilities(db: D1Database, actor: Actor) {
+  await verified(db, actor);
+  const row = await db
+    .prepare(`SELECT ${adminSQL} AS admin, ${approvedOwnerSQL} AS owner`)
+    .bind(actor.id, actor.id)
+    .first<{ admin: number; owner: number }>();
+  return { guest: true, owner: row?.owner === 1, admin: row?.admin === 1 };
+}
+export async function adminConfigured(db: D1Database) {
+  return !!(await db.prepare(`SELECT 1 ok WHERE ${anyAdminSQL}`).first());
+}
