@@ -4,7 +4,7 @@
 
 **Responsible role:** delivery maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 31 October 2026; main [91cd803](https://github.com/kimsourly1912/root-of-cambodia/commit/91cd803cbe7be7e996a2b456cac8eb03953430eb) after PR #40. Faster CI/CD is implemented on `feat/faster-ci`, pending exact-head checks, merge and owner protection setup. The previously verified staging release remains 237343d below.
+**Last source verification:** 31 October 2026; main [754495f](https://github.com/kimsourly1912/root-of-cambodia/commit/754495f3b9a15e5ef8c71445a355211728915cab) after PR #47 (roles slices 1–4), released to staging after migrations 0021–0022 were applied there.
 
 **Sources:** [.github/workflows/verify.yml](../.github/workflows/verify.yml), [apps/web/app/](../apps/web/app), [packages/backend/migrations/](../packages/backend/migrations/), [apps/web/server/runtime.ts](../apps/web/server/runtime.ts), [apps/jobs/src/runtime.ts](../apps/jobs/src/runtime.ts), [staging contract](operations/staging.md).
 
@@ -14,8 +14,8 @@ This is the single current delivery page: what exists, what evidence supports it
 
 | Item | Current value |
 | --- | --- |
-| Main | 91cd803, merge of docs-only [PR #40](https://github.com/kimsourly1912/root-of-cambodia/pull/40); last independently verified live release 237343d |
-| Migrations | 0001–0022 in [packages/backend/migrations](../packages/backend/migrations/); latest is 0022_owner_applications. 0001–0020 applied to staging D1; 0021–0022 not applied remotely (owner chose to apply once after the role slices; the staging release inventory blocks until then) |
+| Main | 754495f, merge of [PR #47](https://github.com/kimsourly1912/root-of-cambodia/pull/47); live on staging |
+| Migrations | 0001–0022 in [packages/backend/migrations](../packages/backend/migrations/); latest is 0022_owner_applications. 0001–0022 applied to staging D1 (0021–0022 on 31 October with owner approval) |
 | Toolchain | Node 24.22.1, pnpm 12.15.0 ([setup](development/setup.md)) |
 | Environments | Local emulators, GitHub CI, and Cloudflare staging in `staging-test` mode ([staging contract](operations/staging.md)). No production |
 
@@ -23,8 +23,8 @@ This is the single current delivery page: what exists, what evidence supports it
 
 | Evidence | Scope | Result |
 | --- | --- | --- |
-| [CI 41178698696](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41178698696), main 237343d | Current main and automatic staging release | Types, both builds, 228 Vitest across 31 files and 28/28 desktop/phone checks passed; staging build, migration inventory, deployment and live smoke passed |
-| Staging HTTPS smoke, 31 October | Deployed main 237343d | Exact healthy revision; home/stays/testing fixture mode and noindex; anonymous catalog/session no-store; owner/guest APIs refuse anonymous access. Reads only; no migration, seed or data reset |
+| [CI 41191915856](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41191915856) attempt 2, main 754495f | Current main and automatic staging release | Reused the exact-tree PR #47 verification; staging build, migration inventory, deployment (version da1b1b56) and exact-revision HTTPS smoke passed |
+| Staging D1 upgrade, 31 October | 0021–0022 applied remotely | Time Travel bookmark recorded first; afterwards foreign-key check empty, quick check ok, configured reviewer is the single active admin, the fixture owner has approved (backfill) access and no property lacks an approved owner |
 | Staging HTTPS smoke, 30 October | Deployed 5d1fa92 runtime with fixture data | 58 real HTTPS checks passed: catalog/stay pages, three-account sessions and cookies, private reads and cross-role refusal, processed public photos, no-store/noindex, disabled registration/recovery, wrong-Origin refusal, sign-out. Remote integrity/FK checks passed |
 
 CI results are GitHub Ubuntu/emulator runs. Staging evidence covers fictional fixture accounts only. Not established: manual signed-in browser testing, phone hardware, accessibility review, load/restore, email delivery, deployed jobs, production. Local matching-Chromium download has repeatedly failed; browser automation evidence comes from PR CI.
@@ -43,10 +43,10 @@ CI results are GitHub Ubuntu/emulator runs. Staging evidence covers fictional fi
 | Arrival/completion | Implemented ordinary flow | Schedule-bounded owner check-in and manual completion; no-show, overrides and post-check-in cancellation open (D01) |
 | Payment records | Implemented | Full pay-at-property attestation with private correction history; no money movement; [payments](features/payments.md) |
 | Notifications and jobs | Local substitute only | Outbox, queue, leases, capture locally; jobs, queue consumer, Cron, expiry/cleanup sweeps and email not deployed (D07); [notifications](features/notifications.md) |
-| Automatic staging delivery | Existing pipeline active; optimization pending merge | [CI/CD contract](operations/ci-cd.md): isolated parallel jobs, shared test build, docs-only gate, equivalent PR receipt reuse/full fallback, caches/reports. Current branch is not yet active staging evidence |
-| Account capabilities | Slices 2–3: admin/owner rows, admin-only review, operator `admin:local`, role-based header; owner applications with admin approve/decline and the property-creation gate; slice 4 admin console (`/admin` overview, `/admin/reviews`, `/admin/owners`, read-only `/admin/properties`) | [ADR 0010](architecture/decisions/0010-account-capabilities.md), [owner access](features/owner-access.md); owner terms wait for D15; suspension/support access remain D06 |
+| Automatic staging delivery | Active | [CI/CD contract](operations/ci-cd.md): isolated parallel jobs, shared test build, docs-only gate, equivalent PR receipt reuse/full fallback, caches/reports |
+| Account capabilities | Implemented; on staging. Slices 2–3: admin/owner rows, admin-only review, operator `admin:local`, role-based header; owner applications with admin approve/decline and the property-creation gate; slice 4 admin console (`/admin` overview, `/admin/reviews`, `/admin/owners`, read-only `/admin/properties`) | [ADR 0010](architecture/decisions/0010-account-capabilities.md), [owner access](features/owner-access.md); owner terms wait for D15; suspension/support access remain D06 |
 | Workspace shell | Implemented (#44) | Route groups: public `(site)` header frame, owner/reviewer `(workspace)` shadcn sidebar frame; URLs unchanged. Slice 1 of the roles and workspaces decision (PR #43); [UI standard](design/ui-standard.md) |
-| Partner/admin/support | Admin console implemented locally | Review, owner applications and a read-only directory with no guest data; account management, moderation, suspension and support access remain D06 |
+| Partner/admin/support | Admin console implemented; on staging | Review, owner applications and a read-only directory with no guest data; account management, moderation, suspension and support access remain D06 |
 | Language/design | Partial | Khmer fonts/names and some labels; working UI mostly English (D13) |
 | Other-category reservations, online payment | Deferred by [scope](product/scope.md) | Reopen only by explicit scope decision |
 
@@ -55,7 +55,7 @@ CI results are GitHub Ubuntu/emulator runs. Staging evidence covers fictional fi
 | Environment | Established | Not established |
 | --- | --- | --- |
 | Local emulators / GitHub CI | Native workerd/D1, emulated R2/Images, built web/jobs Workers, Chromium desktop/phone emulation | Real providers, quotas/costs |
-| Staging ([contract](operations/staging.md)) | Isolated D1 (0001–0020), private R2, Images binding, web Worker on staging.rootsofcambodia.com only; fictional fixtures; historical 58-check interactive smoke and current automatic read-only release smoke | Email, jobs/queue consumer/Cron, real users or data, load/restore, manual signed-in and phone testing |
+| Staging ([contract](operations/staging.md)) | Isolated D1 (0001–0022), private R2, Images binding, web Worker on staging.rootsofcambodia.com only; fictional fixtures; historical 58-check interactive smoke and current automatic read-only release smoke | Email, jobs/queue consumer/Cron, real users or data, load/restore, manual signed-in and phone testing |
 | Production/pilot | Nothing established; apex unchanged | Deployment, deliverability, operator readiness, recovery, pilot usability |
 
 Release requirements are in [release and recovery](operations/release-and-recovery.md).
