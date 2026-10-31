@@ -1,4 +1,4 @@
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 
 // Fictional identities in the isolated staging database only. These are not
 // claims that a customer's inbox or real identity has been verified.

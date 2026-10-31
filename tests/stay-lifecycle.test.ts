@@ -15,8 +15,8 @@ import {
 import { testTransition } from "./booking-fixtures";
 import { setStayClock, atScheduledArrival } from "./stay-fixtures";
 import { transition } from "@root-of-cambodia/backend/bookings";
-import { readBooking } from "@root-of-cambodia/backend/access";
-import { ownerStayReceipt } from "@root-of-cambodia/backend/stay-queries";
+import { readBooking } from "@root-of-cambodia/backend/shared";
+import { ownerStayReceipt } from "@root-of-cambodia/backend/bookings";
 async function ready(db: D1Database) {
   const { input } = await catalog(db);
   const r = await request(db, input);

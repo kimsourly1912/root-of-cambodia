@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ownerSession, ownerRead } from "@/src/owner-session";
-import { ownerBookings, ownerBookingStatus, ownerBookingStatuses } from "@root-of-cambodia/backend/owner-bookings";
-import { ownerProperty } from "@root-of-cambodia/backend/property-queries";
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { ownerBookings, ownerBookingStatus, ownerBookingStatuses } from "@root-of-cambodia/backend/bookings";
+import { ownerProperty } from "@root-of-cambodia/backend/properties";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 import { PropertyNavigation } from "@/components/property-navigation";
 import { usd, cambodiaTime, bookingStatus } from "@/components/booking-format";
 export default async function Page({

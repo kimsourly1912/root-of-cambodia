@@ -9,9 +9,9 @@ import {
 } from "cloudflare:test";
 import worker from "../apps/jobs/src/index";
 import { database, catalog, request, scalar, owner } from "./support";
-import { createPropertyDraft } from "@root-of-cambodia/backend/property-drafts";
+import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
 import { preparePhoto, editPhotos } from "@root-of-cambodia/backend/media";
-import { mediaKeys } from "@root-of-cambodia/backend/media-queries";
+import { mediaKeys } from "@root-of-cambodia/backend/media";
 import { historical } from "./historical";
 
 const jobsEnv = (db: D1Database): JobsEnv => ({

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { PublicDisclosure } from "@root-of-cambodia/backend/public-listing";
+import type { PublicDisclosure } from "@root-of-cambodia/backend/publication";
 type Choice = {
   action: string;
   label: string;

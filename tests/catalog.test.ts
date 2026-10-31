@@ -11,7 +11,7 @@ import {
   scalar,
   request,
 } from "./support";
-import { createPropertyDraft } from "@root-of-cambodia/backend/property-drafts";
+import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
 import {
   ownerReviewAction,
   decideReview,
@@ -19,30 +19,30 @@ import {
 import {
   ownerPublication,
   readSnapshot,
-} from "@root-of-cambodia/backend/publication-queries";
+} from "@root-of-cambodia/backend/publication";
 import {
   publicDisclosurePreview,
   PUBLIC_DISCLOSURE_VERSION,
-} from "@root-of-cambodia/backend/public-listing";
+} from "@root-of-cambodia/backend/publication";
 import {
   browseStays,
   publicStay,
   readPublicPhoto,
-} from "@root-of-cambodia/backend/catalog-queries";
+} from "@root-of-cambodia/backend/catalog";
 import { savePropertyInformation } from "@root-of-cambodia/backend/property-information";
 import { savePropertyLogistics } from "@root-of-cambodia/backend/property-logistics";
 import { readyPublicationFixture, disclosureFor } from "./publication-fixtures";
 import {
   mediaKeys,
   ownerMediaGallery,
-} from "@root-of-cambodia/backend/media-queries";
+} from "@root-of-cambodia/backend/media";
 import { preparePhoto, editPhotos } from "@root-of-cambodia/backend/media";
-import { completeMedia } from "@root-of-cambodia/backend/media-persistence";
-import { digest } from "@root-of-cambodia/backend/operations";
+import { completeMedia } from "../packages/backend/src/features/media/media-persistence";
+import { digest } from "@root-of-cambodia/backend/shared";
 import { submit as submitBooking } from "@root-of-cambodia/backend/bookings";
 import { testTransition as transition } from "./booking-fixtures";
 import { quote } from "@root-of-cambodia/backend/quotes";
-import { shiftNight } from "@root-of-cambodia/backend/calendar-dates";
+import { shiftNight } from "@root-of-cambodia/backend/calendar";
 
 const fields = {
   ownerName: "PRIVATE_OWNER_MARKER",

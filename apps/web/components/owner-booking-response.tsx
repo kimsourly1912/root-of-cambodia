@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type {
   OwnerAttempt,
   OwnerBooking,
-} from "@root-of-cambodia/backend/owner-bookings";
+} from "@root-of-cambodia/backend/bookings";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";

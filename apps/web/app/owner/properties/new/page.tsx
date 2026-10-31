@@ -1,5 +1,5 @@
 import { ownerSession, ownerRead } from "@/src/owner-session";
-import { ownerProfile } from "@root-of-cambodia/backend/property-queries";
+import { ownerProfile } from "@root-of-cambodia/backend/properties";
 import { PropertyForm } from "@/components/property-form";
 export default async function Page() {
   const { db, actor } = await ownerSession();

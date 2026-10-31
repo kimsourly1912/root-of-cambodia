@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ownerSession } from "@/src/owner-session";
 import { reviewerRead } from "@/src/reviewer-read";
-import { reviewQueue } from "@root-of-cambodia/backend/publication-queries";
+import { reviewQueue } from "@root-of-cambodia/backend/publication";
 import { Card, CardContent } from "@/components/ui/card";
 export default async function Page({
   searchParams,

@@ -1,4 +1,4 @@
-import type { ReviewSnapshot as Snapshot } from "@root-of-cambodia/backend/publication-queries";
+import type { ReviewSnapshot as Snapshot } from "@root-of-cambodia/backend/publication";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 const text = (value: string | null | undefined) => value || "Not provided";
 const money = (value: number) => `$${(value / 100).toFixed(2)}`;

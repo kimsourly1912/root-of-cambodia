@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type {
   requestContext,
   GuestQuote,
-} from "@root-of-cambodia/backend/guest-bookings";
+} from "@root-of-cambodia/backend/bookings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

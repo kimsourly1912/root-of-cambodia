@@ -1,5 +1,5 @@
 import { endpoint } from "../../../../../../src/http";
-import { ownerPropertyLogistics } from "@root-of-cambodia/backend/property-logistics-queries";
+import { ownerPropertyLogistics } from "@root-of-cambodia/backend/property-logistics";
 import { savePropertyLogistics } from "@root-of-cambodia/backend/property-logistics";
 export const dynamic = "force-dynamic";
 type Context = { params: Promise<{ id: string }> };

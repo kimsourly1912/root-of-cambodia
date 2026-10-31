@@ -1,6 +1,6 @@
 import { runtime } from "./runtime";
-import { diagnostics } from "@root-of-cambodia/backend/diagnostics";
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { diagnostics } from "@root-of-cambodia/backend/shared";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 
 export async function publicEndpoint(
   handle: (env: CloudflareEnv) => Promise<unknown>,

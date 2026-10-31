@@ -9,13 +9,13 @@ import {
   unverified,
   scalar,
 } from "./support";
-import { createPropertyDraft } from "@root-of-cambodia/backend/property-drafts";
-import { ownerPropertyInformation } from "@root-of-cambodia/backend/property-information-queries";
+import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
+import { ownerPropertyInformation } from "@root-of-cambodia/backend/property-information";
 import { savePropertyInformation } from "@root-of-cambodia/backend/property-information";
-import { commitPropertyInformation } from "@root-of-cambodia/backend/property-information-persistence";
-import { digest } from "@root-of-cambodia/backend/operations";
+import { commitPropertyInformation } from "../packages/backend/src/features/property-information/property-information-persistence";
+import { digest } from "@root-of-cambodia/backend/shared";
 import { testTransition as transition } from "./booking-fixtures";
-import { readBooking } from "@root-of-cambodia/backend/access";
+import { readBooking } from "@root-of-cambodia/backend/shared";
 const base = {
   description: "A calm stay.",
   address: "Village road, Kampot",

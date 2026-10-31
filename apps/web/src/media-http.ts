@@ -6,9 +6,9 @@ import {
   uploadPhoto,
   readPhotoPreview,
 } from "@root-of-cambodia/backend/media";
-import { ownerMediaAsset } from "@root-of-cambodia/backend/media-queries";
-import { DomainError } from "@root-of-cambodia/backend/errors";
-import { diagnostics } from "@root-of-cambodia/backend/diagnostics";
+import { ownerMediaAsset } from "@root-of-cambodia/backend/media";
+import { DomainError } from "@root-of-cambodia/backend/shared";
+import { diagnostics } from "@root-of-cambodia/backend/shared";
 
 export async function photoTransfer(
   request: Request,

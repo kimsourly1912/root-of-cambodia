@@ -1,5 +1,5 @@
 import { endpoint } from "@/src/http";
-import { ownerPublication } from "@root-of-cambodia/backend/publication-queries";
+import { ownerPublication } from "@root-of-cambodia/backend/publication";
 import { ownerReviewAction } from "@root-of-cambodia/backend/publication";
 export const dynamic = "force-dynamic";
 type Context = {

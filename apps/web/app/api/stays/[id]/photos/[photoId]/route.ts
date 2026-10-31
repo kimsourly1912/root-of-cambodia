@@ -1,5 +1,5 @@
 import { publicEndpoint } from "@/src/public-http";
-import { readPublicPhoto } from "@root-of-cambodia/backend/catalog-queries";
+import { readPublicPhoto } from "@root-of-cambodia/backend/catalog";
 export const dynamic = "force-dynamic";
 export async function GET(
   _request: Request,

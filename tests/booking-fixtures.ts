@@ -3,15 +3,15 @@ import {
   transition as actualTransition,
   type Action,
 } from "@root-of-cambodia/backend/bookings";
-import { acceptancePreview } from "@root-of-cambodia/backend/booking-logistics";
+import { acceptancePreview } from "@root-of-cambodia/backend/bookings";
 import {
   verified,
   operate,
   verifiedSQL,
   finish,
   type Actor,
-} from "@root-of-cambodia/backend/operations";
-import { requireBookingActor } from "@root-of-cambodia/backend/access";
+} from "@root-of-cambodia/backend/shared";
+import { requireBookingActor } from "@root-of-cambodia/backend/shared";
 export async function ensureAcceptanceFixture(
   db: D1Database,
   propertyId: string,

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import type { CalendarNight } from "@root-of-cambodia/backend/calendar-queries";
+import type { CalendarNight } from "@root-of-cambodia/backend/calendar";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";

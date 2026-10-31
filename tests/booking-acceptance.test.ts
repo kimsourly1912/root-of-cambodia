@@ -14,16 +14,16 @@ import {
   migrate,
 } from "./support";
 import { transition } from "@root-of-cambodia/backend/bookings";
-import { acceptancePreview } from "@root-of-cambodia/backend/booking-logistics";
-import { guestBooking } from "@root-of-cambodia/backend/guest-bookings";
+import { acceptancePreview } from "@root-of-cambodia/backend/bookings";
+import { guestBooking } from "@root-of-cambodia/backend/bookings";
 import {
   ownerBookings,
   ownerBooking,
   saveOwnerAttempt,
   ownerAttempt,
   applyOwnerAttempt,
-} from "@root-of-cambodia/backend/owner-bookings";
-import { operate, finish } from "@root-of-cambodia/backend/operations";
+} from "@root-of-cambodia/backend/bookings";
+import { operate, finish } from "@root-of-cambodia/backend/shared";
 import { ensureAcceptanceFixture, testTransition } from "./booking-fixtures";
 const accept = async (db: D1Database, id: string, key = crypto.randomUUID()) =>
   transition(

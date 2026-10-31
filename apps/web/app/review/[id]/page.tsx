@@ -1,6 +1,6 @@
 import { ownerSession } from "@/src/owner-session";
 import { reviewerRead } from "@/src/reviewer-read";
-import { reviewDetails } from "@root-of-cambodia/backend/publication-queries";
+import { reviewDetails } from "@root-of-cambodia/backend/publication";
 import { ReviewSnapshot } from "@/components/review-snapshot";
 import { PublicationAction } from "@/components/publication-action";
 import { PublicationChecklist } from "@/components/publication-checklist";

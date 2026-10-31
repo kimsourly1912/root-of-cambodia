@@ -1,17 +1,17 @@
 import { test } from "vitest";
 import assert from "node:assert/strict";
 import { database, catalog, owner, other, unverified, scalar } from "./support";
-import { createPropertyDraft } from "@root-of-cambodia/backend/property-drafts";
+import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
 import {
   createRoomType,
   updateRoomType,
-} from "@root-of-cambodia/backend/room-types";
+} from "@root-of-cambodia/backend/rooms";
 import {
   ownerRoomType,
   ownerRoomTypes,
-} from "@root-of-cambodia/backend/room-queries";
-import { commitCreateRoomType } from "@root-of-cambodia/backend/room-persistence";
-import { digest } from "@root-of-cambodia/backend/operations";
+} from "@root-of-cambodia/backend/rooms";
+import { commitCreateRoomType } from "../packages/backend/src/features/rooms/room-persistence";
+import { digest } from "@root-of-cambodia/backend/shared";
 const propertyFields = {
   nameKm: "ផ្ទះសំណាក់",
   nameEn: "House",

@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { CalendarNight } from "@root-of-cambodia/backend/calendar-queries";
+import type { CalendarNight } from "@root-of-cambodia/backend/calendar";
 import type { CalendarEdit } from "@root-of-cambodia/backend/calendar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

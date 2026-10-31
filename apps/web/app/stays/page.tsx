@@ -5,7 +5,7 @@ import {
   browseInput,
   browseStays,
   type BrowseInput,
-} from "@root-of-cambodia/backend/catalog-queries";
+} from "@root-of-cambodia/backend/catalog";
 import { StayPhoto } from "@/components/stay-photo";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect,useRef,useState } from "react";
-import type { ListingControls as Controls } from "@root-of-cambodia/backend/listing-control-queries";
+import type { ListingControls as Controls } from "@root-of-cambodia/backend/listing-controls";
 import { Button } from "./ui/button";
 import { cambodiaTime } from "./booking-format";
 export function ListingControls({propertyId,state}:{propertyId:string;state:Controls}) {

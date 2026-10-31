@@ -1,5 +1,5 @@
 import { endpoint } from "@/src/http";
-import { guestBooking } from "@root-of-cambodia/backend/guest-bookings";
+import { guestBooking } from "@root-of-cambodia/backend/bookings";
 export const dynamic = "force-dynamic";
 export async function GET(
   request: Request,

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ownerSession, ownerRead } from "@/src/owner-session";
 import { externalReview } from "@root-of-cambodia/backend/external-bookings";
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 import { ExternalReservationReview } from "@/components/external-reservation-review";
 export default async function Page({params}: {params: Promise<{id: string; attemptId: string}>}) {
   const {id, attemptId} = await params, base = `/owner/properties/${id}/bookings/external`;

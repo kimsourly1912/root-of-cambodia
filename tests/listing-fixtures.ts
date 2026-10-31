@@ -1,9 +1,9 @@
 import { catalog,owner,other } from "./support";
-import { createPropertyDraft } from "@root-of-cambodia/backend/property-drafts";
+import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
 import { readyPublicationFixture } from "./publication-fixtures";
-import { ownerPublication } from "@root-of-cambodia/backend/publication-queries";
+import { ownerPublication } from "@root-of-cambodia/backend/publication";
 import { ownerReviewAction,decideReview } from "@root-of-cambodia/backend/publication";
-import { listingControls } from "@root-of-cambodia/backend/listing-control-queries";
+import { listingControls } from "@root-of-cambodia/backend/listing-controls";
 export async function listingFixture(db:D1Database) {
   await catalog(db);
   await db.prepare("INSERT INTO pilot_publication_config VALUES(1,'other','approved-v1',1)").run();

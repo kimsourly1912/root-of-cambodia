@@ -2,8 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { guestSession } from "@/src/guest-session";
 import { ownerRead } from "@/src/owner-session";
-import { guestAttempt } from "@root-of-cambodia/backend/guest-bookings";
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { guestAttempt } from "@root-of-cambodia/backend/bookings";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 import { BookingReview } from "@/components/booking-review";
 export default async function Page({
   params,

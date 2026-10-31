@@ -1,5 +1,5 @@
 import { endpoint } from "../../../../../../src/http";
-import { ownerMediaGallery } from "@root-of-cambodia/backend/media-queries";
+import { ownerMediaGallery } from "@root-of-cambodia/backend/media";
 import { preparePhoto, editPhotos } from "@root-of-cambodia/backend/media";
 export const dynamic = "force-dynamic";
 type Context = { params: Promise<{ id: string }> };

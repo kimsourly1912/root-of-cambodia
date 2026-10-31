@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { env } from "cloudflare:workers";
 import {database, catalog, owner, guest, other, unverified, scalar, migrate, request} from "./support";
 import {prepareExternalReview, externalReview, applyExternalReview} from "@root-of-cambodia/backend/external-bookings";
-import {externalReviews} from "@root-of-cambodia/backend/external-booking-queries";
+import {externalReviews} from "@root-of-cambodia/backend/external-bookings";
 import {quote} from "@root-of-cambodia/backend/quotes";
 import {submit, transition} from "@root-of-cambodia/backend/bookings";
 const confirmed = {confirmed: true};

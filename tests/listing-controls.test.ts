@@ -3,12 +3,12 @@ import assert from "node:assert/strict";
 import { env } from "cloudflare:workers";
 import { database,migrate,owner,other,guest,unverified,scalar,request } from "./support";
 import { listingFixture,listingBody,beforeListingBatch,listingSnapshot } from "./listing-fixtures";
-import { listingControls } from "@root-of-cambodia/backend/listing-control-queries";
+import { listingControls } from "@root-of-cambodia/backend/listing-controls";
 import { changeListing } from "@root-of-cambodia/backend/listing-controls";
-import { browseStays,publicStay,readPublicPhoto } from "@root-of-cambodia/backend/catalog-queries";
+import { browseStays,publicStay,readPublicPhoto } from "@root-of-cambodia/backend/catalog";
 import { quote } from "@root-of-cambodia/backend/quotes";
 import { submit,transition } from "@root-of-cambodia/backend/bookings";
-import { readBooking } from "@root-of-cambodia/backend/access";
+import { readBooking } from "@root-of-cambodia/backend/shared";
 test("owner pause/resume is atomic, exact-retry safe and leaves existing bookings/stock/review snapshots unchanged",async()=>{
   const p=await database();try{
     const db=p.db,f=await listingFixture(db),pending=await request(db,f.input);

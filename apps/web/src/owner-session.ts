@@ -3,9 +3,9 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { guestReturn } from "./return-path";
 import { runtime } from "./runtime";
-import { verified } from "@root-of-cambodia/backend/operations";
-import { DomainError } from "@root-of-cambodia/backend/errors";
-import { diagnostics } from "@root-of-cambodia/backend/diagnostics";
+import { verified } from "@root-of-cambodia/backend/shared";
+import { DomainError } from "@root-of-cambodia/backend/shared";
+import { diagnostics } from "@root-of-cambodia/backend/shared";
 export async function ownerSession(next = "/owner") {
   const suffix =
     next === "/owner" ? "" : "?next=" + encodeURIComponent(guestReturn(next));

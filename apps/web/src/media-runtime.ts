@@ -1,5 +1,5 @@
 import type { PhotoProcessor } from "@root-of-cambodia/backend/media";
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 
 // The generated binding type follows local Wrangler configuration. No API tokens,
 // hosted Images storage, public bucket URL or remote binding is needed here.

@@ -12,7 +12,7 @@ import {
   request,
   migrate,
 } from "./support";
-import { createPropertyDraft } from "@root-of-cambodia/backend/property-drafts";
+import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
 import { readyPublicationFixture, disclosureFor } from "./publication-fixtures";
 import {
   ownerReviewAction,
@@ -26,10 +26,10 @@ import {
   sendGuestAttempt,
   guestBookings,
   guestBooking,
-} from "@root-of-cambodia/backend/guest-bookings";
+} from "@root-of-cambodia/backend/bookings";
 import { submit } from "@root-of-cambodia/backend/bookings";
 import { testTransition as transition } from "./booking-fixtures";
-import { shiftNight } from "@root-of-cambodia/backend/calendar-dates";
+import { shiftNight } from "@root-of-cambodia/backend/calendar";
 async function supply(db: D1Database) {
   await catalog(db);
   await db

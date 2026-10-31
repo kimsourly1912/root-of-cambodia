@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { runtime } from "@/src/runtime";
 import { publicPage } from "@/src/public-http";
-import { publicStay } from "@root-of-cambodia/backend/catalog-queries";
+import { publicStay } from "@root-of-cambodia/backend/catalog";
 import { PublicStayDetails } from "@/components/public-stay-details";
 export default async function Page({
   params,

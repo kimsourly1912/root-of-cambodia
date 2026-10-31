@@ -1,6 +1,6 @@
 import { endpoint } from "../../../src/http";
 import { submit } from "@root-of-cambodia/backend/bookings";
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 export const dynamic = "force-dynamic";
 export async function POST(request: Request) {
   return endpoint(request, true, ({ db, actor, key, body }) => {

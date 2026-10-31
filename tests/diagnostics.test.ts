@@ -4,8 +4,8 @@ import {
   diagnostics,
   notificationReference,
   type DiagnosticRecord,
-} from "@root-of-cambodia/backend/diagnostics";
-import { DomainError, safeFailure } from "@root-of-cambodia/backend/errors";
+} from "@root-of-cambodia/backend/shared";
+import { DomainError, safeFailure } from "@root-of-cambodia/backend/shared";
 import { database, catalog, request, owner, scalar } from "./support";
 import { testTransition as transition } from "./booking-fixtures";
 

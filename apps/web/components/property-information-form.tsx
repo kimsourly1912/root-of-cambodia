@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { PropertyInformation } from "@root-of-cambodia/backend/property-information-queries";
+import type { PropertyInformation } from "@root-of-cambodia/backend/property-information";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";

@@ -12,16 +12,16 @@ import {
 import {
   createPropertyDraft,
   updatePropertyDraft,
-} from "@root-of-cambodia/backend/property-drafts";
+} from "@root-of-cambodia/backend/properties";
 import {
   ownerProperties,
   ownerProperty,
   ownerProfile,
-} from "@root-of-cambodia/backend/property-queries";
+} from "@root-of-cambodia/backend/properties";
 import {
   commitCreateDraft,
   commitUpdateDraft,
-} from "@root-of-cambodia/backend/property-persistence";
+} from "../packages/backend/src/features/properties/property-persistence";
 const fields = {
   nameKm: "ផ្ទះសំណាក់",
   nameEn: "River House",

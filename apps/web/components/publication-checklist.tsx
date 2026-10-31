@@ -2,7 +2,7 @@ import Link from "next/link";
 import type {
   PublicationReadiness,
   ReadinessItem,
-} from "@root-of-cambodia/backend/publication-readiness";
+} from "@root-of-cambodia/backend/publication";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 const items: {

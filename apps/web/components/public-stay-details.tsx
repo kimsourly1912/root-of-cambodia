@@ -1,4 +1,4 @@
-import type { PublicListing } from "@root-of-cambodia/backend/public-listing";
+import type { PublicListing } from "@root-of-cambodia/backend/publication";
 import { StayPhoto } from "@/components/stay-photo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export function PublicStayDetails({

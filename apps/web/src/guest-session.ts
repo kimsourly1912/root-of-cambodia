@@ -3,9 +3,9 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { runtime } from "./runtime";
 import { guestReturn } from "./return-path";
-import { verified } from "@root-of-cambodia/backend/operations";
-import { diagnostics } from "@root-of-cambodia/backend/diagnostics";
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { verified } from "@root-of-cambodia/backend/shared";
+import { diagnostics } from "@root-of-cambodia/backend/shared";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 export async function guestSession(next: string) {
   const context = diagnostics("http");
   let result: null | { db: D1Database; actor: { id: string } } = null,

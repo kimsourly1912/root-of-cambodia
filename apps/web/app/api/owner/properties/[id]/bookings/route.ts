@@ -1,6 +1,6 @@
 import { endpoint } from "@/src/http";
-import { ownerBookings } from "@root-of-cambodia/backend/owner-bookings";
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { ownerBookings } from "@root-of-cambodia/backend/bookings";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 export const dynamic = "force-dynamic";
 export async function GET(
   request: Request,

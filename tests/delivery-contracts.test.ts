@@ -1,7 +1,7 @@
 import { test } from "vitest";
 import assert from "node:assert/strict";
 import { database, catalog, request, scalar } from "./support";
-import { deliver } from "@root-of-cambodia/backend/outbox";
+import { deliver } from "@root-of-cambodia/backend/shared";
 
 async function pendingNotification(db: D1Database) {
   const { input } = await catalog(db);

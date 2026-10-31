@@ -1,5 +1,5 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { makeAuth } from "@root-of-cambodia/backend/auth";
+import { makeAuth } from "@root-of-cambodia/backend/accounts";
 import { runtimePolicy } from "./runtime-policy";
 export async function runtime() {
   const { env } = await getCloudflareContext({ async: true });

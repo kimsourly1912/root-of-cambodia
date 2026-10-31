@@ -3,12 +3,12 @@ import { test, expect } from "vitest";
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
 import { createTestHarness } from "wrangler";
-import type { DiagnosticRecord } from "@root-of-cambodia/backend/diagnostics";
+import type { DiagnosticRecord } from "@root-of-cambodia/backend/shared";
 import { catalog, scalar } from "./fixtures";
 import { ensureAcceptanceFixture } from "./booking-fixtures";
 import { readyPublicationFixture } from "./publication-fixtures";
 import photoFixtures from "./photo-fixtures.json" with { type: "json" };
-import { mediaKeys } from "@root-of-cambodia/backend/media-queries";
+import { mediaKeys } from "@root-of-cambodia/backend/media";
 const baseURL = "http://127.0.0.1:8787";
 const server = createTestHarness({
   workers: [

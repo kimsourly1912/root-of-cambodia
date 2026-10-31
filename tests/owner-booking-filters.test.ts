@@ -2,7 +2,7 @@ import { test } from "vitest";
 import assert from "node:assert/strict";
 import { env } from "cloudflare:workers";
 import { database, migrate, catalog, request, owner, other, guest, unverified } from "./support";
-import { ownerBookings, ownerBookingStatuses } from "@root-of-cambodia/backend/owner-bookings";
+import { ownerBookings, ownerBookingStatuses } from "@root-of-cambodia/backend/bookings";
 import { quote } from "@root-of-cambodia/backend/quotes";
 import { submit, transition } from "@root-of-cambodia/backend/bookings";
 import { atScheduledArrival } from "./stay-fixtures";

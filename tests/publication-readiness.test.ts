@@ -11,7 +11,7 @@ import {
   scalar,
 } from "./support";
 import { env } from "cloudflare:workers";
-import { createPropertyDraft } from "@root-of-cambodia/backend/property-drafts";
+import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
 import {
   ownerReviewAction,
   decideReview,
@@ -20,21 +20,21 @@ import {
   ownerPublication,
   reviewDetails,
   readSnapshot,
-} from "@root-of-cambodia/backend/publication-queries";
+} from "@root-of-cambodia/backend/publication";
 import {
   readPublicationReadiness,
   publicationReadySQL,
   type ReadinessItem,
-} from "@root-of-cambodia/backend/publication-readiness";
-import { commitPublicationAction } from "@root-of-cambodia/backend/publication-persistence";
+} from "@root-of-cambodia/backend/publication";
+import { commitPublicationAction } from "../packages/backend/src/features/publication/publication-persistence";
 import { preparePhoto } from "@root-of-cambodia/backend/media";
 import { editPhotos } from "@root-of-cambodia/backend/media";
-import { ownerMediaGallery } from "@root-of-cambodia/backend/media-queries";
+import { ownerMediaGallery } from "@root-of-cambodia/backend/media";
 import { quote } from "@root-of-cambodia/backend/quotes";
 import { submit as submitBooking } from "@root-of-cambodia/backend/bookings";
 import { testTransition as transition } from "./booking-fixtures";
-import { shiftNight } from "@root-of-cambodia/backend/calendar-dates";
-import { digest } from "@root-of-cambodia/backend/operations";
+import { shiftNight } from "@root-of-cambodia/backend/calendar";
+import { digest } from "@root-of-cambodia/backend/shared";
 import { readyPublicationFixture, disclosureFor } from "./publication-fixtures";
 
 const fields = {

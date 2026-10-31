@@ -2,8 +2,8 @@
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { OwnerBooking } from "@root-of-cambodia/backend/owner-bookings";
-import type { StayAction } from "@root-of-cambodia/backend/stay-queries";
+import type { OwnerBooking } from "@root-of-cambodia/backend/bookings";
+import type { StayAction } from "@root-of-cambodia/backend/bookings";
 import { Button } from "./ui/button";
 import { cambodiaTime } from "./booking-format";
 export function OwnerStayAction({

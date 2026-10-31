@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
-import type { MediaGallery } from "@root-of-cambodia/backend/media-queries";
+import type { MediaGallery } from "@root-of-cambodia/backend/media";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

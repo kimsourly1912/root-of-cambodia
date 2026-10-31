@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { OwnerRoomType } from "@root-of-cambodia/backend/room-queries";
+import type { OwnerRoomType } from "@root-of-cambodia/backend/rooms";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";

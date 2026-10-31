@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { OwnerProperty } from "@root-of-cambodia/backend/property-queries";
+import type { OwnerProperty } from "@root-of-cambodia/backend/properties";
 import { Button } from "@/components/ui/button";
 import {
   Card,

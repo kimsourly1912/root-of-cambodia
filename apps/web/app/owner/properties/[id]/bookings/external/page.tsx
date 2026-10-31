@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ownerSession, ownerRead } from "@/src/owner-session";
-import { ownerProperty } from "@root-of-cambodia/backend/property-queries";
-import { ownerRoomTypes } from "@root-of-cambodia/backend/room-queries";
-import { externalReviews } from "@root-of-cambodia/backend/external-booking-queries";
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { ownerProperty } from "@root-of-cambodia/backend/properties";
+import { ownerRoomTypes } from "@root-of-cambodia/backend/rooms";
+import { externalReviews } from "@root-of-cambodia/backend/external-bookings";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 import { PropertyNavigation } from "@/components/property-navigation";
 import { ExternalReservationForm } from "@/components/external-reservation-form";
 export default async function Page({params, searchParams}: {

@@ -22,8 +22,8 @@ import {
   paymentAttempt,
   paymentInput,
 } from "@root-of-cambodia/backend/payments";
-import { ownerPayments } from "@root-of-cambodia/backend/payment-queries";
-import { guestBooking } from "@root-of-cambodia/backend/guest-bookings";
+import { ownerPayments } from "@root-of-cambodia/backend/payments";
+import { guestBooking } from "@root-of-cambodia/backend/bookings";
 async function ready(db: D1Database) {
   const { input } = await catalog(db);
   const r = await request(db, input);

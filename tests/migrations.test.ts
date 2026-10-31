@@ -4,8 +4,8 @@ import assert from "node:assert/strict";
 import { getMigrations } from "better-auth/db/migration";
 import { database, migrate, catalog, request, owner, scalar } from "./support";
 import { testTransition as transition } from "./booking-fixtures";
-import { deliver } from "@root-of-cambodia/backend/outbox";
-import { makeAuth } from "@root-of-cambodia/backend/auth";
+import { deliver } from "@root-of-cambodia/backend/shared";
+import { makeAuth } from "@root-of-cambodia/backend/accounts";
 test("fresh installation has all FKs/indexes and matches the pinned Better Auth configuration", async () => {
   const p = await database({ migrate: false });
   try {
@@ -369,7 +369,7 @@ test("room history upgrade preserves populated owner drafts, bookings and origin
     const { input } = await catalog(db);
     const booking = await request(db, input, "room-upgrade-booking");
     const { createPropertyDraft } =
-      await import("@root-of-cambodia/backend/property-drafts");
+      await import("@root-of-cambodia/backend/properties");
     const fields = {
       ownerName: "Owner",
       nameKm: "????",
@@ -413,9 +413,9 @@ test("calendar upgrade retains populated stock, rates, room/property history and
     const { input } = await catalog(db);
     const booking = await request(db, input, "calendar-upgrade-booking");
     const { createPropertyDraft } =
-      await import("@root-of-cambodia/backend/property-drafts");
+      await import("@root-of-cambodia/backend/properties");
     const { createRoomType } =
-      await import("@root-of-cambodia/backend/room-types");
+      await import("@root-of-cambodia/backend/rooms");
     const propertyFields = {
       ownerName: "Owner",
       nameKm: "????",
@@ -496,9 +496,9 @@ test("information upgrade preserves populated calendars, prior history and origi
     const { input } = await catalog(db);
     const booking = await request(db, input, "information-upgrade-booking");
     const { createPropertyDraft } =
-      await import("@root-of-cambodia/backend/property-drafts");
+      await import("@root-of-cambodia/backend/properties");
     const { createRoomType } =
-      await import("@root-of-cambodia/backend/room-types");
+      await import("@root-of-cambodia/backend/rooms");
     const { saveRoomCalendar } =
       await import("@root-of-cambodia/backend/calendar");
     const propertyFields = {

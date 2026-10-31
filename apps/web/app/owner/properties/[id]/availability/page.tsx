@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ownerSession, ownerRead } from "@/src/owner-session";
-import { ownerProperty } from "@root-of-cambodia/backend/property-queries";
-import { ownerRoomTypes } from "@root-of-cambodia/backend/room-queries";
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { ownerProperty } from "@root-of-cambodia/backend/properties";
+import { ownerRoomTypes } from "@root-of-cambodia/backend/rooms";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 import { PropertyNavigation } from "@/components/property-navigation";
 export default async function Page({params, searchParams}: {
   params: Promise<{id: string}>;

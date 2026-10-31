@@ -11,12 +11,12 @@ import {
   scalar,
   migrate,
 } from "./support";
-import { createPropertyDraft } from "@root-of-cambodia/backend/property-drafts";
+import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
 import {
   ownerMediaGallery,
   ownerMediaAsset,
   mediaKeys,
-} from "@root-of-cambodia/backend/media-queries";
+} from "@root-of-cambodia/backend/media";
 import {
   preparePhoto,
   uploadPhoto,
@@ -30,7 +30,7 @@ import {
 import {
   reorderMedia,
   completeMedia,
-} from "@root-of-cambodia/backend/media-persistence";
+} from "../packages/backend/src/features/media/media-persistence";
 import { photoProcessor } from "../apps/web/src/media-runtime";
 import fixtures from "./photo-fixtures.json";
 

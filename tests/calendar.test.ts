@@ -10,17 +10,17 @@ import {
   unverified,
   scalar,
 } from "./support";
-import { createPropertyDraft } from "@root-of-cambodia/backend/property-drafts";
-import { createRoomType } from "@root-of-cambodia/backend/room-types";
+import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
+import { createRoomType } from "@root-of-cambodia/backend/rooms";
 import {
   saveRoomCalendar,
   type CalendarEdit,
 } from "@root-of-cambodia/backend/calendar";
-import { ownerRoomCalendar } from "@root-of-cambodia/backend/calendar-queries";
-import { commitRoomCalendar } from "@root-of-cambodia/backend/calendar-persistence";
-import { digest } from "@root-of-cambodia/backend/operations";
+import { ownerRoomCalendar } from "@root-of-cambodia/backend/calendar";
+import { commitRoomCalendar } from "../packages/backend/src/features/calendar/calendar-persistence";
+import { digest } from "@root-of-cambodia/backend/shared";
 import { testTransition as transition } from "./booking-fixtures";
-import { readBooking } from "@root-of-cambodia/backend/access";
+import { readBooking } from "@root-of-cambodia/backend/shared";
 import { quote } from "@root-of-cambodia/backend/quotes";
 const start = "2027-01-03";
 const propertyFields = {

@@ -1,6 +1,6 @@
 import { endpoint } from "../../../../../../src/http";
-import { createRoomType } from "@root-of-cambodia/backend/room-types";
-import { ownerRoomTypes } from "@root-of-cambodia/backend/room-queries";
+import { createRoomType } from "@root-of-cambodia/backend/rooms";
+import { ownerRoomTypes } from "@root-of-cambodia/backend/rooms";
 export const dynamic = "force-dynamic";
 type Context = { params: Promise<{ id: string }> };
 export async function GET(request: Request, context: Context) {

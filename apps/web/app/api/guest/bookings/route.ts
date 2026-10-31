@@ -1,6 +1,6 @@
 import { endpoint } from "@/src/http";
-import { guestBookings } from "@root-of-cambodia/backend/guest-bookings";
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { guestBookings } from "@root-of-cambodia/backend/bookings";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   return endpoint(request, false, ({ db, actor }) => {

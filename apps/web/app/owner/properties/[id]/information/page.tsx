@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { ownerSession, ownerRead } from "@/src/owner-session";
-import { ownerProperty } from "@root-of-cambodia/backend/property-queries";
-import { ownerPropertyInformation } from "@root-of-cambodia/backend/property-information-queries";
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { ownerProperty } from "@root-of-cambodia/backend/properties";
+import { ownerPropertyInformation } from "@root-of-cambodia/backend/property-information";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 import { PropertyNavigation } from "@/components/property-navigation";
 import { PropertyInformationForm } from "@/components/property-information-form";
 export default async function Page({

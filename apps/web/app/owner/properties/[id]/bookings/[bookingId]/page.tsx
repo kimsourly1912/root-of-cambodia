@@ -5,19 +5,19 @@ import {
   ownerBooking,
   ownerAttempt,
   type OwnerAttempt,
-} from "@root-of-cambodia/backend/owner-bookings";
+} from "@root-of-cambodia/backend/bookings";
 import { OwnerStayAction } from "@/components/owner-stay-action";
 import {
   ownerStayReceipt,
   stayIntent,
-} from "@root-of-cambodia/backend/stay-queries";
+} from "@root-of-cambodia/backend/bookings";
 import { PaymentRecords } from "@/components/payment-records";
-import { ownerPayments } from "@root-of-cambodia/backend/payment-queries";
+import { ownerPayments } from "@root-of-cambodia/backend/payments";
 import {
   paymentAttempt as readPaymentAttempt,
   type PaymentAttempt,
 } from "@root-of-cambodia/backend/payments";
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 import { usd, cambodiaTime, bookingStatus } from "@/components/booking-format";
 import { BookingLogistics } from "@/components/booking-logistics";
 import { OwnerBookingResponse } from "@/components/owner-booking-response";

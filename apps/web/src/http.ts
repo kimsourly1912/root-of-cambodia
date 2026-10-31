@@ -1,8 +1,8 @@
 import { requireStagingAccount } from "./staging-accounts";
 import { runtime } from "./runtime";
-import { verified, type Actor } from "@root-of-cambodia/backend/operations";
-import { DomainError } from "@root-of-cambodia/backend/errors";
-import { diagnostics } from "@root-of-cambodia/backend/diagnostics";
+import { verified, type Actor } from "@root-of-cambodia/backend/shared";
+import { DomainError } from "@root-of-cambodia/backend/shared";
+import { diagnostics } from "@root-of-cambodia/backend/shared";
 export async function endpoint(
   request: Request,
   mutates: boolean,

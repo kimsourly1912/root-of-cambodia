@@ -2,7 +2,7 @@ import { endpoint } from "@/src/http";
 import {
   ownerAttempt,
   saveOwnerAttempt,
-} from "@root-of-cambodia/backend/owner-bookings";
+} from "@root-of-cambodia/backend/bookings";
 export const dynamic = "force-dynamic";
 type Context = { params: Promise<{ id: string; attemptId: string }> };
 export async function GET(request: Request, context: Context) {
