@@ -1,4 +1,4 @@
-import { endpoint } from "../../../src/http";
+import { endpoint } from "@/server/http";
 import { quote } from "@root-of-cambodia/backend/quotes";
 import { submit } from "@root-of-cambodia/backend/bookings";
 import { DomainError } from "@root-of-cambodia/backend/shared";

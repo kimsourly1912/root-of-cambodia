@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { ownerRead } from "./owner-session";
+import { ownerRead } from "@/server/owner-session";
 import { DomainError } from "@root-of-cambodia/backend/shared";
 export async function reviewerRead<T>(read: () => Promise<T>): Promise<T> {
   const result = await ownerRead(async () => {

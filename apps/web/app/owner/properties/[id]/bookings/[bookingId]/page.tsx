@@ -1,26 +1,26 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ownerSession, ownerRead } from "@/src/owner-session";
+import { ownerSession, ownerRead } from "@/server/owner-session";
 import {
   ownerBooking,
   ownerAttempt,
   type OwnerAttempt,
 } from "@root-of-cambodia/backend/bookings";
-import { OwnerStayAction } from "@/components/owner-stay-action";
+import { OwnerStayAction } from "@/features/bookings/components/owner-stay-action";
 import {
   ownerStayReceipt,
   stayIntent,
 } from "@root-of-cambodia/backend/bookings";
-import { PaymentRecords } from "@/components/payment-records";
+import { PaymentRecords } from "@/features/payments/components/payment-records";
 import { ownerPayments } from "@root-of-cambodia/backend/payments";
 import {
   paymentAttempt as readPaymentAttempt,
   type PaymentAttempt,
 } from "@root-of-cambodia/backend/payments";
 import { DomainError } from "@root-of-cambodia/backend/shared";
-import { usd, cambodiaTime, bookingStatus } from "@/components/booking-format";
-import { BookingLogistics } from "@/components/booking-logistics";
-import { OwnerBookingResponse } from "@/components/owner-booking-response";
+import { usd, cambodiaTime, bookingStatus } from "@/lib/booking-format";
+import { BookingLogistics } from "@/features/bookings/components/booking-logistics";
+import { OwnerBookingResponse } from "@/features/bookings/components/owner-booking-response";
 export default async function Page({
   params,
   searchParams,

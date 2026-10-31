@@ -1,4 +1,4 @@
-import { endpoint } from "../../../../../../../../src/http";
+import { endpoint } from "@/server/http";
 import { ownerRoomCalendar } from "@root-of-cambodia/backend/calendar";
 import { saveRoomCalendar } from "@root-of-cambodia/backend/calendar";
 import { cambodiaToday } from "@root-of-cambodia/backend/calendar";

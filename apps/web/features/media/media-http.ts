@@ -1,5 +1,5 @@
-import { requireStagingAccount } from "./staging-accounts";
-import { runtime } from "./runtime";
+import { requireStagingAccount } from "@/server/staging-accounts";
+import { runtime } from "@/server/runtime";
 import { photoProcessor } from "./media-runtime";
 import {
   MAX_PHOTO_BYTES,

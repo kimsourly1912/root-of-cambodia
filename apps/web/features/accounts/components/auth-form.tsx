@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { guestReturn } from "@/src/return-path";
+import { guestReturn } from "@/server/return-path";
 import { Button } from "@/components/ui/button";
 import {
   Card,

@@ -2,7 +2,7 @@ import { test } from "vitest";
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
 import { createTestHarness } from "wrangler";
-import { runtimePolicy, stagingAuthRead } from "../../apps/web/src/runtime-policy";
+import { runtimePolicy, stagingAuthRead } from "../../apps/web/server/runtime-policy";
 
 const origin = "https://staging.rootsofcambodia.com";
 const baseURL = "http://127.0.0.1:8787";
@@ -120,7 +120,7 @@ test("built staging Worker browses D1 but refuses auth, business writes and medi
 });
 
 test("interactive staging auth admits only bounded fixture logins and the exact origin", async () => {
-  const {stagingAuthAction,requireStagingAccount}=await import("../../apps/web/src/staging-accounts");
+  const {stagingAuthAction,requireStagingAccount}=await import("../../apps/web/server/staging-accounts");
   const policy=runtimePolicy("staging-test",origin);
   assert.deepEqual(policy,{readOnly:false,fixtureTest:true,localCapture:false,isStaging:true});
   assert.throws(()=>runtimePolicy("staging-test",origin+".invalid"));
@@ -143,7 +143,7 @@ test("interactive staging auth admits only bounded fixture logins and the exact 
 
 test("interactive staging signs in fictional users and exercises real publication, media and booking services", async () => {
   const {seedStagingAccounts,seedStagingProperties}=await import("../../scripts/staging-fixtures");
-  const {STAGING_ACCOUNTS}=await import("../../apps/web/src/staging-accounts");
+  const {STAGING_ACCOUNTS}=await import("../../apps/web/server/staging-accounts");
   const server=createTestHarness({workers:[{configPath:"apps/web/wrangler.jsonc",env:"staging",secrets:{BETTER_AUTH_SECRET:randomBytes(32).toString("hex")}}]});
   try {
     await server.listen();const worker=server.getWorker<CloudflareEnv>();await worker.applyD1Migrations("DB");const env=await worker.getEnv(),db=env.DB;

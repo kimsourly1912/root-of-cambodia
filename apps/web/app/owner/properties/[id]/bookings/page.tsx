@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ownerSession, ownerRead } from "@/src/owner-session";
+import { ownerSession, ownerRead } from "@/server/owner-session";
 import { ownerBookings, ownerBookingStatus, ownerBookingStatuses } from "@root-of-cambodia/backend/bookings";
 import { ownerProperty } from "@root-of-cambodia/backend/properties";
 import { DomainError } from "@root-of-cambodia/backend/shared";
-import { PropertyNavigation } from "@/components/property-navigation";
-import { usd, cambodiaTime, bookingStatus } from "@/components/booking-format";
+import { PropertyNavigation } from "@/features/properties/components/property-navigation";
+import { usd, cambodiaTime, bookingStatus } from "@/lib/booking-format";
 export default async function Page({
   params,
   searchParams,

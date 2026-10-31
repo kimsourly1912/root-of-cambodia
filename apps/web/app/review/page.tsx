@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ownerSession } from "@/src/owner-session";
-import { reviewerRead } from "@/src/reviewer-read";
+import { ownerSession } from "@/server/owner-session";
+import { reviewerRead } from "@/features/publication/server";
 import { reviewQueue } from "@root-of-cambodia/backend/publication";
 import { Card, CardContent } from "@/components/ui/card";
 export default async function Page({

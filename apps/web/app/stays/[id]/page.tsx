@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { runtime } from "@/src/runtime";
-import { publicPage } from "@/src/public-http";
+import { runtime } from "@/server/runtime";
+import { publicPage } from "@/server/public-http";
 import { publicStay } from "@root-of-cambodia/backend/catalog";
-import { PublicStayDetails } from "@/components/public-stay-details";
+import { PublicStayDetails } from "@/features/catalog/components/public-stay-details";
 export default async function Page({
   params,
 }: {

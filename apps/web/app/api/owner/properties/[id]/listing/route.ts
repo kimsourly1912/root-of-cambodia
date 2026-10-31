@@ -1,4 +1,4 @@
-import { endpoint } from "@/src/http";
+import { endpoint } from "@/server/http";
 import { listingControls } from "@root-of-cambodia/backend/listing-controls";
 import { changeListing } from "@root-of-cambodia/backend/listing-controls";
 export const dynamic="force-dynamic";

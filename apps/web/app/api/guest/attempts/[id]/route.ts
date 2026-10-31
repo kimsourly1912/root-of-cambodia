@@ -1,4 +1,4 @@
-import { endpoint } from "@/src/http";
+import { endpoint } from "@/server/http";
 import {
   guestAttempt,
   saveGuestAttempt,

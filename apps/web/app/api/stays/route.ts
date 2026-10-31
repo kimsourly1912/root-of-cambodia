@@ -1,4 +1,4 @@
-import { publicEndpoint } from "@/src/public-http";
+import { publicEndpoint } from "@/server/public-http";
 import { browseStays } from "@root-of-cambodia/backend/catalog";
 import { DomainError } from "@root-of-cambodia/backend/shared";
 export const dynamic = "force-dynamic";

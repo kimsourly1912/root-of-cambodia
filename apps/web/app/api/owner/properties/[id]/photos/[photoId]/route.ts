@@ -1,4 +1,4 @@
-import { photoTransfer } from "../../../../../../../src/media-http";
+import { photoTransfer } from "@/features/media/server";
 export const dynamic = "force-dynamic";
 type Context = { params: Promise<{ id: string; photoId: string }> };
 export async function GET(request: Request, context: Context) {

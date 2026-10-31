@@ -1,4 +1,4 @@
-import { endpoint } from "../../../../src/http";
+import { endpoint } from "@/server/http";
 import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
 import { ownerProperties } from "@root-of-cambodia/backend/properties";
 export const dynamic = "force-dynamic";

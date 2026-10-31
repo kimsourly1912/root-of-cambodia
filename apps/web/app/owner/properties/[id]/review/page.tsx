@@ -1,14 +1,14 @@
 import { listingControls } from "@root-of-cambodia/backend/listing-controls";
-import { ListingControls } from "@/components/listing-controls";
+import { ListingControls } from "@/features/listing-controls/components/listing-controls";
 import { notFound } from "next/navigation";
-import { ownerSession, ownerRead } from "@/src/owner-session";
+import { ownerSession, ownerRead } from "@/server/owner-session";
 import { ownerPublication } from "@root-of-cambodia/backend/publication";
 import { DomainError } from "@root-of-cambodia/backend/shared";
-import { PropertyNavigation } from "@/components/property-navigation";
-import { ReviewSnapshot } from "@/components/review-snapshot";
-import { PublicationAction } from "@/components/publication-action";
-import { PublicationChecklist } from "@/components/publication-checklist";
-import { PublicStayDetails } from "@/components/public-stay-details";
+import { PropertyNavigation } from "@/features/properties/components/property-navigation";
+import { ReviewSnapshot } from "@/features/publication/components/review-snapshot";
+import { PublicationAction } from "@/features/publication/components/publication-action";
+import { PublicationChecklist } from "@/features/publication/components/publication-checklist";
+import { PublicStayDetails } from "@/features/catalog/components/public-stay-details";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 export default async function Page({

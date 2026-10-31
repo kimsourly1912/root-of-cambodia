@@ -1,4 +1,4 @@
-import { endpoint } from "../../../../../../../src/http";
+import { endpoint } from "@/server/http";
 import { updateRoomType } from "@root-of-cambodia/backend/rooms";
 import { ownerRoomType } from "@root-of-cambodia/backend/rooms";
 export const dynamic = "force-dynamic";

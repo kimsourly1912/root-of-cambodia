@@ -1,4 +1,4 @@
-import { publicEndpoint } from "@/src/public-http";
+import { publicEndpoint } from "@/server/public-http";
 import { publicStay } from "@root-of-cambodia/backend/catalog";
 export const dynamic = "force-dynamic";
 export async function GET(

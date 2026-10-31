@@ -1,5 +1,5 @@
 import type { LogisticsCopy } from "@root-of-cambodia/backend/bookings";
-import { cambodiaTime } from "./booking-format";
+import { cambodiaTime } from "../../../lib/booking-format";
 export function BookingLogistics({
   details,
   heading,

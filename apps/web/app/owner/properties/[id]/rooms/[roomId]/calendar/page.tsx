@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ownerSession, ownerRead } from "@/src/owner-session";
+import { ownerSession, ownerRead } from "@/server/owner-session";
 import { ownerProperty } from "@root-of-cambodia/backend/properties";
 import { ownerRoomType } from "@root-of-cambodia/backend/rooms";
 import { ownerRoomCalendar } from "@root-of-cambodia/backend/calendar";
@@ -9,8 +9,8 @@ import {
   shiftNight,
 } from "@root-of-cambodia/backend/calendar";
 import { DomainError } from "@root-of-cambodia/backend/shared";
-import { PropertyNavigation } from "@/components/property-navigation";
-import { RoomCalendarForm } from "@/components/room-calendar-form";
+import { PropertyNavigation } from "@/features/properties/components/property-navigation";
+import { RoomCalendarForm } from "@/features/calendar/components/room-calendar-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { runtime } from "@/src/runtime";
+import { runtime } from "@/server/runtime";
 export default async function Home() {
   const { readOnly, fixtureTest } = await runtime();
   return (

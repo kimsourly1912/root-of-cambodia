@@ -1,6 +1,6 @@
 import { canReview } from "@root-of-cambodia/backend/publication";
 import Link from "next/link";
-import { ownerSession, ownerRead } from "@/src/owner-session";
+import { ownerSession, ownerRead } from "@/server/owner-session";
 import { ownerProperties } from "@root-of-cambodia/backend/properties";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

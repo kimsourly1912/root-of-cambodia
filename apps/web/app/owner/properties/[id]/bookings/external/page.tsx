@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ownerSession, ownerRead } from "@/src/owner-session";
+import { ownerSession, ownerRead } from "@/server/owner-session";
 import { ownerProperty } from "@root-of-cambodia/backend/properties";
 import { ownerRoomTypes } from "@root-of-cambodia/backend/rooms";
 import { externalReviews } from "@root-of-cambodia/backend/external-bookings";
 import { DomainError } from "@root-of-cambodia/backend/shared";
-import { PropertyNavigation } from "@/components/property-navigation";
-import { ExternalReservationForm } from "@/components/external-reservation-form";
+import { PropertyNavigation } from "@/features/properties/components/property-navigation";
+import { ExternalReservationForm } from "@/features/external-bookings/components/external-reservation-form";
 export default async function Page({params, searchParams}: {
   params: Promise<{id: string}>; searchParams: Promise<{cursor?: string}>;
 }) {

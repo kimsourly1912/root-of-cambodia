@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { guestSession } from "@/src/guest-session";
-import { ownerRead } from "@/src/owner-session";
+import { guestSession } from "@/server/guest-session";
+import { ownerRead } from "@/server/owner-session";
 import { guestAttempt } from "@root-of-cambodia/backend/bookings";
 import { DomainError } from "@root-of-cambodia/backend/shared";
-import { BookingReview } from "@/components/booking-review";
+import { BookingReview } from "@/features/bookings/components/booking-review";
 export default async function Page({
   params,
 }: {

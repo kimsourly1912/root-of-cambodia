@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { guestSession } from "@/src/guest-session";
-import { ownerRead } from "@/src/owner-session";
+import { guestSession } from "@/server/guest-session";
+import { ownerRead } from "@/server/owner-session";
 import { guestBooking } from "@root-of-cambodia/backend/bookings";
 import { DomainError } from "@root-of-cambodia/backend/shared";
-import { usd, cambodiaTime, bookingStatus } from "@/components/booking-format";
-import { BookingLogistics } from "@/components/booking-logistics";
-import { GuestPaymentRecord } from "@/components/payment-records";
-import { GuestCancel } from "@/components/guest-cancel";
+import { usd, cambodiaTime, bookingStatus } from "@/lib/booking-format";
+import { BookingLogistics } from "@/features/bookings/components/booking-logistics";
+import { GuestPaymentRecord } from "@/features/payments/components/payment-records";
+import { GuestCancel } from "@/features/bookings/components/guest-cancel";
 export default async function Page({
   params,
   searchParams,

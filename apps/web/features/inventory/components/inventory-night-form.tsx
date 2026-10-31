@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import type { CalendarNight } from "@root-of-cambodia/backend/calendar";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { usd } from "./booking-format";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { usd } from "@/lib/booking-format";
 export function InventoryNightForm({roomId, night, returnTo}: {
   roomId: string; night: CalendarNight; returnTo: string;
 }) {

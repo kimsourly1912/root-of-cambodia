@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { runtime } from "@/src/runtime";
-import { STAGING_ACCOUNTS } from "@/src/staging-accounts";
+import { runtime } from "@/server/runtime";
+import { STAGING_ACCOUNTS } from "@/server/staging-accounts";
 
 export default async function Testing() {
   if (!(await runtime()).fixtureTest) notFound();

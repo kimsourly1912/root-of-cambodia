@@ -31,7 +31,7 @@ import {
   reorderMedia,
   completeMedia,
 } from "../media-persistence";
-import { photoProcessor } from "../../../../../../apps/web/src/media-runtime";
+import { photoProcessor } from "../../../../../../apps/web/features/media/media-runtime";
 import fixtures from "../../../testing/photo-fixtures.json";
 
 const bytes = (kind: keyof typeof fixtures) =>

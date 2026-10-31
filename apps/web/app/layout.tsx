@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { runtime } from "@/src/runtime";
+import { runtime } from "@/server/runtime";
 import "./globals.css";
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {

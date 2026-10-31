@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { OwnerPayments } from "@root-of-cambodia/backend/payments";
 import type { PaymentAttempt } from "@root-of-cambodia/backend/payments";
-import { Button } from "./ui/button";
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import { usd, cambodiaTime } from "./booking-format";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { usd, cambodiaTime } from "@/lib/booking-format";
 export function PaymentRecords({
   bookingId,
   base,

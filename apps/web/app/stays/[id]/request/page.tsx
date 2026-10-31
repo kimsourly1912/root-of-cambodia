@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { guestSession } from "@/src/guest-session";
-import { ownerRead } from "@/src/owner-session";
+import { guestSession } from "@/server/guest-session";
+import { ownerRead } from "@/server/owner-session";
 import { requestContext } from "@root-of-cambodia/backend/bookings";
 import { DomainError } from "@root-of-cambodia/backend/shared";
-import { GuestRequestForm } from "@/components/guest-request-form";
+import { GuestRequestForm } from "@/features/bookings/components/guest-request-form";
 export const dynamic = "force-dynamic";
 export default async function Page({
   params,

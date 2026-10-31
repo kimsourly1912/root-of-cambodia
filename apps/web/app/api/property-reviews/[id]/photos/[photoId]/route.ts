@@ -1,5 +1,5 @@
-import { requireStagingAccount } from "@/src/staging-accounts";
-import { runtime } from "@/src/runtime";
+import { requireStagingAccount } from "@/server/staging-accounts";
+import { runtime } from "@/server/runtime";
 import { readReviewPreview } from "@root-of-cambodia/backend/publication";
 import { DomainError } from "@root-of-cambodia/backend/shared";
 import { diagnostics } from "@root-of-cambodia/backend/shared";

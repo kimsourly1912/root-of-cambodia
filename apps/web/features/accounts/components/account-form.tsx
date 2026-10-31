@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
 import Link from "next/link";
-import { runtime } from "@/src/runtime";
+import { runtime } from "@/server/runtime";
 import { AuthForm } from "./auth-form";
 
 export async function AccountForm(props: ComponentProps<typeof AuthForm>) {

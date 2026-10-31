@@ -1,4 +1,4 @@
-import { endpoint } from "@/src/http";
+import { endpoint } from "@/server/http";
 import { ownerPublication } from "@root-of-cambodia/backend/publication";
 import { ownerReviewAction } from "@root-of-cambodia/backend/publication";
 export const dynamic = "force-dynamic";

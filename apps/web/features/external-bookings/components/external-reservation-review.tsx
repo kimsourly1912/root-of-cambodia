@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ExternalReview } from "@root-of-cambodia/backend/external-bookings";
-import { usd, cambodiaTime } from "./booking-format";
-import { Button } from "./ui/button";
+import { usd, cambodiaTime } from "@/lib/booking-format";
+import { Button } from "@/components/ui/button";
 export function ExternalReservationReview({propertyId, review, base}: {
   propertyId: string; review: ExternalReview; base: string;
 }) {

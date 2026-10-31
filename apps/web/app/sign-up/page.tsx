@@ -1,4 +1,4 @@
-import { AccountForm } from "@/components/account-form";
+import { AccountForm } from "@/features/accounts/components/account-form";
 export default async function Page({
   searchParams,
 }: {

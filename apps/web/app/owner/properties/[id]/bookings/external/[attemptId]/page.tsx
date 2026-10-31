@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ownerSession, ownerRead } from "@/src/owner-session";
+import { ownerSession, ownerRead } from "@/server/owner-session";
 import { externalReview } from "@root-of-cambodia/backend/external-bookings";
 import { DomainError } from "@root-of-cambodia/backend/shared";
-import { ExternalReservationReview } from "@/components/external-reservation-review";
+import { ExternalReservationReview } from "@/features/external-bookings/components/external-reservation-review";
 export default async function Page({params}: {params: Promise<{id: string; attemptId: string}>}) {
   const {id, attemptId} = await params, base = `/owner/properties/${id}/bookings/external`;
   const path = base + "/" + attemptId, {db, actor} = await ownerSession(path);

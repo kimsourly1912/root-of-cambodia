@@ -158,7 +158,7 @@ test("local handoff refuses conflicting databases and secrets without overwritin
   }));
 
 test("availability authentication returns allow only bounded local owner destinations", async () => {
-  const {guestReturn} = await import("../../apps/web/src/return-path");
+  const {guestReturn} = await import("../../apps/web/server/return-path");
   for (const url of ["/owner/properties/p/availability", "/owner/properties/p/availability/r?start=2026-11-02", "/owner/properties/p/bookings/b?response=abc"])
     assert.equal(guestReturn(url), url);
   for (const url of ["https://evil.invalid/owner", "//evil.invalid", "/owner/properties/p/availability/r/extra", "/owner/properties/p/availability/r#fragment", "/owner/properties/p/availability/r\\evil", "/owner/properties/p/availability/r?x=\u000a", "/owner/properties/p/availability/r?x=" + "a".repeat(4001)])
@@ -166,7 +166,7 @@ test("availability authentication returns allow only bounded local owner destina
 });
 
 test("external review recovery returns stay local and bounded through authentication", async () => {
-  const {guestReturn} = await import("../../apps/web/src/return-path");
+  const {guestReturn} = await import("../../apps/web/server/return-path");
   for(const url of ["/owner/properties/p/bookings/external", "/owner/properties/p/bookings/external/abc"])
     assert.equal(guestReturn(url),url);
   for(const url of ["/owner/properties/p/bookings/external/abc/more", "/owner/properties/p/bookings/external//evil", "/owner/properties/p/bookings/external/abc\\evil"])

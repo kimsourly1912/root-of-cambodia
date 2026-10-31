@@ -1,10 +1,10 @@
-import { ownerSession } from "@/src/owner-session";
-import { reviewerRead } from "@/src/reviewer-read";
+import { ownerSession } from "@/server/owner-session";
+import { reviewerRead } from "@/features/publication/server";
 import { reviewDetails } from "@root-of-cambodia/backend/publication";
-import { ReviewSnapshot } from "@/components/review-snapshot";
-import { PublicationAction } from "@/components/publication-action";
-import { PublicationChecklist } from "@/components/publication-checklist";
-import { PublicStayDetails } from "@/components/public-stay-details";
+import { ReviewSnapshot } from "@/features/publication/components/review-snapshot";
+import { PublicationAction } from "@/features/publication/components/publication-action";
+import { PublicationChecklist } from "@/features/publication/components/publication-checklist";
+import { PublicStayDetails } from "@/features/catalog/components/public-stay-details";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 export default async function Page({
   params,

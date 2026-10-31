@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { runtime } from "@/src/runtime";
-import { publicPage } from "@/src/public-http";
+import { runtime } from "@/server/runtime";
+import { publicPage } from "@/server/public-http";
 import {
   browseInput,
   browseStays,
   type BrowseInput,
 } from "@root-of-cambodia/backend/catalog";
-import { StayPhoto } from "@/components/stay-photo";
+import { StayPhoto } from "@/features/catalog/components/stay-photo";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";

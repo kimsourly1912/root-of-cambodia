@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
-import { ownerSession, ownerRead } from "@/src/owner-session";
+import { ownerSession, ownerRead } from "@/server/owner-session";
 import { ownerProperty } from "@root-of-cambodia/backend/properties";
 import { DomainError } from "@root-of-cambodia/backend/shared";
-import { PropertyNavigation } from "@/components/property-navigation";
-import { PropertyForm } from "@/components/property-form";
+import { PropertyNavigation } from "@/features/properties/components/property-navigation";
+import { PropertyForm } from "@/features/properties/components/property-form";
 export default async function Page({
   params,
 }: {

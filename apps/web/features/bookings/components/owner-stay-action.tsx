@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { OwnerBooking } from "@root-of-cambodia/backend/bookings";
 import type { StayAction } from "@root-of-cambodia/backend/bookings";
-import { Button } from "./ui/button";
-import { cambodiaTime } from "./booking-format";
+import { Button } from "@/components/ui/button";
+import { cambodiaTime } from "../../../lib/booking-format";
 export function OwnerStayAction({
   booking: b,
   intent,

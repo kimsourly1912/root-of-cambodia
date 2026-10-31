@@ -1,14 +1,14 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { hashPassword, verifyPassword } from "better-auth/crypto";
-import { STAGING_ACCOUNTS } from "../apps/web/src/staging-accounts";
+import { STAGING_ACCOUNTS } from "../apps/web/server/staging-accounts";
 import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
 import { savePropertyInformation } from "@root-of-cambodia/backend/property-information";
 import { savePropertyLogistics } from "@root-of-cambodia/backend/property-logistics";
 import { createRoomType } from "@root-of-cambodia/backend/rooms";
 import { saveRoomCalendar } from "@root-of-cambodia/backend/calendar";
 import { preparePhoto, photoDigest, uploadPhoto } from "@root-of-cambodia/backend/media";
-import { photoProcessor } from "../apps/web/src/media-runtime";
+import { photoProcessor } from "../apps/web/features/media/media-runtime";
 import { ownerProperty } from "@root-of-cambodia/backend/properties";
 import { ownerReviewAction, decideReview } from "@root-of-cambodia/backend/publication";
 import { readSnapshot, requestRecord, reviewConfig } from "@root-of-cambodia/backend/publication";

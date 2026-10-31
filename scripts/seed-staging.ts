@@ -7,7 +7,7 @@ import path from "node:path";
 import os from "node:os";
 import {fileURLToPath} from "node:url";
 import {hashPassword,verifyPassword} from "better-auth/crypto";
-import {STAGING_ACCOUNTS} from "../apps/web/src/staging-accounts";
+import {STAGING_ACCOUNTS} from "../apps/web/server/staging-accounts";
 import {STAGING_TERMS,STAGING_TERMS_VERSION,type StagingCredential} from "./staging-fixtures";
 import {photoDigest} from "@root-of-cambodia/backend/media";
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),".."),origin="https://staging.rootsofcambodia.com";

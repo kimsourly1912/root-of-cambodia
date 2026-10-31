@@ -6,7 +6,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { getPlatformProxy } from "wrangler";
-import { STAGING_ACCOUNTS } from "../apps/web/src/staging-accounts";
+import { STAGING_ACCOUNTS } from "../apps/web/server/staging-accounts";
 import {
   seedStagingAccounts,
   seedStagingProperties,

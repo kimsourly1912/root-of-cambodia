@@ -6,9 +6,9 @@ import type {
   OwnerAttempt,
   OwnerBooking,
 } from "@root-of-cambodia/backend/bookings";
-import { Button } from "./ui/button";
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { BookingLogistics } from "./booking-logistics";
 export function OwnerBookingResponse({
   booking: b,

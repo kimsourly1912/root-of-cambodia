@@ -1,4 +1,4 @@
-import { endpoint } from "../../../../../../src/http";
+import { endpoint } from "@/server/http";
 import { ownerMediaGallery } from "@root-of-cambodia/backend/media";
 import { preparePhoto, editPhotos } from "@root-of-cambodia/backend/media";
 export const dynamic = "force-dynamic";

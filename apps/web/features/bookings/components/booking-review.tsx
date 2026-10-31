@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type { GuestQuote } from "@root-of-cambodia/backend/bookings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { usd, cambodiaTime } from "./booking-format";
+import { usd, cambodiaTime } from "../../../lib/booking-format";
 import { requestError } from "./guest-request-form";
 export function BookingReview({
   id,

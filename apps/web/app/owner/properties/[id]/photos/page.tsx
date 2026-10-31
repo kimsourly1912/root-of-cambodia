@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
-import { ownerSession, ownerRead } from "@/src/owner-session";
+import { ownerSession, ownerRead } from "@/server/owner-session";
 import { ownerMediaGallery } from "@root-of-cambodia/backend/media";
 import { DomainError } from "@root-of-cambodia/backend/shared";
-import { PropertyNavigation } from "@/components/property-navigation";
-import { PropertyPhotos } from "@/components/property-photos";
+import { PropertyNavigation } from "@/features/properties/components/property-navigation";
+import { PropertyPhotos } from "@/features/media/components/property-photos";
 export default async function Page({
   params,
 }: {

@@ -1,6 +1,6 @@
-import { ownerSession, ownerRead } from "@/src/owner-session";
+import { ownerSession, ownerRead } from "@/server/owner-session";
 import { ownerProfile } from "@root-of-cambodia/backend/properties";
-import { PropertyForm } from "@/components/property-form";
+import { PropertyForm } from "@/features/properties/components/property-form";
 export default async function Page() {
   const { db, actor } = await ownerSession();
   const profile = await ownerRead(() => ownerProfile(db, actor));
