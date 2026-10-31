@@ -45,3 +45,15 @@ export async function ownerRead<T>(read: () => Promise<T>): Promise<T> {
     throw new Error("Owner workspace temporarily unavailable");
   }
 }
+
+// Independent reads (each rechecks session and ownership) run together but
+// settle in argument order, so the first failure listed wins, as if they ran
+// one after another.
+export async function readTogether<T extends unknown[]>(
+  ...reads: { [K in keyof T]: Promise<T[K]> }
+): Promise<T> {
+  for (const read of reads) read.catch(() => {});
+  const results = [];
+  for (const read of reads) results.push(await read);
+  return results as T;
+}

@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "@tanstack/react-form";
 import type { GuestQuote } from "@root-of-cambodia/backend/bookings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,50 +25,52 @@ export function BookingReview({
     [error, setError] = useState(""),
     [blocked, setBlocked] = useState(false),
     [auth, setAuth] = useState(false);
-  async function send(event: React.SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (busy.current || blocked) return;
-    busy.current = true;
-    setPending(true);
-    setError("");
-    try {
-      const r = await fetch(`/api/guest/attempts/${id}/send`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ acceptedTerms: true }),
-      });
-      if (r.status >= 500) {
+  const form = useForm({
+    defaultValues: { acceptedTerms: uncertain },
+    onSubmit: async ({ value }) => {
+      if (busy.current || blocked || !value.acceptedTerms) return;
+      busy.current = true;
+      setPending(true);
+      setError("");
+      try {
+        const r = await fetch(`/api/guest/attempts/${id}/send`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ acceptedTerms: value.acceptedTerms }),
+        });
+        if (r.status >= 500) {
+          setUncertain(true);
+          setError(
+            "We couldn’t confirm the result. Retry this same request to recover it safely. Do not start another request.",
+          );
+          return;
+        }
+        const result = (await r.json()) as { error?: string; id: string };
+        if (!r.ok) {
+          if (r.status === 401 || r.status === 403) {
+            setAuth(true);
+            setUncertain(true);
+          } else {
+            setBlocked(true);
+            setUncertain(false);
+          }
+          setError(requestError(result.error));
+          return;
+        }
+        setBlocked(true);
+        router.replace(`/bookings/${result.id}`);
+        router.refresh();
+      } catch {
         setUncertain(true);
         setError(
-          "We couldn’t confirm the result. Retry this same request to recover it safely. Do not start another request.",
+          "The connection was interrupted. Retry the same request or return to this saved review after signing in.",
         );
-        return;
+      } finally {
+        busy.current = false;
+        setPending(false);
       }
-      const result = (await r.json()) as { error?: string; id: string };
-      if (!r.ok) {
-        if (r.status === 401 || r.status === 403) {
-          setAuth(true);
-          setUncertain(true);
-        } else {
-          setBlocked(true);
-          setUncertain(false);
-        }
-        setError(requestError(result.error));
-        return;
-      }
-      setBlocked(true);
-      router.replace(`/bookings/${result.id}`);
-      router.refresh();
-    } catch {
-      setUncertain(true);
-      setError(
-        "The connection was interrupted. Retry the same request or return to this saved review after signing in.",
-      );
-    } finally {
-      busy.current = false;
-      setPending(false);
-    }
-  }
+    },
+  });
   return (
     <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_300px]">
       <div className="min-w-0 space-y-6">
@@ -151,16 +154,30 @@ export function BookingReview({
             The owner has 12 hours to respond after submission. A successful
             request means Pending confirmation.
           </p>
-          <form onSubmit={send} className="space-y-5">
-            <CheckboxField
-               
-               
-                required
-                disabled={pending || uncertain || blocked}
-                defaultChecked={uncertain}>
-                I accept booking terms {q.terms.version}, the house rules and
-                cancellation policy shown here.
-              </CheckboxField>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              form.handleSubmit();
+            }}
+            className="space-y-5"
+          >
+            <form.Field name="acceptedTerms">
+              {(field) => (
+                <CheckboxField
+                  name={field.name}
+                  checked={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(event) =>
+                    field.handleChange(event.currentTarget.checked)
+                  }
+                  required
+                  disabled={pending || uncertain || blocked}
+                >
+                  I accept booking terms {q.terms.version}, the house rules and
+                  cancellation policy shown here.
+                </CheckboxField>
+              )}
+            </form.Field>
             {error && (
               <StatusMessage tone="error">
                 {error}

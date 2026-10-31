@@ -52,6 +52,27 @@ async function register(page: Page, email: string) {
   await expect(page).toHaveURL(/\/sign-in\?verified=1/);
   await signIn(page, email);
 }
+test("sign-in password visibility control is accessible and reversible", async ({
+  page,
+}) => {
+  await page.goto("/sign-in");
+  const passwordField = page.getByLabel("Password", { exact: true });
+  await expect(passwordField).toHaveAttribute("type", "password");
+  await page.getByRole("button", { name: "Show password" }).click();
+  await expect(passwordField).toHaveAttribute("type", "text");
+  await page.getByRole("button", { name: "Hide password" }).click();
+  await expect(passwordField).toHaveAttribute("type", "password");
+  await expect(page.getByRole("link", { name: "Forgot password?" })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Resend verification email" }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBeTruthy();
+});
+
 test("verified owner creates, retries, edits, resolves a stale tab and reopens a private property", async ({
   page,
 }, info) => {

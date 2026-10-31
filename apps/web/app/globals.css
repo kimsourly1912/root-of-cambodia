@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "@fontsource/noto-sans-khmer/400.css";
 @import "@fontsource/noto-sans-khmer/600.css";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
 :root {
   --background: #f8f7f3;
   --foreground: #222b28;
@@ -22,7 +25,9 @@
   --input: #c3cdc2;
   --ring: #32795a;
   --radius: 0.75rem;
+  --font-body: Arial, "Noto Sans Khmer", sans-serif;
 }
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -43,18 +48,24 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-body);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
+
 @layer base {
   * {
-    border-color: var(--border);
+    @apply border-border outline-ring/50;
   }
   body {
-    background: var(--background);
-    color: var(--foreground);
-    font-family: Arial, "Noto Sans Khmer", sans-serif;
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
     line-height: 1.65;
     margin: 0;
   }
@@ -72,8 +83,11 @@
     outline-offset: 4px;
     border-radius: 4px;
   }
-  input,
-  textarea {
-    font-size: 1rem !important;
+  @media (pointer: coarse) {
+    input,
+    textarea,
+    select {
+      font-size: 1rem !important;
+    }
   }
 }

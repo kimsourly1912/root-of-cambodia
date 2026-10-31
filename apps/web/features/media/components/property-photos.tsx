@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
+import { useForm } from "@tanstack/react-form";
 import type { MediaGallery } from "@root-of-cambodia/backend/media";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,12 +43,15 @@ export function PropertyPhotos({
     busy = useRef(false),
     fileInput = useRef<HTMLInputElement>(null);
   const [gallery, setGallery] = useState(initial),
-    [file, setFile] = useState<File | null>(null),
     [pending, setPending] = useState(false),
     [uncertain, setUncertain] = useState(false),
     [conflict, setConflict] = useState(false),
     [error, setError] = useState(""),
     [message, setMessage] = useState("");
+  const form = useForm({
+    defaultValues: { file: null as File | null },
+    onSubmit: async ({ value }) => upload(value.file),
+  });
   async function checked(response: Response) {
     if (!response.ok) {
       if (response.status < 500) throw new Rejected(response.status);
@@ -106,7 +110,7 @@ export function PropertyPhotos({
       await refresh();
       attempt.current = null;
       setUncertain(false);
-      setFile(null);
+      form.reset();
       if (fileInput.current) fileInput.current.value = "";
       setMessage(
         action.kind === "upload"
@@ -138,8 +142,7 @@ export function PropertyPhotos({
       setPending(false);
     }
   }
-  async function upload(event: React.SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function upload(file: File | null) {
     if (busy.current || attempt.current || !file) return;
     if (
       !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
@@ -203,32 +206,47 @@ export function PropertyPhotos({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={upload} className="space-y-4">
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              form.handleSubmit();
+            }}
+            className="space-y-4"
+          >
             <Label htmlFor="property-photo">Photo file</Label>
-            <Input
-              ref={fileInput}
-              id="property-photo"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              disabled={frozen || gallery.photos.length >= 20}
-              onChange={(event) => {
-                setFile(event.target.files?.[0] ?? null);
-                setError("");
-                setMessage("");
-              }}
-              aria-describedby="photo-limits"
-            />
+            <form.Field name="file">
+              {(field) => (
+                <Input
+                  ref={fileInput}
+                  id="property-photo"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  disabled={frozen || gallery.photos.length >= 20}
+                  onChange={(event) => {
+                    field.handleChange(event.target.files?.[0] ?? null);
+                    setError("");
+                    setMessage("");
+                  }}
+                  aria-describedby="photo-limits"
+                />
+              )}
+            </form.Field>
             <p id="photo-limits" className="text-xs text-muted-foreground">
               Still JPEG, PNG or WebP, up to 8 MiB each. Maximum 8,000 pixels
               per side and 24 megapixels. Up to 20 photos, including unfinished
               uploads.
             </p>
-            <Button
-              type="submit"
-              disabled={frozen || !file || gallery.photos.length >= 20}
-            >
-              {pending ? "Saving." : "Upload photo"}
-            </Button>
+            <form.Subscribe selector={(state) => state.values.file}>
+              {(file) => (
+                <Button
+                  type="submit"
+                  disabled={frozen || !file || gallery.photos.length >= 20}
+                >
+                  {pending ? "Saving." : "Upload photo"}
+                </Button>
+              )}
+            </form.Subscribe>
           </form>
         </CardContent>
       </Card>

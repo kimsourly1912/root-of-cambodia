@@ -4,7 +4,7 @@
 
 **Responsible role:** product/design owner (direction); technical maintainer (tokens).
 
-**Last source verification:** 31 October 2026, branch `feat/ui-standard`.
+**Last source verification:** 31 October 2026, branch `feat/home-page-ux`.
 
 **Sources:** [apps/web/app/globals.css](../../apps/web/app/globals.css), [apps/web/components/typography.tsx](../../apps/web/components/typography.tsx), [apps/web/components/page-container.tsx](../../apps/web/components/page-container.tsx), [screen brief](screen-brief.md).
 
@@ -32,7 +32,7 @@ Meaning is never carried by color alone: errors also say what went wrong, and st
 
 ## Typography
 
-Font stack: Arial for Latin text, then the bundled **Noto Sans Khmer** (400 and 600) for Khmer, then sans-serif. Body text is 16 px with line height 1.65. Inputs are forced to 16 px so iOS does not zoom on focus.
+Font stack: Arial for Latin text, then the bundled **Noto Sans Khmer** (400 and 600) for Khmer, then sans-serif. Body text is 16 px with line height 1.65. Inputs, selects, and textareas use 16 px text on coarse-pointer devices so iOS does not zoom on focus; fine-pointer devices use the compact shadcn `base-nova` text size.
 
 | Role | Component / class | Size |
 | --- | --- | --- |
@@ -70,8 +70,9 @@ Prefer `space-y-*` and `gap-*` on the parent over margins on children. Margins (
 - **Readable width:** long text and single forms stay within `max-w-2xl` (forms) or `max-w-md` (auth cards, empty-state text).
 - **Grids:** one column on phones, two from `sm:` or `md:`, three from `lg:` or `xl:` for photo grids.
 - **Breakpoints:** mobile first. `sm` (640 px) and `lg` (1024 px) are the common steps; `md` and `xl` are rare.
-- **Radius:** `rounded-md` for controls, `rounded-lg` for alerts, `rounded-xl` for cards and large surfaces, `rounded-full` only in `Badge` and icon circles.
+- **Radius:** shadcn `base-nova` uses `rounded-lg` for controls and alerts, `rounded-xl` for cards and large surfaces, and pill rounding only for `Badge` and icon circles.
 - **Elevation:** flat. Cards have a border, not a shadow; the sign-in card (`shadow-sm`) is the one exception.
+- **Control sizing:** shadcn `base-nova` compact sizes are used with fine pointers (32 px default buttons and inputs); coarse-pointer devices retain at least 44 px control hit heights.
 
 ## Khmer and mixed text
 

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { ownerSession, ownerRead } from "@/server/owner-session";
+import { ownerSession, ownerRead, readTogether } from "@/server/owner-session";
 import { ownerProperty } from "@root-of-cambodia/backend/properties";
 import { ownerRoomTypes } from "@root-of-cambodia/backend/rooms";
 import { DomainError } from "@root-of-cambodia/backend/shared";
@@ -15,9 +15,13 @@ export default async function Page({params, searchParams}: {
   const {db, actor} = await ownerSession(base);
   let property, rooms;
   try {
-    property = await ownerRead(() => ownerProperty(db, actor, id));
-    if (cursor !== undefined && typeof cursor !== "string") throw new DomainError("invalid_request", 422);
-    rooms = await ownerRead(() => ownerRoomTypes(db, actor, id, cursor ?? ""));
+    [property, rooms] = await readTogether(
+      ownerRead(() => ownerProperty(db, actor, id)),
+      ownerRead(async () => {
+        if (cursor !== undefined && typeof cursor !== "string") throw new DomainError("invalid_request", 422);
+        return ownerRoomTypes(db, actor, id, cursor ?? "");
+      }),
+    );
   } catch (error) {
     if (error instanceof DomainError && error.code === "not_found") notFound();
     if (error instanceof DomainError && error.code === "invalid_request")

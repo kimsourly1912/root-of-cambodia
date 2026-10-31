@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LinkPending } from "@/components/link-pending";
 export function PropertyNavigation({
   propertyId,
   active,
@@ -34,9 +35,10 @@ export function PropertyNavigation({
           key={key}
           href={href}
           aria-current={active === key ? "page" : undefined}
-          className={`border-b-2 px-1 py-3 text-sm font-medium ${active === key ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-primary"}`}
+          className={`relative border-b-2 px-1 py-3 text-sm font-medium ${active === key ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-primary"}`}
         >
           {label}
+          <LinkPending />
         </Link>
       ))}
     </nav>

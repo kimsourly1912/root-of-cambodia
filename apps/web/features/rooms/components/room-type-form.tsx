@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "@tanstack/react-form";
 import type { OwnerRoomType } from "@root-of-cambodia/backend/rooms";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,12 @@ type Attempt = {
     revision?: number;
   };
 };
+type RoomTypeFormValues = {
+  name: string;
+  adultCapacity: string;
+  childCapacity: string;
+  totalCapacity: string;
+};
 export function RoomTypeForm({
   propertyId,
   editable,
@@ -52,85 +59,99 @@ export function RoomTypeForm({
     setSettling(false);
   }, [room?.id, room?.revision]);
   const base = `/owner/properties/${propertyId}/rooms`;
-  async function save(event: React.SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (busy.current || completed.current) return;
-    if (!attempt.current) {
-      const data = new FormData(event.currentTarget);
-      attempt.current = {
-        key: crypto.randomUUID(),
-        body: {
-          name: String(data.get("name") ?? ""),
-          adultCapacity: Number(data.get("adultCapacity")),
-          childCapacity: Number(data.get("childCapacity")),
-          totalCapacity: Number(data.get("totalCapacity")),
-          ...(room ? { revision: room.revision } : {}),
-        },
-      };
-    }
-    busy.current = true;
-    setPending(true);
-    setError("");
-    setSaved(false);
-    try {
-      const response = await fetch(
-        "/api" + base + (room ? "/" + room.id : ""),
-        {
-          method: room ? "PATCH" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Idempotency-Key": attempt.current.key,
+  const defaultValues: RoomTypeFormValues = {
+    name: room?.name ?? "",
+    adultCapacity:
+      room?.adultCapacity === undefined ? "" : String(room.adultCapacity),
+    childCapacity:
+      room?.childCapacity === undefined ? "" : String(room.childCapacity),
+    totalCapacity:
+      room?.totalCapacity === undefined ? "" : String(room.totalCapacity),
+  };
+  const form = useForm({
+    defaultValues,
+    onSubmit: async ({ value }) => {
+      if (busy.current || completed.current) return;
+      if (!attempt.current) {
+        attempt.current = {
+          key: crypto.randomUUID(),
+          body: {
+            name: value.name,
+            adultCapacity: Number(value.adultCapacity),
+            childCapacity: Number(value.childCapacity),
+            totalCapacity: Number(value.totalCapacity),
+            ...(room ? { revision: room.revision } : {}),
           },
-          body: JSON.stringify(attempt.current.body),
-        },
-      );
-      if (response.status >= 500) {
+        };
+      }
+      busy.current = true;
+      setPending(true);
+      setError("");
+      setSaved(false);
+      try {
+        const response = await fetch(
+          "/api" + base + (room ? "/" + room.id : ""),
+          {
+            method: room ? "PATCH" : "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Idempotency-Key": attempt.current.key,
+            },
+            body: JSON.stringify(attempt.current.body),
+          },
+        );
+        if (response.status >= 500) {
+          setUncertain(true);
+          setError(
+            "We couldn’t confirm this save. Retry the same save to recover its result safely.",
+          );
+          return;
+        }
+        if (!response.ok) {
+          attempt.current = null;
+          setUncertain(false);
+          if (response.status === 409) {
+            setConflict(true);
+            setError(
+              "The room type or property changed since you opened it. Reload the latest details before saving again.",
+            );
+          } else
+            setError(
+              response.status === 401 || response.status === 403
+                ? "Your session needs attention. Sign in again, then return to this page."
+                : response.status === 404
+                  ? "This room type is no longer available to your account."
+                  : "Check the name and guest limits, then try again.",
+            );
+          return;
+        }
+        const receipt = (await response.json()) as { id: string };
+        attempt.current = null;
+        completed.current = true;
+        setSettling(true);
+        setUncertain(false);
+        setDirty(false);
+        setSaved(true);
+        router.replace(base + "/" + receipt.id);
+        router.refresh();
+      } catch {
         setUncertain(true);
         setError(
-          "We couldn’t confirm this save. Retry the same save to recover its result safely.",
+          "The connection was interrupted. Retry the same save to check whether it completed.",
         );
-        return;
+      } finally {
+        busy.current = false;
+        setPending(false);
       }
-      if (!response.ok) {
-        attempt.current = null;
-        setUncertain(false);
-        if (response.status === 409) {
-          setConflict(true);
-          setError(
-            "The room type or property changed since you opened it. Reload the latest details before saving again.",
-          );
-        } else
-          setError(
-            response.status === 401 || response.status === 403
-              ? "Your session needs attention. Sign in again, then return to this page."
-              : response.status === 404
-                ? "This room type is no longer available to your account."
-                : "Check the name and guest limits, then try again.",
-          );
-        return;
-      }
-      const receipt = (await response.json()) as { id: string };
-      attempt.current = null;
-      completed.current = true;
-      setSettling(true);
-      setUncertain(false);
-      setDirty(false);
-      setSaved(true);
-      router.replace(base + "/" + receipt.id);
-      router.refresh();
-    } catch {
-      setUncertain(true);
-      setError(
-        "The connection was interrupted. Retry the same save to check whether it completed.",
-      );
-    } finally {
-      busy.current = false;
-      setPending(false);
-    }
-  }
+    },
+  });
   return (
     <form
-      onSubmit={save}
+      onSubmit={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        void form.handleSubmit();
+      }}
       onChange={() => {
         setDirty(true);
         setSaved(false);
@@ -153,13 +174,21 @@ export function RoomTypeForm({
               <Label htmlFor="name">
                 Room type name <span lang="km">· ប្រភេទបន្ទប់</span>
               </Label>
-              <Input
-                id="name"
-                name="name"
-                required
-                maxLength={200}
-                defaultValue={room?.name}
-              />
+              <form.Field name="name">
+                {(field) => (
+                  <Input
+                    id="name"
+                    name="name"
+                    value={field.state.value}
+                    onChange={(event) =>
+                      field.handleChange(event.target.value)
+                    }
+                    onBlur={field.handleBlur}
+                    required
+                    maxLength={200}
+                  />
+                )}
+              </form.Field>
               <p className="text-xs text-muted-foreground">
                 Use a name that helps guests tell your room types apart.
               </p>
@@ -173,33 +202,72 @@ export function RoomTypeForm({
                 </p>
               </div>
               <div className="grid gap-5 sm:grid-cols-3">
-                {[
-                  ["adultCapacity", "Maximum adults", 1, room?.adultCapacity],
-                  ["childCapacity", "Maximum children", 0, room?.childCapacity],
-                  [
-                    "totalCapacity",
-                    "Maximum total guests",
-                    1,
-                    room?.totalCapacity,
-                  ],
-                ].map(([name, label, min, value]) => (
-                  <div key={String(name)} className="space-y-2">
-                    <Label htmlFor={String(name)}>{String(label)}</Label>
-                    <Input
-                      id={String(name)}
-                      name={String(name)}
-                      type="number"
-                      inputMode="numeric"
-                      min={Number(min)}
-                      max={100}
-                      step={1}
-                      required
-                      defaultValue={
-                        value === undefined ? undefined : Number(value)
-                      }
-                    />
-                  </div>
-                ))}
+                <form.Field name="adultCapacity">
+                  {(field) => (
+                    <div className="space-y-2">
+                      <Label htmlFor="adultCapacity">Maximum adults</Label>
+                      <Input
+                        id="adultCapacity"
+                        name="adultCapacity"
+                        type="number"
+                        inputMode="numeric"
+                        min={1}
+                        max={100}
+                        step={1}
+                        required
+                        value={field.state.value}
+                        onChange={(event) =>
+                          field.handleChange(event.target.value)
+                        }
+                        onBlur={field.handleBlur}
+                      />
+                    </div>
+                  )}
+                </form.Field>
+                <form.Field name="childCapacity">
+                  {(field) => (
+                    <div className="space-y-2">
+                      <Label htmlFor="childCapacity">Maximum children</Label>
+                      <Input
+                        id="childCapacity"
+                        name="childCapacity"
+                        type="number"
+                        inputMode="numeric"
+                        min={0}
+                        max={100}
+                        step={1}
+                        required
+                        value={field.state.value}
+                        onChange={(event) =>
+                          field.handleChange(event.target.value)
+                        }
+                        onBlur={field.handleBlur}
+                      />
+                    </div>
+                  )}
+                </form.Field>
+                <form.Field name="totalCapacity">
+                  {(field) => (
+                    <div className="space-y-2">
+                      <Label htmlFor="totalCapacity">Maximum total guests</Label>
+                      <Input
+                        id="totalCapacity"
+                        name="totalCapacity"
+                        type="number"
+                        inputMode="numeric"
+                        min={1}
+                        max={100}
+                        step={1}
+                        required
+                        value={field.state.value}
+                        onChange={(event) =>
+                          field.handleChange(event.target.value)
+                        }
+                        onBlur={field.handleBlur}
+                      />
+                    </div>
+                  )}
+                </form.Field>
               </div>
               <p className="text-xs text-muted-foreground">
                 Infant and child-age policies remain undecided. These limits do

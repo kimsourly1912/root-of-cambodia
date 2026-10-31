@@ -4,7 +4,7 @@
 
 **Responsible role:** technical maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 31 October 2026, branch `feat/ui-standard`.
+**Last source verification:** 31 October 2026, branch `feat/home-page-ux`.
 
 **Sources:** [apps/web/components/ui/](../../apps/web/components/ui/), [apps/web/components/](../../apps/web/components/), [UI standard](ui-standard.md).
 
@@ -14,12 +14,15 @@ Look up what you need here before writing markup. Rules for choosing and adding 
 
 | I need | Use | Import from |
 | --- | --- | --- |
+| State and submit an interactive form | TanStack React Form: `useForm`, `form.Field` and `form.handleSubmit()`; keep native GET search/filter forms for URL navigation | `@tanstack/react-form` |
+| Compose a labeled form control with help or validation | `<Field>` + `<FieldLabel>` + control + optional `<FieldDescription>` / `<FieldError>`, grouped with `<FieldGroup>` | `@/components/ui/field` |
+| Add a control beside an input (for example, show/hide password) | `<InputGroup>` + `<InputGroupInput>` + `<InputGroupAddon>` / `<InputGroupButton>` | `@/components/ui/input-group` |
 | The page's main area | `<PageContainer>` (`variant`: `default`, `focused` for single-task pages such as sign-in, `landing`) | `@/components/page-container` |
 | The page heading (one per page) | `<PageTitle>` (`size="hero"` only on the landing page) | `@/components/typography` |
 | A section heading | `<SectionTitle>` (`as="h3"` for nested sections, `size="sm"` for a quieter heading) | `@/components/typography` |
 | A heading inside a card | `<CardTitle><h2>…</h2></CardTitle>` | `@/components/ui/card` |
-| An action | `<Button>` (`variant`: `default`, `outline`, `secondary`, `ghost`, `destructive`, `link`; `size`: `default`, `sm`, `lg`, `icon`) | `@/components/ui/button` |
-| A link that looks like a button | `<Button asChild><Link href=…>…</Link></Button>` | `@/components/ui/button`, `next/link` |
+| An action | `<Button>` (`variant`: `default`, `outline`, `secondary`, `ghost`, `destructive`, `link`; `size`: `default`, `xs`, `sm`, `lg`, `icon`, `icon-xs`, `icon-sm`, `icon-lg`) | `@/components/ui/button` |
+| A link that looks like a button | `<Link className={buttonVariants(...)} href=…>…</Link>` | `@/components/ui/button`, `next/link` |
 | A text link | `<TextLink href=…>` (`className` for layout: `block`, margins, `text-sm`) | `@/components/text-link` |
 | A native `<a>` forcing a full page load | `<a className={cn(textLinkClass, "block")} href=…>` | `@/components/text-link`, `@/lib/utils` |
 | A grouped surface | `<Card>`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent` (flat by default) | `@/components/ui/card` |
@@ -33,6 +36,7 @@ Look up what you need here before writing markup. Rules for choosing and adding 
 | A one-line success or progress note | `<StatusMessage tone="success">` / `tone="info"` (renders `role="status"`) | `@/components/status-message` |
 | A boxed notice with more content (retry buttons, lists) | `<Alert role="alert" variant="destructive">` / `variant="info"` / default | `@/components/ui/alert` |
 | A route loading screen (`loading.tsx`) | `<LoadingState>Loading …</LoadingState>` | `@/components/status-message` |
+| Show that a navigation link's page is loading | `<LinkPending />` as the last child of a `relative` `<Link>` in a navigation bar (decorative bar, shown after a short delay) | `@/components/link-pending` |
 | A list or area with nothing in it | `<EmptyState title description icon?>` + action as children | `@/components/empty-state` |
 | A status word (Draft, Pending, Paused…) | `<Badge>` (`variant`: `secondary` default, `default`, `outline`, `destructive`) | `@/components/ui/badge` |
 | Show more / collapsible section | `<Disclosure summary="…" open? variant="card" \| "plain">` | `@/components/disclosure` |
@@ -46,6 +50,7 @@ Shared inside the owner workspace; import them from the feature folder in routes
 
 | Component | Feature | Use |
 | --- | --- | --- |
+| `SiteHeader` | Shared layout | Responsive primary navigation with runtime-aware links |
 | `PropertyNavigation` | properties | Tabs across one property's pages (`active` names the current page) |
 | `PublicStayDetails` | catalog | The guest-facing listing view (also used as the preview in review screens) |
 | `StayPhoto` | catalog | A processed public photo |
@@ -53,13 +58,13 @@ Shared inside the owner workspace; import them from the feature folder in routes
 
 ## Planned: add when first needed
 
-Approved on 31 October 2026 as shadcn/Radix additions; add them with the [adding a component](ui-standard.md#adding-a-component) steps and move the row up.
+Add these only when needed, using the configured shadcn `base-nova` style (Base UI); follow the [adding a component](ui-standard.md#adding-a-component) steps and move the row up.
 
 | Need | Component | Notes |
 | --- | --- | --- |
 | Confirm a destructive or irreversible action in a modal | shadcn `AlertDialog` | Today confirmations use a required `CheckboxField` plus a button, which works before hydration; keep that for forms |
 | Tabular data (owner booking lists at scale) | shadcn `Table` | Lists use cards and `<ul>`/`<ol>` today |
-| Transient success notices | shadcn `Sonner` (toast) | Keep `StatusMessage` for anything the user must be able to re-read |
+| Transient success notices | shadcn `Toast` | Keep `StatusMessage` for anything the user must be able to re-read |
 | Icons | `lucide-react` | Decorative icons get `aria-hidden`; icon-only buttons need `aria-label` |
 | Skeleton placeholders | shadcn `Skeleton` | `LoadingState` text is the default |
 | Segmented navigation | shadcn `Tabs` | `PropertyNavigation` is a link list, which is correct for page navigation |

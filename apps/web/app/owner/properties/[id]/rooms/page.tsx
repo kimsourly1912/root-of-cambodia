@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ownerSession, ownerRead } from "@/server/owner-session";
+import { ownerSession, ownerRead, readTogether } from "@/server/owner-session";
 import { ownerProperty } from "@root-of-cambodia/backend/properties";
 import { ownerRoomTypes } from "@root-of-cambodia/backend/rooms";
 import { DomainError } from "@root-of-cambodia/backend/shared";
 import { PropertyNavigation } from "@/features/properties/components/property-navigation";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageTitle, SectionTitle } from "@/components/typography";
 import { EmptyState } from "@/components/empty-state";
@@ -22,16 +22,11 @@ export default async function Page({
   const { cursor } = await searchParams;
   const data = await ownerRead(async () => {
     try {
-      const property = await ownerProperty(db, actor, id);
-      return {
-        property,
-        ...(await ownerRoomTypes(
-          db,
-          actor,
-          id,
-          typeof cursor === "string" ? cursor : "",
-        )),
-      };
+      const [property, rooms] = await readTogether(
+        ownerProperty(db, actor, id),
+        ownerRoomTypes(db, actor, id, typeof cursor === "string" ? cursor : ""),
+      );
+      return { property, ...rooms };
     } catch (error) {
       if (error instanceof DomainError && error.code === "not_found")
         return null;
@@ -53,9 +48,9 @@ export default async function Page({
           </p>
         </div>
         {data.property.publication === "draft" && (
-          <Button asChild>
-            <Link href={base + "/new"}>+ Add room type</Link>
-          </Button>
+          <Link href={base + "/new"} className={buttonVariants()}>
+            + Add room type
+          </Link>
         )}
       </div>
       <PropertyNavigation propertyId={id} active="rooms" />
@@ -97,9 +92,9 @@ export default async function Page({
           }
         >
           {data.property.publication === "draft" && !cursor && (
-            <Button asChild>
-              <Link href={base + "/new"}>Create first room type</Link>
-            </Button>
+            <Link href={base + "/new"} className={buttonVariants()}>
+              Create first room type
+            </Link>
           )}
         </EmptyState>
       )}

@@ -4,7 +4,7 @@
 
 **Responsible role:** technical maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 31 October 2026; module map and topology rechecked after the [ADR 0008](decisions/0008-feature-based-modules.md) feature reorganization (branch `refactor/feature-structure`).
+**Last source verification:** 31 October 2026; module map and topology rechecked after the [ADR 0008](decisions/0008-feature-based-modules.md) feature reorganization and shadcn setup review (branch `feat/home-page-ux`).
 
 **Sources:** [apps/web/server/runtime.ts](../../apps/web/server/runtime.ts), [apps/jobs/src/index.ts](../../apps/jobs/src/index.ts), [packages/backend/package.json](../../packages/backend/package.json), [tests/tooling/workspace.test.ts](../../tests/tooling/workspace.test.ts).
 
@@ -22,7 +22,7 @@ The system is a modular monolith with two runtime adapters using one shared back
 | [proofs/foundation](../../proofs/foundation/README.md) | Independent historical npm compatibility fixture, outside the active workspace |
 | [handoff-local.ts](../../scripts/handoff-local.ts) | Imports ignored state from a legacy `application/` folder in older checkouts (the tracked folder was removed by the owner on 31 October 2026); preserve until a separately reviewed state migration |
 
-Next.js/React/TypeScript, shadcn/Radix/Tailwind and bundled Khmer fonts remain selected. Better Auth uses native D1 and server sessions. Drizzle provides selected reads; it is not a replacement for atomic D1 operations or SQL migrations. OpenNext generates the web Worker and assets; jobs is a separate Worker. R2 stores private objects and Images processes previews. Current bindings/providers are local substitutes.
+Next.js/React/TypeScript, shadcn `base-nova` (Base UI where needed)/Tailwind, TanStack React Form, and bundled Khmer fonts remain selected. Better Auth uses native D1 and server sessions. Drizzle provides selected reads; it is not a replacement for atomic D1 operations or SQL migrations. OpenNext generates the web Worker and assets; jobs is a separate Worker. R2 stores private objects and Images processes previews. Current bindings/providers are local substitutes.
 
 ## Dependency direction and module rules
 

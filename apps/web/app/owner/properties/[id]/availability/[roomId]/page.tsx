@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { ownerSession, ownerRead } from "@/server/owner-session";
+import { ownerSession, ownerRead, readTogether } from "@/server/owner-session";
 import { ownerProperty } from "@root-of-cambodia/backend/properties";
 import { ownerRoomType } from "@root-of-cambodia/backend/rooms";
 import { ownerRoomCalendar } from "@root-of-cambodia/backend/calendar";
@@ -22,10 +22,14 @@ export default async function Page({params, searchParams}: {
   let property, room, calendar;
   const start = query.start === undefined ? cambodiaToday() : query.start;
   try {
-    property = await ownerRead(() => ownerProperty(db, actor, id));
-    room = await ownerRead(() => ownerRoomType(db, actor, id, roomId));
-    if (typeof start !== "string") throw new DomainError("invalid_dates", 422);
-    calendar = await ownerRead(() => ownerRoomCalendar(db, actor, id, roomId, start));
+    [property, room, calendar] = await readTogether(
+      ownerRead(() => ownerProperty(db, actor, id)),
+      ownerRead(() => ownerRoomType(db, actor, id, roomId)),
+      ownerRead(async () => {
+        if (typeof start !== "string") throw new DomainError("invalid_dates", 422);
+        return ownerRoomCalendar(db, actor, id, roomId, start);
+      }),
+    );
   } catch (error) {
     if (error instanceof DomainError && error.code === "not_found") notFound();
     if (error instanceof DomainError && error.code === "invalid_dates")

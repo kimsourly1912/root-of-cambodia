@@ -9,7 +9,7 @@ import {
 import { StayPhoto } from "@/features/catalog/components/stay-photo";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { PageTitle, SectionTitle } from "@/components/typography";
 import { EmptyState } from "@/components/empty-state";
 import { TextLink } from "@/components/text-link";
@@ -134,9 +134,12 @@ export default async function Page({
       )}
       {result?.nextCursor && (
         <div className="mt-10 flex justify-center">
-          <Button asChild variant="outline">
-            <Link href={`/stays?${next.toString()}`}>More stays →</Link>
-          </Button>
+          <Link
+            href={`/stays?${next.toString()}`}
+            className={buttonVariants({ variant: "outline" })}
+          >
+            More stays →
+          </Link>
         </div>
       )}
     </>

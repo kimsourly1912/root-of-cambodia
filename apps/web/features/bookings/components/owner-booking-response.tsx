@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "@tanstack/react-form";
 import type {
   OwnerAttempt,
   OwnerBooking,
@@ -24,16 +25,71 @@ export function OwnerBookingResponse({
   const router = useRouter(),
     busy = useRef(false),
     base = `/owner/properties/${b.propertyId}/bookings/${b.id}`;
-  const [selectedAction, setAction] = useState(
+  type ResponseAction = "accept" | "decline" | "cancel_owner";
+  const [pending, setPending] = useState(false),
+    [selectedAction, setAction] = useState<ResponseAction>(
       b.status === "pending" ? "accept" : "cancel_owner",
     ),
-    [pending, setPending] = useState(false),
     [error, setError] = useState(""),
     [uncertain, setUncertain] = useState(false),
     [blocked, setBlocked] = useState(false),
     [auth, setAuth] = useState(false),
     [recovery, setRecovery] = useState(""),
     [now, setNow] = useState<number | null>(null);
+  const form = useForm({
+    defaultValues: {
+      action: (b.status === "pending" ? "accept" : "cancel_owner") as ResponseAction,
+      reason: "",
+      reviewedDetails: false,
+    },
+    onSubmit: async ({ value }) => {
+      if (busy.current) return;
+      busy.current = true;
+      setPending(true);
+      setError("");
+      let id = "";
+      try {
+        id = crypto.randomUUID();
+        const responseAction = choices.includes(value.action)
+          ? value.action
+          : action;
+        const r = await fetch(`/api/owner/bookings/${b.id}/attempts/${id}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: responseAction,
+            reason: value.reason,
+            ...(responseAction === "accept"
+              ? { acceptanceHash: b.preview?.hash }
+              : {}),
+          }),
+        });
+        if (r.status >= 500) {
+          setRecovery(id);
+          setError(
+            "We couldn’t confirm whether this response review was saved. Open the saved review before starting again. No booking change has been requested yet.",
+          );
+          return;
+        }
+        if (!r.ok) {
+          const result = (await r.json()) as { error: string };
+          setAuth(r.status === 401 || r.status === 403);
+          setError(responseError(result.error));
+          return;
+        }
+        router.push(base + "?response=" + id);
+        router.refresh();
+      } catch {
+        if (id) setRecovery(id);
+        setError(
+          "Connection interrupted while preparing this response. Open its saved review to check the result.",
+        );
+      } finally {
+        busy.current = false;
+        setPending(false);
+      }
+    },
+  });
   useEffect(() => {
     const tick = () => setNow(Date.now() / 1000);
     tick();
@@ -49,10 +105,16 @@ export function OwnerBookingResponse({
     b.checkinAt > now
       ? ["cancel_owner"]
       : []),
-  ];
+  ] as ResponseAction[];
   const action = choices.includes(selectedAction)
     ? selectedAction
     : (choices[0] ?? "cancel_owner");
+  useEffect(() => {
+    if (action !== selectedAction) {
+      setAction(action);
+      form.setFieldValue("action", action);
+    }
+  }, [action, form, selectedAction]);
   const label = (value: string) =>
     ({
       accept: "Accept and confirm stay",
@@ -60,50 +122,6 @@ export function OwnerBookingResponse({
       cancel_owner: "Cancel booking",
     })[value] ?? value;
   const preview = attempt?.preview ?? b.preview;
-  async function review(event: React.SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (busy.current) return;
-    busy.current = true;
-    setPending(true);
-    setError("");
-    let id = "";
-    try {
-      const data = new FormData(event.currentTarget);
-      id = crypto.randomUUID();
-      const r = await fetch(`/api/owner/bookings/${b.id}/attempts/${id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action,
-          reason: String(data.get("reason") ?? ""),
-          ...(action === "accept" ? { acceptanceHash: b.preview?.hash } : {}),
-        }),
-      });
-      if (r.status >= 500) {
-        setRecovery(id);
-        setError(
-          "We couldn’t confirm whether this response review was saved. Open the saved review before starting again. No booking change has been requested yet.",
-        );
-        return;
-      }
-      if (!r.ok) {
-        const value = (await r.json()) as { error: string };
-        setAuth(r.status === 401 || r.status === 403);
-        setError(responseError(value.error));
-        return;
-      }
-      router.push(base + "?response=" + id);
-      router.refresh();
-    } catch {
-      if (id) setRecovery(id);
-      setError(
-        "Connection interrupted while preparing this response. Open its saved review to check the result.",
-      );
-    } finally {
-      busy.current = false;
-      setPending(false);
-    }
-  }
   async function apply() {
     if (!attempt || busy.current || blocked) return;
     busy.current = true;
@@ -194,21 +212,37 @@ export function OwnerBookingResponse({
           )}
         </div>
       ) : (
-        <form onSubmit={review} className="space-y-5">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            form.handleSubmit();
+          }}
+          className="space-y-5"
+        >
           <fieldset disabled={pending || !!recovery} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="booking-response">Response</Label>
-              <NativeSelect
-                id="booking-response"
-                value={action}
-                onChange={(e) => setAction(e.target.value)}
-              >
-                {choices.map((value) => (
-                  <option key={value} value={value}>
-                    {label(value)}
-                  </option>
-                ))}
-              </NativeSelect>
+              <form.Field name="action">
+                {(field) => (
+                  <NativeSelect
+                    id="booking-response"
+                    name={field.name}
+                    value={action}
+                    onBlur={field.handleBlur}
+                    onChange={(event) => {
+                      const next = event.target.value as ResponseAction;
+                      field.handleChange(next);
+                      setAction(next);
+                    }}
+                  >
+                    {choices.map((value) => (
+                      <option key={value} value={value}>
+                        {label(value)}
+                      </option>
+                    ))}
+                  </NativeSelect>
+                )}
+              </form.Field>
             </div>
             {action === "accept" && b.preview && (
               <>
@@ -223,11 +257,22 @@ export function OwnerBookingResponse({
                     complete.
                   </StatusMessage>
                 ) : (
-                  <CheckboxField
-                      required>
-                      I reviewed the exact property details shown here and will
-                      share this copy with the confirmed guest.
-                    </CheckboxField>
+                  <form.Field name="reviewedDetails">
+                    {(field) => (
+                      <CheckboxField
+                        name={field.name}
+                        checked={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(event) =>
+                          field.handleChange(event.currentTarget.checked)
+                        }
+                        required
+                      >
+                        I reviewed the exact property details shown here and
+                        will share this copy with the confirmed guest.
+                      </CheckboxField>
+                    )}
+                  </form.Field>
                 )}
               </>
             )}
@@ -237,13 +282,20 @@ export function OwnerBookingResponse({
                   ? "Cancellation reason (required)"
                   : "Reason (optional)"}
               </Label>
-              <Textarea
-                id="response-reason"
-                name="reason"
-                required={action === "cancel_owner"}
-                maxLength={2000}
-                rows={3}
-              />
+              <form.Field name="reason">
+                {(field) => (
+                  <Textarea
+                    id="response-reason"
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(event) => field.handleChange(event.target.value)}
+                    required={action === "cancel_owner"}
+                    maxLength={2000}
+                    rows={3}
+                  />
+                )}
+              </form.Field>
             </div>
           </fieldset>
           {!recovery && (

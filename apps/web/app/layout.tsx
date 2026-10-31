@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { runtime } from "@/server/runtime";
+import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
+
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {
   const { isStaging } = await runtime();
@@ -18,7 +19,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
       <body>
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:bg-white focus:p-3"
+          className="sr-only focus:not-sr-only focus:absolute focus:bg-card focus:p-3 focus:text-foreground"
         >
           Skip to content
         </a>
@@ -27,24 +28,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
             ? "Staging preview · Browsing only. Accounts, bookings and email are unavailable."
             : "Local preview · Email delivery is not connected. Drafts stay private."}
         </div>
-        <header className="border-b bg-white">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-5 sm:px-8">
-            <Link href="/" className="text-lg font-semibold tracking-tight">
-              Root of Cambodia<span className="ml-2 text-primary">↗</span>
-            </Link>
-            <nav
-              aria-label="Main navigation"
-              className="flex flex-wrap gap-5 text-sm font-medium text-primary"
-            >
-              <Link href="/stays">Explore stays</Link>
-              {fixtureTest && <Link href="/testing">Testing guide</Link>}
-              {!readOnly && <>
-                <Link href="/bookings">My bookings</Link>
-                <Link href="/owner">Owner workspace</Link>
-              </>}
-            </nav>
-          </div>
-        </header>
+        <SiteHeader fixtureTest={fixtureTest} readOnly={readOnly} />
         {children}
         <footer className="mx-auto max-w-6xl px-5 py-10 text-xs text-muted-foreground sm:px-8">
           Root of Cambodia · {isStaging ? "Staging preview" : "Local preview"} <span className="mx-2">/</span>{" "}

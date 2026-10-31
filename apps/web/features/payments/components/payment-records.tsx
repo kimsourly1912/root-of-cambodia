@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import type { OwnerPayments } from "@root-of-cambodia/backend/payments";
 import type { PaymentAttempt } from "@root-of-cambodia/backend/payments";
@@ -11,6 +12,10 @@ import { SectionTitle } from "@/components/typography";
 import { TextLink } from "@/components/text-link";
 import { StatusMessage } from "@/components/status-message";
 import { CheckboxField } from "@/components/ui/checkbox";
+type PaymentReviewValues = {
+  confirmed: boolean;
+  reason: string;
+};
 export function PaymentRecords({
   bookingId,
   base,
@@ -34,21 +39,23 @@ export function PaymentRecords({
   useEffect(() => setHydrated(true), []);
   const action =
     attempt?.action ?? (state.status === "recorded" ? "void" : "record");
+  const form = useForm({
+    defaultValues: { confirmed: false, reason: "" } as PaymentReviewValues,
+    onSubmit: async ({ value }) => review(value),
+  });
   const eligible =
     state.totalCents > 0 &&
     (action === "void" ||
       ["checked_in", "completed"].includes(state.bookingStatus));
   const api = `/api/owner/bookings/${bookingId}/payments/attempts/`;
   const currentAttempt = attempt?.id ?? recovery;
-  async function review(event: React.SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function review(values: PaymentReviewValues) {
     if (!hydrated || busy.current) return;
     busy.current = true;
     setPending(true);
     setError("");
     let id = "";
     try {
-      const values = new FormData(event.currentTarget);
       id = crypto.randomUUID();
       const r = await fetch(api + id, {
         method: "POST",
@@ -57,7 +64,7 @@ export function PaymentRecords({
           action,
           revision: state.revision,
           ...(action === "void"
-            ? { reason: String(values.get("reason") ?? "") }
+            ? { reason: values.reason }
             : {}),
         }),
       });
@@ -178,28 +185,50 @@ export function PaymentRecords({
           )}
         </div>
       ) : eligible ? (
-        <form onSubmit={review} className="space-y-4">
-          <CheckboxField
-              required
-             
-             
-              disabled={!hydrated || pending || !!recovery}>
-              {action === "record"
-                ? `The property received the full ${usd(state.totalCents)} outside this platform.`
-                : "I am correcting a mistaken record. This does not refund money or establish a new debt."}
-            </CheckboxField>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            form.handleSubmit();
+          }}
+          className="space-y-4"
+        >
+          <form.Field name="confirmed">
+            {(field) => (
+              <CheckboxField
+                checked={field.state.value}
+                onChange={(event) =>
+                  field.handleChange(event.currentTarget.checked)
+                }
+                required
+                disabled={!hydrated || pending || !!recovery}
+              >
+                {action === "record"
+                  ? `The property received the full ${usd(state.totalCents)} outside this platform.`
+                  : "I am correcting a mistaken record. This does not refund money or establish a new debt."}
+              </CheckboxField>
+            )}
+          </form.Field>
           {action === "void" && (
             <div className="space-y-2">
               <Label htmlFor="payment-correction-reason">
                 Correction reason (owner-private)
               </Label>
-              <Textarea
-                required
-                maxLength={2000}
-                id="payment-correction-reason"
-                name="reason"
-                disabled={!hydrated || pending || !!recovery}
-              />
+              <form.Field name="reason">
+                {(field) => (
+                  <Textarea
+                    required
+                    maxLength={2000}
+                    id="payment-correction-reason"
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(event) =>
+                      field.handleChange(event.currentTarget.value)
+                    }
+                    disabled={!hydrated || pending || !!recovery}
+                  />
+                )}
+              </form.Field>
             </div>
           )}
           {!recovery && (
