@@ -37,7 +37,11 @@ async function bootstrap() {
     statements.push(`INSERT INTO user(id,name,email,emailVerified,createdAt,updatedAt) VALUES(${sqlString(identity.id)},${sqlString(identity.name)},${sqlString(identity.email)},1,${now},${now});`);
     statements.push(`INSERT INTO account(id,accountId,providerId,userId,password,createdAt,updatedAt) VALUES(${sqlString(identity.id+":credential")},${sqlString(identity.id)},'credential',${sqlString(identity.id)},${sqlString(hash)},${now},${now});`);
   }
-  statements.push(`INSERT INTO booking_terms_document(version,content) VALUES(${sqlString(STAGING_TERMS_VERSION)},${sqlString(STAGING_TERMS)}) ON CONFLICT(version) DO NOTHING;`,`INSERT INTO pilot_publication_config(singleton,reviewer_user_id,terms_version) VALUES(1,${sqlString(STAGING_ACCOUNTS[2].id)},${sqlString(STAGING_TERMS_VERSION)}) ON CONFLICT(singleton) DO NOTHING;`);
+  statements.push(`INSERT INTO booking_terms_document(version,content) VALUES(${sqlString(STAGING_TERMS_VERSION)},${sqlString(STAGING_TERMS)}) ON CONFLICT(version) DO NOTHING;`,`INSERT INTO pilot_publication_config(singleton,reviewer_user_id,terms_version) VALUES(1,${sqlString(STAGING_ACCOUNTS[2].id)},${sqlString(STAGING_TERMS_VERSION)}) ON CONFLICT(singleton) DO NOTHING;`,
+    // Fictional demo admin and approved demo owner (ADR 0010); no-ops when already present.
+    `INSERT INTO platform_staff_event(user_id,action,revision,operator,reason) SELECT ${sqlString(STAGING_ACCOUNTS[2].id)},'grant',1,'seed-staging','Fictional demo admin' WHERE NOT EXISTS(SELECT 1 FROM platform_staff_event WHERE user_id=${sqlString(STAGING_ACCOUNTS[2].id)});`,
+    `INSERT INTO platform_staff(user_id,role,active,revision) SELECT ${sqlString(STAGING_ACCOUNTS[2].id)},'admin',1,1 WHERE NOT EXISTS(SELECT 1 FROM platform_staff WHERE user_id=${sqlString(STAGING_ACCOUNTS[2].id)});`,
+    `INSERT INTO owner_access(user_id,status,source,decided_by,decided_at) VALUES(${sqlString(STAGING_ACCOUNTS[0].id)},'approved','application',${sqlString(STAGING_ACCOUNTS[2].id)},unixepoch()) ON CONFLICT(user_id) DO NOTHING;`);
   const temp=await mkdtemp(path.join(os.tmpdir(),"roc-fixture-bootstrap-"));
   try {const file=path.join(temp,"fixtures.sql");await writeFile(file,statements.join("\n"),{mode:0o600});await d1(["--file",file,"--yes"]);} finally {await rm(temp,{recursive:true,force:true});}
   console.log(JSON.stringify({stagingDatabase:"roc-staging",fictionalAccounts:3,emailDelivery:false}));

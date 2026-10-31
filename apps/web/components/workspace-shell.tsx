@@ -27,12 +27,12 @@ import { SignOut } from "@/components/sign-out";
 
 // Read by server/workspace-navigation.ts; null when there is no usable session.
 type WorkspaceNavigation = {
-  reviewer: boolean;
+  admin: boolean;
   properties: { id: string; nameKm: string; nameEn: string | null }[];
   moreProperties: boolean;
 };
 
-// The owner and reviewer workspace: a sidebar of area-level pages and a top
+// The owner and admin workspace: a sidebar of area-level pages and a top
 // bar with sign-out. Page-level navigation (property tabs, booking filters)
 // stays inside the page, so links are not repeated and work before hydration.
 // Labels here must not duplicate in-page link names used by e2e tests.
@@ -151,9 +151,9 @@ function WorkspaceMenu({
         </SidebarGroupContent>
       </SidebarGroup>
       )}
-      {navigation?.reviewer && (
+      {navigation?.admin && (
         <SidebarGroup>
-          <SidebarGroupLabel>Reviewer</SidebarGroupLabel>
+          <SidebarGroupLabel>Admin</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {item("/review", "Review queue", <ClipboardCheck aria-hidden="true" />, pathname.startsWith("/review"))}

@@ -22,6 +22,7 @@
     "test:worker": "vitest run --project worker-http",
     "test": "vitest run",
     "test:browser": "playwright test",
+    "admin:local": "node scripts/configure-admin-local.ts",
     "reviewer:local": "node scripts/configure-reviewer-local.ts",
     "seed:local": "node --import tsx scripts/seed-local.ts"
   },

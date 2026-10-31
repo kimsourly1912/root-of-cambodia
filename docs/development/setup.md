@@ -144,7 +144,18 @@ pnpm reviewer:local --user-id <verified-app-user-id> --terms-version <approved-v
 pnpm reviewer:local --user-id <verified-app-user-id> --clear-terms
 ```
 
-Omitting the terms option preserves an existing configured version. --clear-terms revokes it; the two terms options are mutually exclusive. The command assigns one reviewer and increments configuration revisions for in-flight fencing. Synthetic test version IDs are not approved legal text. Configuration changes do not rewrite earlier approved requests or booking snapshots. Nonlocal resources/operators and public launch remain separately gated.
+Omitting the terms option preserves an existing configured version. --clear-terms revokes it; the two terms options are mutually exclusive. The command records the account in the pilot setting, grants it platform admin in the same batch (review permission is an active admin, [ADR 0010](../architecture/decisions/0010-account-capabilities.md)) and increments configuration revisions for in-flight fencing. Synthetic test version IDs are not approved legal text. Configuration changes do not rewrite earlier approved requests or booking snapshots. Nonlocal resources/operators and public launch remain separately gated.
+
+## Local platform admin
+
+Platform admin (ADR 0010) is granted and revoked only by a trusted operator command, never through the app. From the repository root, with a verified local account:
+
+```sh
+pnpm admin:local --grant <verified-app-user-id> --reason "Why this account needs admin"
+pnpm admin:local --revoke <app-user-id> --reason "Why access ends"
+```
+
+Each change appends an immutable event (operator, reason, time) and updates the staff row in one batch; an account already in the requested state is left unchanged. Revocation takes effect at the next commit: an admin's in-flight review decision is refused. The command uses remoteBindings:false with root .wrangler/state; it is not a remote or web command.
 
 ## Local booking terms documents
 

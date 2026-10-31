@@ -56,7 +56,7 @@ Shared inside the owner workspace; import them from the feature folder in routes
 
 | Component | Feature | Use |
 | --- | --- | --- |
-| `SiteHeader` | Shared layout | Responsive primary navigation with runtime-aware links; public pages only (`app/(site)/layout.tsx`) |
+| `SiteHeader` | Shared layout | Responsive primary navigation with runtime-aware links and capability-aware owner/admin links (from `server/viewer.ts`, navigation only); public pages only (`app/(site)/layout.tsx`) |
 | `PropertyNavigation` | properties | Tabs across one property's pages (`active` names the current page) |
 | `PublicStayDetails` | catalog | The guest-facing listing view (also used as the preview in review screens) |
 | `StayPhoto` | catalog | A processed public photo |

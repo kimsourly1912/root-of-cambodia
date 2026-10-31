@@ -11,6 +11,8 @@ import {
   unverified,
   scalar,
   request,
+  configureReviewer,
+  grantAdminStatements,
 } from "../../../testing/support";
 import {
   createPropertyDraft,
@@ -46,10 +48,7 @@ const fields = {
   policyText: "Quiet hours",
 };
 async function configure(db: D1Database, terms: string | null = null) {
-  await db
-    .prepare("INSERT INTO pilot_publication_config VALUES(1,'other',?,1)")
-    .bind(terms)
-    .run();
+  await configureReviewer(db, "other", terms);
 }
 async function setup(db: D1Database, configured = true, photo = true) {
   await catalog(db);
@@ -334,11 +333,8 @@ test("return notes, resubmission and explicit approved terms gate publication wi
       ).results,
       stock,
     );
-    await db
-      .prepare(
-        "UPDATE pilot_publication_config SET reviewer_user_id='guest',revision=revision+1",
-      )
-      .run();
+    // Revoking the admin grant removes review access at commit time.
+    await db.batch(grantAdminStatements(db, "other", false));
     await assert.rejects(
       decide(db, next.id, "approve", "approve", "Reviewed"),
       /not_found/,
@@ -588,11 +584,7 @@ test("pending photo uploads block submission and review previews stay private an
     const store = {
       get: async (key: string) => {
         const result = await env.MEDIA.get(key);
-        await db
-          .prepare(
-            "UPDATE pilot_publication_config SET reviewer_user_id='guest',revision=revision+1",
-          )
-          .run();
+        await db.batch(grantAdminStatements(db, "other", false));
         return result;
       },
     } as Pick<R2Bucket, "get">;

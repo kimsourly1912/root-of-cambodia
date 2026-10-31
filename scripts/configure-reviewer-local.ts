@@ -2,6 +2,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { getPlatformProxy } from "wrangler";
+import { adminChangeStatements } from "./platform-staff.ts";
 const args = process.argv.slice(2);
 let userId = "",
   terms: string | null | undefined;
@@ -48,7 +49,9 @@ const proxy = await getPlatformProxy<{
 });
 try {
   const db = proxy.env.DB;
-  const result = await db
+  // The pilot setting and the reviewer's admin grant (ADR 0010) commit together.
+  const [result] = await db.batch([
+    db
     .prepare(
       `INSERT INTO pilot_publication_config(singleton,reviewer_user_id,terms_version)
     SELECT 1,?,? WHERE EXISTS(SELECT 1 FROM user WHERE id=? AND emailVerified=1)
@@ -56,13 +59,14 @@ try {
     terms_version=CASE WHEN ? THEN excluded.terms_version ELSE pilot_publication_config.terms_version END,
     revision=pilot_publication_config.revision+1`,
     )
-    .bind(userId, terms ?? null, userId, terms === undefined ? 0 : 1)
-    .run();
+    .bind(userId, terms ?? null, userId, terms === undefined ? 0 : 1),
+    ...adminChangeStatements(db, userId, true, "reviewer:local", "Local pilot publication reviewer"),
+  ]);
   if (result.meta.changes !== 1)
     throw new Error(
       "Account must already exist and have verified email in this local database",
     );
-  console.log("Local pilot reviewer configuration saved.");
+  console.log("Local pilot reviewer configuration and admin grant saved.");
 } finally {
   await proxy.dispose();
 }

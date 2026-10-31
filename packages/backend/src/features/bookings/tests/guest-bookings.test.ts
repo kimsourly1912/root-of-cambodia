@@ -10,8 +10,7 @@ import {
   unverified,
   scalar,
   request,
-  migrate,
-} from "../../../testing/support";
+  migrate, configureReviewer } from "../../../testing/support";
 import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
 import { readyPublicationFixture, disclosureFor } from "../../../testing/publication-fixtures";
 import {
@@ -32,11 +31,7 @@ import { testTransition as transition } from "../../../testing/booking-fixtures"
 import { shiftNight } from "@root-of-cambodia/backend/calendar";
 async function supply(db: D1Database) {
   await catalog(db);
-  await db
-    .prepare(
-      "INSERT INTO pilot_publication_config VALUES (1,'other','guest-test-v1',1)",
-    )
-    .run();
+  await configureReviewer(db, "other", "guest-test-v1");
   await db
     .prepare(
       "INSERT INTO booking_terms_document(version,content) VALUES ('guest-test-v1','Synthetic local terms only. Pay at the property.')",

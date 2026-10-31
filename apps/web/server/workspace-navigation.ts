@@ -1,29 +1,22 @@
-import { headers } from "next/headers";
-import { canReview } from "@root-of-cambodia/backend/publication";
 import { ownerProperties } from "@root-of-cambodia/backend/properties";
 import { diagnostics, DomainError } from "@root-of-cambodia/backend/shared";
-import { requireStagingAccount } from "./staging-accounts";
 import { runtime } from "./runtime";
+import { viewer } from "./viewer";
 import type { WorkspaceNavigation } from "@/components/workspace-shell";
 
 // Navigation only, never authorization: pages and services still check the
-// session and ownership. Any failure shows only guest links instead of an error,
-// and never redirects, so each page keeps its own sign-in return path.
+// session, capabilities and ownership. Any failure shows only guest links
+// instead of an error, and never redirects, so each page keeps its own sign-in
+// return path.
 export async function workspaceNavigation(): Promise<WorkspaceNavigation | null> {
+  const current = await viewer();
+  if (!current) return null;
   const context = diagnostics("http");
   try {
-    const { env, auth, readOnly, fixtureTest } = await runtime();
-    if (readOnly) return null;
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) return null;
-    requireStagingAccount(session.user.id, fixtureTest);
-    const actor = { id: session.user.id };
-    const [reviewer, result] = await Promise.all([
-      canReview(env.DB, actor),
-      ownerProperties(env.DB, actor, ""),
-    ]);
+    const { env } = await runtime();
+    const result = await ownerProperties(env.DB, current.actor, "");
     return {
-      reviewer,
+      admin: current.admin,
       properties: result.items.map(({ id, nameKm, nameEn }) => ({ id, nameKm, nameEn })),
       moreProperties: Boolean(result.nextCursor),
     };

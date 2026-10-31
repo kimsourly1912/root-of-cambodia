@@ -147,7 +147,9 @@ test("withdrawn/returned corrections remain offline and cannot resume the old ap
 });
 test("0020 preserves populated 0019 visibility/bookings/review receipts and extends only the legal correction transition",async()=>{
   const p=await database({migrate:false});try{
-    const db=p.db;await migrate(db,env.TEST_MIGRATIONS.filter(m=>m.name<"0020").map(m=>m.name));
+    // Today's publication code needs 0021's staff table to build this fixture; 0021
+    // depends only on 0011 objects, so it is applied early and the rest follow.
+    const db=p.db;await migrate(db,env.TEST_MIGRATIONS.filter(m=>m.name<"0020"||m.name.startsWith("0021")).map(m=>m.name));
     const f=await listingFixture(db),originalQuote=await quote(db,guest,f.input);
     const booking=await submit(db,guest,"retained-correction-booking",f.input,originalQuote.hash);
     const body=await listingBody(db,f.id,"pause"),receipt=await changeListing(db,owner,"retained-owner-pause",f.id,body);

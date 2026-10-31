@@ -247,6 +247,20 @@ test("safeguards upgrade retains every populated row, old schema object and orig
       assert.deepEqual(afterDraftMigration[table], []);
       delete afterDraftMigration[table];
     }
+    // 0021 backfills owner access for every existing property owner; with no
+    // configured reviewer there is no admin to backfill.
+    assert.deepEqual(
+      (afterDraftMigration.owner_access as { user_id: string; status: string; source: string; decided_by: unknown }[])
+        .map(({ user_id, status, source, decided_by }) => ({ user_id, status, source, decided_by })),
+      [
+        { user_id: "other", status: "approved", source: "backfill", decided_by: null },
+        { user_id: "owner", status: "approved", source: "backfill", decided_by: null },
+      ],
+    );
+    for (const table of ["owner_access", "platform_staff", "platform_staff_event"]) {
+      if (table !== "owner_access") assert.deepEqual(afterDraftMigration[table], []);
+      delete afterDraftMigration[table];
+    }
     assert.deepEqual(afterDraftMigration, before);
     assert.deepEqual(
       await transition(db, owner, "accept-then-cancel", cancelled.id, "accept"),

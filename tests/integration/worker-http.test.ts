@@ -9,6 +9,7 @@ import { ensureAcceptanceFixture } from "../../packages/backend/src/testing/book
 import { readyPublicationFixture } from "../../packages/backend/src/testing/publication-fixtures";
 import photoFixtures from "../../packages/backend/src/testing/photo-fixtures.json" with { type: "json" };
 import { mediaKeys } from "@root-of-cambodia/backend/media";
+import { adminChangeStatements } from "../../scripts/platform-staff";
 const baseURL = "http://127.0.0.1:8787";
 const server = createTestHarness({
   workers: [
@@ -531,7 +532,7 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
     assert.equal((await post(reviewPath,{action:"submit",propertyRevision:1},owner.cookie,"review-submit")).status,422);
     assert.equal((await server.fetch(baseURL+"/api/property-reviews",{headers:{Cookie:owner.cookie}})).status,404);
     assert.equal((await post("/__test/pilot-reviewer",{userId:owner.id,termsVersion:"forged"},owner.cookie)).status,404);
-    await db.prepare("INSERT INTO pilot_publication_config VALUES(1,?,NULL,1)").bind(other.id).run();
+    await db.batch([db.prepare("INSERT INTO pilot_publication_config VALUES(1,?,NULL,1)").bind(other.id),...adminChangeStatements(db,other.id,true,"test","HTTP test reviewer")]);
     const incomplete = await post(reviewPath,{action:"submit",propertyRevision:1},owner.cookie,"review-incomplete");
     assert.equal(incomplete.status,422);
     assert.deepEqual(await incomplete.json(),{error:"publication_incomplete"});
