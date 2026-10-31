@@ -66,7 +66,7 @@ Release requirements are in [release and recovery](operations/release-and-recove
 | 2 | Real email sending, then account registration/recovery and booking notifications on staging | Owner's Cloudflare upgrade; D07 |
 | 3 | Pilot reviewer account and approved booking terms text/version | Project-owner action; D15 legal text |
 | 4 | Exceptional stay handling: no-show, early/late, post-check-in cancellation | D01 decision proposal before code |
-| 5 | Admin/support powers and suspended-owner handling | D06 decision |
+| 5 | Account roles: workspace shell, role foundation, owner onboarding, admin console (slices 1–4); later support/suspension | Accepted 31 October 2026 ([roles and workspaces](product/roles-and-workspaces-proposal.md)); remaining D06 |
 | 6 | Deployed jobs, abuse budgets, retention, recovery | D08, D09, D10, D11 |
 | 7 | Khmer copy, accessibility, real-device and performance review | D13 ownership |
 | 8 | Apply the accepted strict main protection with required CI gate | D18 partially accepted; [owner setup](operations/ci-cd.md#owner-setup-protect-main). New job must pass first; reviewer/emergency policy remains open |

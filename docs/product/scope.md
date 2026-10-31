@@ -23,10 +23,10 @@ Accommodation is the first complete booking journey: hotels, resorts, guesthouse
 | Booking | Request-to-book; successful submission means Pending confirmation, requiring owner acceptance |
 | Payment | Guest pays the property directly; no platform collection in v1 |
 | Currency | USD booking prices; optional Riel display/conversion is undecided |
-| Account | A person can be both guest and owner; one owner may manage multiple properties |
+| Account | One account per person with guest, owner and platform admin capabilities; a person can be both guest and owner; one owner may manage multiple properties; admin is granted only by operator command |
 | Verification | Signed-in account, guest name, verified email and accepted booking terms; no phone verification |
 | Verification meaning | Inbox control, not legal identity or proof of arrival; any phone field is informational |
-| Owner access | Owner accounts initially; staff invitations deferred |
+| Owner access | Owner capability through a platform-admin-approved owner application; accounts that already own a property are backfilled as approved (accepted 31 October 2026, [roles and workspaces](roles-and-workspaces-proposal.md)); staff invitations deferred |
 | Owner operations | Owners maintain information, rooms, prices, availability and bookings |
 | Publication | Verified owner email and first-property review before publication; project owner is the sole pilot listing reviewer (29 October 2026). Narrow procedure in [pilot review](../features/publication-review.md); the [minimum checklist](publication-checklist-proposal.md) was approved on 29 October 2026; broader editing/public delivery policies remain open |
 | Anonymous browsing | First [guest-browsing boundary](guest-browsing-proposal.md) approved 29 October 2026: allowlisted approved content, processed gallery/first-photo cover, province only and explicit owner public-display acknowledgement; exact logistics/originals private during browsing; D17 booking-state decision accepted separately |

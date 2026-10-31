@@ -36,6 +36,7 @@ Report material disagreement. Do not silently rewrite approved policy to match a
 - [Owner availability and external reservation steps](product/owner-inventory-operations.md): missing owner interfaces over existing stock rules
 - [Selected arrival/completion and payment-record scope](product/stay-operations.md): two local steps under delegated recommendations; money is paid outside the platform
 - [Accepted booking journey](product/booking-journey-proposal.md): guest request/tracking, owner response and D17 privacy/copy decision
+- [Accepted account roles and workspaces](product/roles-and-workspaces-proposal.md): guest/owner/platform admin capabilities, admin-approved owner onboarding and role-based areas (D06 partly)
 - [Architecture overview and module map](architecture/overview.md)
 - [Database and operation invariants](architecture/database.md)
 - [ADR 0001: Modular monolith](architecture/decisions/0001-modular-monolith.md)
