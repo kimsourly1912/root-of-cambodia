@@ -3,6 +3,6 @@ export default defineConfig({
   test: {
     name: "tooling",
     environment: "node",
-    include: ["tests/workspace.test.ts"],
+    include: ["tests/tooling/*.test.ts"],
   },
 });

@@ -18,7 +18,7 @@
     "types:bindings": "pnpm --filter @root-of-cambodia/backend run types:runtime && pnpm --filter @root-of-cambodia/web run types:bindings && pnpm --filter @root-of-cambodia/jobs run types:bindings",
     "typecheck": "pnpm -r run typecheck && tsc --noEmit -p tests/tsconfig.json",
     "test:backend": "vitest run --project backend",
-    "test:jobs": "vitest run --project backend tests/jobs.test.ts",
+    "test:jobs": "vitest run --project backend packages/backend/src/features/jobs/tests/jobs.test.ts",
     "test:worker": "vitest run --project worker-http",
     "test": "vitest run",
     "test:browser": "playwright test",

@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
-  testDir: "./tests/browser",
+  testDir: "./tests/e2e",
   fullyParallel: false,
   workers: 1,
   timeout: 60000,
@@ -18,7 +18,7 @@ export default defineConfig({
     { name: "mobile-chromium", use: { ...devices["Pixel 7"] } },
   ],
   webServer: {
-    command: "node tests/browser/server.ts",
+    command: "node tests/e2e/server.ts",
     url: "http://127.0.0.1:8787/__test/ready",
     reuseExistingServer: false,
     timeout: 60000,

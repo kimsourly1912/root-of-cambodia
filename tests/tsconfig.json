@@ -9,6 +9,9 @@
   },
   "include": [
     "**/*.ts",
+    "../packages/backend/src/**/tests/**/*.ts",
+    "../packages/backend/src/testing/**/*.ts",
+    "../packages/backend/tests/**/*.ts",
     "../apps/web/worker-configuration.d.ts",
     "../apps/jobs/worker-configuration.d.ts",
     "../packages/backend/worker-configuration.d.ts",
