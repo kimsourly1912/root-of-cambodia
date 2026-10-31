@@ -19,6 +19,8 @@ export function commitCreateDraft(
     { kind: "property_draft_create", fields },
     (op) => {
       const id = crypto.randomUUID();
+      // The property insert also needs approved owner access: migration 0022's
+      // trigger enforces it inside this batch (ADR 0010).
       return [
         assertion(db, op, verifiedSQL, [actor.id]),
         db

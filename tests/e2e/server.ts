@@ -70,6 +70,23 @@ const server = createServer(async (req, res) => {
       res.end();
       return;
     }
+    // Approved owner access for a verified test account (ADR 0010), so journeys
+    // that are not about the owner application can create properties.
+    if (url.pathname === "/__test/owner-access" && req.method === "POST") {
+      const input = JSON.parse(Buffer.concat(chunks).toString()) as { userId?: unknown };
+      const result =
+        typeof input.userId === "string" && size <= 1024
+          ? await db
+              .prepare(
+                "INSERT INTO owner_access(user_id,status,source,decided_at) SELECT id,'approved','application',unixepoch() FROM user WHERE id=? AND emailVerified=1 ON CONFLICT(user_id) DO NOTHING",
+              )
+              .bind(input.userId)
+              .run()
+          : null;
+      res.writeHead(result?.meta.changes === 1 ? 200 : 422, { "Cache-Control": "no-store" });
+      res.end();
+      return;
+    }
     // Explicit fixture provisioning, solely in this loopback test process.
     if (url.pathname === "/__test/pilot-reviewer" && req.method === "POST") {
       if (size > 32768) {

@@ -8,6 +8,7 @@ import { PageTitle, SectionTitle } from "@/components/typography";
 import { EmptyState } from "@/components/empty-state";
 import { TextLink } from "@/components/text-link";
 import { Badge } from "@/components/ui/badge";
+import { capabilities } from "@root-of-cambodia/backend/shared";
 export default async function Page({
   searchParams,
 }: {
@@ -15,11 +16,12 @@ export default async function Page({
 }) {
   const { db, actor } = await ownerSession();
   const { cursor } = await searchParams;
-  const [result, reviewer] = await readTogether(
+  const [result, reviewer, access] = await readTogether(
     ownerRead(() =>
       ownerProperties(db, actor, typeof cursor === "string" ? cursor : ""),
     ),
     ownerRead(() => canReview(db, actor)),
+    ownerRead(() => capabilities(db, actor)),
   );
   return (
     <>
@@ -42,9 +44,15 @@ export default async function Page({
               Publication reviews
             </Link>
           )}
-          <Link href="/owner/properties/new" className={buttonVariants()}>
-            + New property draft
-          </Link>
+          {access.owner ? (
+            <Link href="/owner/properties/new" className={buttonVariants()}>
+              + New property draft
+            </Link>
+          ) : (
+            <Link href="/owner/apply" className={buttonVariants()}>
+              List your property
+            </Link>
+          )}
         </div>
       </div>
       {result.items.length ? (
@@ -77,6 +85,16 @@ export default async function Page({
             </Card>
           ))}
         </div>
+      ) : !access.owner && !cursor ? (
+        <EmptyState
+          icon="⌂"
+          title="Apply to list your property"
+          description="During the pilot the platform team approves each new owner. After approval you can create property drafts here."
+        >
+          <Link href="/owner/apply" className={buttonVariants()}>
+            Start owner application
+          </Link>
+        </EmptyState>
       ) : (
         <EmptyState
           icon="⌂"

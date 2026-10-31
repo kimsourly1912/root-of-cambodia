@@ -515,6 +515,11 @@ test("built Next.js/OpenNext Worker journey preserves all 12 HTTP checks", async
       .run();
     // Publication adapters reuse the real session/Origin/private-response boundary.
     const draftFields={ownerName:"Owner",nameKm:"ផ្ទះ",nameEn:"Review house",province:"Kampot",checkinTime:"14:00",checkoutTime:"11:00",policyText:"Quiet hours"};
+    // Creating a property needs approved owner access (ADR 0010).
+    const denied=await post("/api/owner/properties",draftFields,owner.cookie,"review-draft-denied");
+    assert.equal(denied.status,403);
+    assert.deepEqual(await denied.json(),{error:"owner_access_required"});
+    await db.prepare("INSERT INTO owner_access(user_id,status,source,decided_at) VALUES(?,'approved','application',unixepoch())").bind(owner.id).run();
     const draftResponse=await post("/api/owner/properties",draftFields,owner.cookie,"review-draft");
     assert.equal(draftResponse.status,201);
     await expect

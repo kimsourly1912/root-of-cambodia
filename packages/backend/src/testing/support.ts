@@ -66,3 +66,14 @@ export function grantAdminStatements(db: D1Database, userId: string, active = tr
       .bind(userId, active ? 1 : 0, userId),
   ];
 }
+
+// Records approved owner access directly, as an operator or fixture would; the
+// application flow itself is covered by the owner-access tests.
+export async function approveOwner(db: D1Database, userId: string) {
+  await db
+    .prepare(
+      "INSERT INTO owner_access(user_id,status,source,decided_at) VALUES (?,'approved','application',unixepoch())",
+    )
+    .bind(userId)
+    .run();
+}

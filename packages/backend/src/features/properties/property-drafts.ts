@@ -1,4 +1,4 @@
-import { verified, type Actor } from "../../shared/index";
+import { capabilities, verified, type Actor } from "../../shared/index";
 import { requireOwnedProperty } from "../../shared/index";
 import { DomainError } from "../../shared/index";
 import { commitCreateDraft, commitUpdateDraft } from "./property-persistence";
@@ -64,7 +64,15 @@ export async function createPropertyDraft(
 ) {
   await verified(db, actor);
   const fields = normalize(input, true) as CreateDraft;
-  const receipt = await commitCreateDraft(db, actor, key, fields);
+  let receipt;
+  try {
+    receipt = await commitCreateDraft(db, actor, key, fields);
+  } catch (error) {
+    // A same-key receipt has already replayed; name the missing owner access.
+    if (error instanceof DomainError && error.code === "booking_conflict" && !(await capabilities(db, actor)).owner)
+      throw new DomainError("owner_access_required", 403);
+    throw error;
+  }
   // Recovered receipts still require current access to the created resource.
   await verified(db, actor);
   await requireOwnedProperty(db, actor, receipt.id);

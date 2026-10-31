@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   database,
   catalog,
+  approveOwner,
   guest,
   owner,
   other,
@@ -37,6 +38,12 @@ test("verified account creates, reopens and updates a private draft with attribu
     const db = p.db;
     await catalog(db);
     assert.equal((await ownerProfile(db, guest)).exists, false);
+    // Without approved owner access nothing is written (ADR 0010).
+    await assert.rejects(createPropertyDraft(db, guest, "no-access", create), /owner_access_required/);
+    assert.equal(await scalar(db, "SELECT count(*) n FROM place"), 2);
+    assert.equal(await scalar(db, "SELECT count(*) n FROM operation"), 0);
+    assert.equal((await ownerProfile(db, guest)).exists, false);
+    await approveOwner(db, "guest");
     const r = await createPropertyDraft(db, guest, "create", create);
     assert.equal(r.status, "draft");
     assert.equal((await ownerProfile(db, guest)).displayName, "Local Owner");
@@ -230,6 +237,7 @@ test("same-key races and a lost commit response recover exactly one draft", asyn
   try {
     const db = p.db;
     await catalog(db);
+    await approveOwner(db, "guest");
     const receipts = await Promise.all([
       createPropertyDraft(db, guest, "race", create),
       createPropertyDraft(db, guest, "race", create),
@@ -269,6 +277,7 @@ test("database guards reject invalid draft attribution and failure rolls back ev
   try {
     const db = p.db;
     await catalog(db);
+    await approveOwner(db, "guest");
     await assert.rejects(
       commitCreateDraft(db, unverified, "invalid", create),
       /booking_conflict/,
@@ -354,6 +363,7 @@ test("private property pagination returns all own entries without leaking anothe
   try {
     const db = p.db;
     await catalog(db);
+    await approveOwner(db, "guest");
     for (let i = 0; i < 21; i++)
       await createPropertyDraft(db, guest, "create-" + i, create);
     const first = await ownerProperties(db, guest);

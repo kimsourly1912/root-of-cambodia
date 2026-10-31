@@ -78,7 +78,7 @@ test("admin grants need a verified account and a matching immutable event; revoc
     await assert.rejects(db.prepare("DELETE FROM platform_staff").run(), /invalid_staff_change/);
     await db.batch(grantAdminStatements(db, "other", false));
     assert.equal(await canReview(db, other), false);
-    assert.deepEqual(await capabilities(db, other), { guest: true, owner: false, admin: false });
+    assert.deepEqual(await capabilities(db, other), { guest: true, owner: true, admin: false });
     await db.batch(grantAdminStatements(db, "other"));
     assert.equal(await canReview(db, other), true);
     assert.deepEqual(
