@@ -87,7 +87,8 @@ This is a product safety rule from [AGENTS.md](../../AGENTS.md#correctness-and-p
 
 ## Navigation
 
-- The site header holds the main destinations; area layouts add their own `nav` with `aria-label` (for example "Owner navigation").
+- Public pages: the site header holds the main destinations. Owner and reviewer pages: the workspace sidebar (`nav` named "Workspace") holds area-level pages only (properties, review queue, guest links).
+- Page-level navigation stays in the page (`PropertyNavigation`, booking filters), so it is visible on phones before the sidebar sheet is opened and its link names are not repeated in the sidebar. Sign-out sits in the always-visible top bar.
 - Mark the current page with `aria-current="page"` (as `PropertyNavigation` does).
 - Back links go up one level (to the list), not browser-back.
 

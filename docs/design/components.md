@@ -40,7 +40,13 @@ Look up what you need here before writing markup. Rules for choosing and adding 
 | A list or area with nothing in it | `<EmptyState title description icon?>` + action as children | `@/components/empty-state` |
 | A status word (Draft, Pending, Paused…) | `<Badge>` (`variant`: `secondary` default, `default`, `outline`, `destructive`) | `@/components/ui/badge` |
 | Show more / collapsible section | `<Disclosure summary="…" open? variant="card" \| "plain">` | `@/components/disclosure` |
-| Sign-out button in a layout | `<SignOut />` | `@/components/sign-out` |
+| Sign-out button in a layout | `<SignOut />` (the workspace shell already renders it) | `@/components/sign-out` |
+| The owner/reviewer workspace frame | `<WorkspaceShell>`; only `app/(workspace)/layout.tsx` renders it | `@/components/workspace-shell` |
+| The environment notice above a layout | `<PreviewNotice fixtureTest readOnly />`; only the two group layouts render it | `@/components/preview-notice` |
+| Sidebar parts inside a workspace frame | `Sidebar*` parts (`SidebarGroup`, `SidebarMenuButton render={<Link …/>}` …); used by `WorkspaceShell`, not by pages | `@/components/ui/sidebar` |
+| A panel sliding in from an edge | `<Sheet>` + `<SheetContent side>` (Base UI dialog); the sidebar uses it on phones | `@/components/ui/sheet` |
+| A short hover/focus hint | `<Tooltip>` + `<TooltipTrigger>` + `<TooltipContent>`; needs a `TooltipProvider` | `@/components/ui/tooltip` |
+| A shape placeholder while loading | `<Skeleton className=…/>` (decorative; keep `LoadingState` text for the status) | `@/components/ui/skeleton` |
 | Money, Cambodia time, booking status words | `usd()`, `cambodiaTime()`, `bookingStatus()` | `@/lib/booking-format` |
 | Join class names | `cn()` | `@/lib/utils` |
 
@@ -50,7 +56,7 @@ Shared inside the owner workspace; import them from the feature folder in routes
 
 | Component | Feature | Use |
 | --- | --- | --- |
-| `SiteHeader` | Shared layout | Responsive primary navigation with runtime-aware links |
+| `SiteHeader` | Shared layout | Responsive primary navigation with runtime-aware links; public pages only (`app/(site)/layout.tsx`) |
 | `PropertyNavigation` | properties | Tabs across one property's pages (`active` names the current page) |
 | `PublicStayDetails` | catalog | The guest-facing listing view (also used as the preview in review screens) |
 | `StayPhoto` | catalog | A processed public photo |
@@ -66,6 +72,5 @@ Add these only when needed, using the configured shadcn `base-nova` style (Base 
 | Tabular data (owner booking lists at scale) | shadcn `Table` | Lists use cards and `<ul>`/`<ol>` today |
 | Transient success notices | shadcn `Toast` | Keep `StatusMessage` for anything the user must be able to re-read |
 | Icons | `lucide-react` | Decorative icons get `aria-hidden`; icon-only buttons need `aria-label` |
-| Skeleton placeholders | shadcn `Skeleton` | `LoadingState` text is the default |
 | Segmented navigation | shadcn `Tabs` | `PropertyNavigation` is a link list, which is correct for page navigation |
 | Searchable choice from a long list | shadcn `Command`/`Combobox` | `NativeSelect` for short lists |

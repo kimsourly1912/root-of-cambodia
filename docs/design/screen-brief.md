@@ -6,7 +6,7 @@
 
 **Last source verification:** 30 October 2026; owner-response implementation based on guest PR #25 head [a5bf41f](https://github.com/kimsourly1912/root-of-cambodia/commit/a5bf41ff6d54351358cd307b5ef4b9ded3f9d233).
 
-**Sources:** [apps/web/components/](../../apps/web/components), [apps/web/app/owner/](../../apps/web/app/owner), [apps/web/app/layout.tsx](../../apps/web/app/layout.tsx), [docs/archive/2026-10/Claude-Mockup-Brief.md](../archive/2026-10/Claude-Mockup-Brief.md).
+**Sources:** [apps/web/components/](../../apps/web/components), [apps/web/app/owner/](../../apps/web/app/%28workspace%29/owner), [apps/web/app/layout.tsx](../../apps/web/app/layout.tsx), [docs/archive/2026-10/Claude-Mockup-Brief.md](../archive/2026-10/Claude-Mockup-Brief.md).
 
 Use [product scope](../product/scope.md) for policy, [feature contracts](../README.md#feature-contracts) for real behavior and [status](../status.md) for delivery. The archived brief's claim that the main app does not exist and its instruction to create a parallel mockups/web app are superseded. The active app is apps/web. Do not scaffold a second app or change backend/pins/deployment merely to make a prototype.
 

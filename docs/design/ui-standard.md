@@ -21,8 +21,8 @@ Product rules (what a screen may promise) stay in [scope](../product/scope.md) a
 
 ## Choose a building block in this order
 
-1. **A primitive in `apps/web/components/ui/`** (shadcn `base-nova` style, using Base UI where an interactive primitive is needed): Button, Card, Input, Label, Textarea, Checkbox, NativeSelect, Badge, Alert.
-2. **A shared app component in `apps/web/components/`**: PageContainer, PageTitle, SectionTitle, TextLink, StatusMessage, LoadingState, LinkPending, EmptyState, Disclosure, SignOut.
+1. **A primitive in `apps/web/components/ui/`** (shadcn `base-nova` style, using Base UI where an interactive primitive is needed): Button, Card, Input, Label, Textarea, Checkbox, NativeSelect, Badge, Alert, Field, InputGroup, Separator, and the workspace Sidebar with its Sheet, Tooltip and Skeleton parts.
+2. **A shared app component in `apps/web/components/`**: PageContainer, PageTitle, SectionTitle, TextLink, StatusMessage, LoadingState, LinkPending, EmptyState, Disclosure, SignOut, and the layout-only SiteHeader, WorkspaceShell and PreviewNotice.
 3. **A feature component in `apps/web/features/<feature>/components/`**, composed from 1 and 2.
 4. **Nothing fits?** Add a primitive or shared component first (see [adding a component](#adding-a-component)), then use it. Never hand-style a native element in a screen as a shortcut.
 
