@@ -20,7 +20,7 @@ The system is a modular monolith with two runtime adapters using one shared back
 | [migrations](../../packages/backend/migrations/) | Authoritative ordered SQL schema, constraints, triggers and history |
 | [tests](../../tests/) | Whole-app tests: `integration/` (built web/jobs Worker, staging runtime), `e2e/` (browser) and `tooling/` (workspace, handoff, feature boundaries). Feature tests live beside their feature |
 | [proofs/foundation](../../proofs/foundation/README.md) | Independent historical npm compatibility fixture, outside the active workspace |
-| [application](../../application/) and [handoff-local.ts](../../scripts/handoff-local.ts) | Legacy ignored-state compatibility bridge; preserve until a separately reviewed state migration |
+| [handoff-local.ts](../../scripts/handoff-local.ts) | Imports ignored state from a legacy `application/` folder in older checkouts (the tracked folder was removed by the owner on 31 October 2026); preserve until a separately reviewed state migration |
 
 Next.js/React/TypeScript, shadcn/Radix/Tailwind and bundled Khmer fonts remain selected. Better Auth uses native D1 and server sessions. Drizzle provides selected reads; it is not a replacement for atomic D1 operations or SQL migrations. OpenNext generates the web Worker and assets; jobs is a separate Worker. R2 stores private objects and Images processes previews. Current bindings/providers are local substitutes.
 

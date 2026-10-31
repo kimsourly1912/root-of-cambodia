@@ -51,7 +51,8 @@ before adding or moving files; the tooling test enforces its import rules.
 - `apps/jobs`: scheduled and queue adapters that call backend features.
 - `tests/integration`, `tests/e2e`, `tests/tooling`: whole-app tests.
 - `proofs/foundation`: independent historical npm fixture; not the active app.
-- `application/` and `scripts/handoff-local.ts`: legacy local-state bridge; keep.
+- `scripts/handoff-local.ts`: imports state from an older `application/` checkout
+  folder if one exists (the tracked folder was removed 31 October 2026); keep.
 
 ## Commands
 
