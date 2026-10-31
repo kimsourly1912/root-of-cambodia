@@ -1404,12 +1404,14 @@ test("signed-out visitors can search, clear and recover from invalid or unavaila
   await page.getByLabel("Property name",{exact:true}).fill(query);
   await page.getByRole("button",{name:"Search stays",exact:true}).click();
   await expect(page).toHaveURL((url) => url.searchParams.get("q") === query);
-  await expect(page.getByRole("heading",{name:"No stays found",exact:true}),
-    "Empty search response: "+await page.locator("main").innerText()).toBeVisible();
+  // Streaming navigation can retain a hidden page beside the loading screen.
+  // Wait for the accessible search result instead of eagerly reading both mains.
+  await expect(page.getByRole("main").getByRole("heading",{name:"No stays found",exact:true}),
+    "A valid search with no matches shows the empty state").toBeVisible();
   await page.getByRole("link",{name:"Clear search",exact:true}).click();
   await expect(page).toHaveURL(/\/stays$/);
   await page.goto("/stays?q="+"x".repeat(101));
-  await expect(page.locator("main").getByRole("alert")).toContainText("Check the search details");
+  await expect(page.getByRole("main").getByRole("alert")).toContainText("Check the search details");
   await page.goto("/stays/not-a-public-property");
   await expect(page.getByRole("heading",{name:"Stay unavailable",exact:true})).toBeVisible();
   await page.getByRole("link",{name:"Explore other stays",exact:true}).click();
