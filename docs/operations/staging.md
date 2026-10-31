@@ -116,62 +116,35 @@ and CI in status/PR; deploy/build success alone is not live behavior evidence.
 
 ## Automatic web deployments from main
 
-The owner approved setting up merge-to-staging delivery on 31 October 2026.
-[verify.yml](../../.github/workflows/verify.yml) verifies PRs, pushes to `main`
-and manual runs. Only a successful push/manual run on `refs/heads/main` may
-start `deploy-staging`; PR verification never receives deployment credentials.
-Activation requires merging this workflow and configuring the GitHub environment
-below. [Status](../status.md) records whether an actual deployment is verified.
+The owner approved merge-to-staging delivery on 31 October 2026 and subsequently
+accepted parallel verification, documentation filtering, protected main and reuse
+of equivalent successful PR verification with a full fallback. The authoritative
+workflow, receipt rules, activation state and manual protection instructions are
+in the [CI/CD contract](ci-cd.md) and [status](../status.md).
 
-The deployment job checks out the exact verified SHA, uses pinned Node/pnpm and
-the frozen lockfile, generates types and builds OpenNext with `--env staging`.
-It serializes staging releases without cancelling an in-flight deployment,
-skips outdated commits after checking current main, then:
+[verify.yml](../../.github/workflows/verify.yml) verifies PRs or explicit full
+requests. [deploy-staging.yml](../../.github/workflows/deploy-staging.yml) handles
+main delivery: docs-only pushes skip release; application pushes reuse exact-tree
+successful PR proof or run full verification, then build staging from main,
+check migration inventory, serialize upload and run exact-revision HTTPS smoke.
+Only the deployment step receives the existing GitHub `staging` environment secret
+`CLOUDFLARE_API_TOKEN`. Wrangler staging configuration selects the existing account.
+The existing `BETTER_AUTH_SECRET` stays in Cloudflare; no value belongs in GitHub.
 
-1. [Checks migration tracking](../../scripts/check-staging-schema.ts) with a
-   read-only query to staging D1. The applied filenames must exactly match the
-   candidate migration directory; pending, unknown or missing tracking refuses
-   deployment. Applied SQL must still never be edited. Filename matching alone
-   is not a content checksum or a schema-integrity/restore check.
-2. Deploys only `roc-web-staging` with the existing staging config and the commit
-   SHA as its version tag. It preserves the existing auth secret and resources.
-3. Runs [HTTPS smoke](../../scripts/smoke-staging.ts): the public, no-store
-   `/api/health` must report database readiness and the expected version tag;
-   home/stays/testing must retain the fixture-test/noindex state; catalog and
-   anonymous session reads must remain uncached and private APIs refuse access.
-   Only readiness reads are retried for propagation; no fixture writes occur.
+The owner configured the environment/token and the original automatic release
+passed in [CI 41178698696](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41178698696),
+main `237343d07d6ee611e3df573f933c9a1a95c7226f`. The optimized workflow requires its
+own exact-head PR and post-merge evidence; the older release is not that proof.
 
-The GitHub run summary/environment history records success or a stale-commit
-skip. A failed check/deploy/smoke is reported as failure. Smoke failure does not
-automatically roll back code or data; an operator investigates before recovery.
-This smoke is anonymous and read-only, not the three-account interactive test
-or an email-delivery, real-device, restore or full production-readiness proof.
+This pipeline never applies remote migrations, resets/seeds D1, rotates fixture
+passwords, deploys jobs, enables email or touches production. New migrations stop
+release until separately reviewed and applied, followed by a manual current-main
+redeploy. Filename matching is not a migration checksum or restore proof. A Worker
+rollback does not reverse data. Failed live smoke requires investigation and does
+not automatically roll back code/data. Existing tester edits and credentials persist.
 
-### One-time credential setup
-
-Create a GitHub environment named `staging`, restrict deployment branches to
-`main`, and add the environment secret `CLOUDFLARE_API_TOKEN`. The account ID is
-already fixed in the workflow/config; no app password or `BETTER_AUTH_SECRET`
-belongs in GitHub. Keep the Cloudflare token out of source, chat and logs.
-The required auth secret name is declared in Wrangler so clean-checkout type
-generation/builds need no local `.dev.vars` or copy of its value.
-
-Use only the Cloudflare permissions/resources required to update the existing
-staging Worker/custom domain and read the existing D1/R2 bindings. It needs D1
-read access for the migration check, not schema/data write access. Scope Worker
-edit access to staging where supported and Routes access to this zone; never
-use a Global API Key or account-wide administrator token. GitHub branch/ruleset
-protection beyond this staging environment remains a separate D18 task.
-
-### Manual redeploy and schema changes
-
-In GitHub Actions, open **Verify application → Run workflow → main**. This reruns
-verification and redeploys only the current main commit. It is not a historical
-rollback control. A newer main commit causes an older queued release to skip.
-
-When migrations are added, automatic deployment stops before upload until an
-operator reviews compatibility/recovery and separately applies the approved
-staging migration. Then manually rerun on main. This pipeline never applies
-remote migrations, resets D1, seeds fixtures, rotates passwords, deploys jobs,
-enables email, or changes production. Tester edits and existing credentials
-remain in place across web releases.
+For a manual current-main release use **Actions → Deploy staging → Run workflow →
+main**. **Verify application → Run workflow** verifies only. The live smoke checks
+readiness/revision, fixture/noindex pages, uncached anonymous reads and private API
+refusal. It is anonymous/read-only, not three-account, real-device, email, restore
+or full production-readiness evidence.

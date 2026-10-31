@@ -28,6 +28,12 @@ The browser bridge includes a test-only captured-mail reader and synthetic clien
 
 ## Select meaningful checks
 
+CI runs backend/tooling and the Worker build in parallel, then shares that build
+with separate Worker, desktop and phone test runners. Each browser runner keeps
+one worker and its own database. The required CI gate and post-merge reuse/full
+fallback are defined in the [CI/CD contract](../operations/ci-cd.md). Documentation
+changes take only the explicit docs path; manual full verification remains available.
+
 For changed semantics, verify the relevant source/migration contracts and add focused regressions for failures that matter. Preserve existing scenarios. Documentation-only edits normally require source/command/link/anchor/whitespace/scope checks; do not install or initialize when the task excludes those operations.
 
 | Changed boundary | Required scenarios as applicable |

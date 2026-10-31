@@ -29,7 +29,7 @@ This log preserves open policy and operational choices. Options describe decisio
 | D15 | Privacy/platform terms, support contacts, reports/moderation procedures and property responsibilities | Blocks public pilot approval; technical schemas do not settle business/legal policy |
 | D16 | Future revenue model, optional Riel conversion and pilot success targets | Pilot remains free and USD/pay-at-property; no new commission or conversion rule |
 | D17 | [Accepted booking journey](booking-journey-proposal.md): confirmation-only logistics, acceptance-time immutable copy, owner preview/completeness guard, terminal-state hiding and legacy unavailable state | Accepted 30 October 2026; staged implementation. No public address endpoint or historical backfill. Later published corrections/retention/support remain D05/D09/D06 |
-| D18 | Named maintainer/reviewer, required CI check, review and solo-maintainer emergency policy | Blocks CODEOWNERS and repository protection changes; no fictional reviewers assigned |
+| D18 | Required `CI gate`, PR-only/strict protected main accepted on 31 October 2026; named reviewer and emergency policy remain open | Owner protection setup pending; [CI/CD contract](../operations/ci-cd.md). No fictional reviewer/CODEOWNERS or mandatory second reviewer |
 
 ## Approval boundaries outside this phase
 
