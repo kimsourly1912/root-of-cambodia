@@ -79,6 +79,8 @@ Arrival/no-show/late cancellation (D01), occupancy/physical-room continuity (D02
 
 ## Guest screens and recovery (slice A)
 
+The guest selection form keeps its inputs and review button disabled until hydration, so a selection cannot be entered and then lost before React owns the form. Pending and uncertain-review recovery continue to freeze the selection. Browser coverage delays scripts, checks the disabled controls, then completes the normal review flow after hydration.
+
 The public stay links to `/stays/:id/request`; verified guests select dates/room quantities and aggregate party counts, then review full nightly/charge totals, configured booking terms and house/cancellation rules at `/bookings/requests/:attemptId`. Explicit submission leads to `/bookings/:id`. `/bookings` lists only the guest's own bookings with bounded cursor pagination and up to five recent unsent saved reviews. Pending never means confirmed or a stock hold. Details show Cambodia-time deadlines and support the existing pre-check-in cancellation action. Arrival/payment recording/owner responses are outside A.
 
 New private/no-store routes, separate from the historical APIs above:

@@ -26,7 +26,7 @@ available as a conservative code/config fallback. A rollback does not undo data.
 | Origin | [Testing guide](https://staging.rootsofcambodia.com/testing); only this custom domain, no workers.dev/preview URL |
 | D1 | roc-staging; 169e1c39-c59a-40c8-8646-b82bbad08a2c; migrations 0001–0022 tracked in d1_migrations |
 | R2 | roc-media-staging, APAC; private originals/previews; managed public domain disabled |
-| Web | roc-web-staging; DB, MEDIA, IMAGES and ASSETS, separate auth secret |
+| Web | roc-web-staging; DB, MEDIA, IMAGES and ASSETS, separate auth secret; Smart Placement (runs near D1 once Cloudflare has enough traffic to place it) |
 | Images | Native binding; free transformation allowance, no paid Images storage subscription |
 | Queue | roc-notifications-staging; 2fdbf2b65e5f4fd780a6deb1eb51c8d6; no consumer |
 | Jobs | roc-jobs-staging config only; not deployed, no Cron |

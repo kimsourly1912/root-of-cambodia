@@ -1,8 +1,8 @@
 import { cache } from "react";
-import { headers } from "next/headers";
 import { capabilities, diagnostics, DomainError, type Actor } from "@root-of-cambodia/backend/shared";
 import { requireStagingAccount } from "./staging-accounts";
 import { runtime } from "./runtime";
+import { renderSession } from "./session";
 
 export type Viewer = { actor: Actor; owner: boolean; admin: boolean };
 
@@ -12,9 +12,8 @@ export type Viewer = { actor: Actor; owner: boolean; admin: boolean };
 export const viewer = cache(async (): Promise<Viewer | null> => {
   const context = diagnostics("http");
   try {
-    const { env, auth, readOnly, fixtureTest } = await runtime();
-    if (readOnly) return null;
-    const session = await auth.api.getSession({ headers: await headers() });
+    const { env, fixtureTest } = await runtime();
+    const session = await renderSession();
     if (!session) return null;
     requireStagingAccount(session.user.id, fixtureTest);
     const actor = { id: session.user.id };

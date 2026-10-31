@@ -29,6 +29,7 @@ Look up what you need here before writing markup. Rules for choosing and adding 
 | A text field | `<Label htmlFor>` + `<Input id>` | `@/components/ui/label`, `@/components/ui/input` |
 | A multi-line field | `<Label>` + `<Textarea>` | `@/components/ui/textarea` |
 | A choice from a short list | `<Label>` + `<NativeSelect>` with `<option>`s | `@/components/ui/native-select` |
+| A time of day (check-in, check-out) | `<Label>` + `<TimeSelect id value onChange>` (half-hour steps shown as "2:00 PM"; the value stays "14:00"; a saved off-step time stays selectable) | `@/components/time-select` |
 | A checkbox with its text | `<CheckboxField required …>text</CheckboxField>` (takes all input props) | `@/components/ui/checkbox` |
 | A bare checkbox (custom layout) | `<Checkbox>` inside your own `<label>` | `@/components/ui/checkbox` |
 | A group of related fields | `<fieldset>` + `<legend>` (native; style the legend like `SectionTitle size="sm"`) | — |
@@ -36,6 +37,7 @@ Look up what you need here before writing markup. Rules for choosing and adding 
 | A one-line success or progress note | `<StatusMessage tone="success">` / `tone="info"` (renders `role="status"`) | `@/components/status-message` |
 | A boxed notice with more content (retry buttons, lists) | `<Alert role="alert" variant="destructive">` / `variant="info"` / default | `@/components/ui/alert` |
 | A route loading screen (`loading.tsx`) | `<LoadingState>Loading …</LoadingState>` | `@/components/status-message` |
+| A navigation link that loads the whole page on hover, focus or touch (nav bars, sidebars; `TextLink` already uses it) | `<IntentLink href=…>` (same props as `next/link`) | `@/components/intent-link` |
 | Show that a navigation link's page is loading | `<LinkPending />` as the last child of a `relative` `<Link>` in a navigation bar (decorative bar, shown after a short delay) | `@/components/link-pending` |
 | A list or area with nothing in it | `<EmptyState title description icon?>` + action as children | `@/components/empty-state` |
 | A status word (Draft, Pending, Paused…) | `<Badge>` (`variant`: `secondary` default, `default`, `outline`, `destructive`) | `@/components/ui/badge` |

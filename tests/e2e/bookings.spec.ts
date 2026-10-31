@@ -193,6 +193,25 @@ test("guest and owner recover requests/responses and reveal logistics only while
     await page.getByLabel("Password", { exact: true }).fill(password);
     await page.getByRole("button", { name: "Sign in", exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/stays/${property.id}/request$`));
+    // Inputs must not accept a selection before hydration can preserve it.
+    let releaseRequestScripts!: () => void;
+    const requestScriptsReady = new Promise<void>((resolve) => {
+      releaseRequestScripts = resolve;
+    });
+    await page.route("**/_next/static/**/*.js*", async (route) => {
+      await requestScriptsReady;
+      await route.continue();
+    });
+    try {
+      await page.reload({ waitUntil: "commit" });
+      await expect(page.getByLabel("Check-in date", { exact: true })).toBeDisabled();
+      await expect(page.getByLabel("Check-out date", { exact: true })).toBeDisabled();
+      await expect(page.getByLabel("Rooms / units", { exact: true })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Review request", exact: true })).toBeDisabled();
+    } finally {
+      releaseRequestScripts();
+      await page.unrouteAll({ behavior: "wait" });
+    }
     await page.getByLabel("Check-in date", { exact: true }).fill(night);
     await page.getByLabel("Check-out date", { exact: true }).fill(checkout);
     await page.getByLabel("Rooms / units", { exact: true }).fill("1");

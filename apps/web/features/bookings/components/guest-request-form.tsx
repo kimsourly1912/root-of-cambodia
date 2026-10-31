@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
 import type {
@@ -27,10 +27,12 @@ export function GuestRequestForm({
 }) {
   const router = useRouter(),
     busy = useRef(false);
-  const [pending, setPending] = useState(false),
+  const [hydrated, setHydrated] = useState(false),
+    [pending, setPending] = useState(false),
     [error, setError] = useState(""),
     [auth, setAuth] = useState(false),
     [recovery, setRecovery] = useState("");
+  useEffect(() => setHydrated(true), []);
   const params = new URLSearchParams(initial);
   const { listing, terms } = context;
   const defaultValues: RequestValues = {
@@ -46,7 +48,7 @@ export function GuestRequestForm({
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value }) => {
-      if (busy.current) return;
+      if (!hydrated || busy.current) return;
       busy.current = true;
       setPending(true);
       setError("");
@@ -142,7 +144,7 @@ export function GuestRequestForm({
         Request a stay at {listing.nameEn || listing.nameKm}. The owner has 12
         hours to respond. Pay at the property after confirmation.
       </p>
-      <fieldset disabled={pending || !!recovery} className="space-y-6">
+      <fieldset disabled={!hydrated || pending || !!recovery} className="space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Choose your dates</CardTitle>
@@ -254,7 +256,7 @@ export function GuestRequestForm({
           Check saved review
         </TextLink>
       ) : (
-        <Button type="submit" disabled={pending || !listing.rooms.length}>
+        <Button type="submit" disabled={!hydrated || pending || !listing.rooms.length}>
           {pending ? "Checking price and availability…" : "Review request"}
         </Button>
       )}

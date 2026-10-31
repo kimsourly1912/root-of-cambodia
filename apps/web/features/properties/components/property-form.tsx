@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { TimeSelect } from "@/components/time-select";
 import { TextLink } from "@/components/text-link";
 import { StatusMessage } from "@/components/status-message";
 import { Alert } from "@/components/ui/alert";
@@ -278,11 +279,9 @@ export function PropertyForm({
                   <Label htmlFor="checkinTime">Check-in time</Label>
                   <form.Field name="checkinTime">
                     {(field) => (
-                      <Input
+                      <TimeSelect
                         id="checkinTime"
                         name="checkinTime"
-                        type="time"
-                        step={60}
                         value={field.state.value}
                         onChange={(event) =>
                           field.handleChange(event.target.value)
@@ -297,11 +296,9 @@ export function PropertyForm({
                   <Label htmlFor="checkoutTime">Check-out time</Label>
                   <form.Field name="checkoutTime">
                     {(field) => (
-                      <Input
+                      <TimeSelect
                         id="checkoutTime"
                         name="checkoutTime"
-                        type="time"
-                        step={60}
                         value={field.state.value}
                         onChange={(event) =>
                           field.handleChange(event.target.value)

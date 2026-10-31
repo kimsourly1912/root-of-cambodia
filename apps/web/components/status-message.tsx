@@ -22,12 +22,29 @@ function StatusMessage({
   return <p role={role} className={cn(toneClass, className)} {...props} />;
 }
 
-// Route-level loading.tsx content.
-function LoadingState({ children, className }: { children: React.ReactNode; className?: string }) {
+// Route-level loading.tsx content. `label` is announced; `children` is an
+// optional skeleton of the page (decorative, hidden from assistive technology).
+// Without children the label is shown as text.
+function LoadingState({
+  label,
+  children,
+  className,
+}: {
+  label: string;
+  children?: React.ReactNode;
+  className?: string;
+}) {
+  if (!children)
+    return (
+      <p role="status" className={cn("py-12 text-muted-foreground", className)}>
+        {label}
+      </p>
+    );
   return (
-    <p role="status" className={cn("py-12 text-muted-foreground", className)}>
-      {children}
-    </p>
+    <div role="status" className={className}>
+      <span className="sr-only">{label}</span>
+      <div aria-hidden="true">{children}</div>
+    </div>
   );
 }
 

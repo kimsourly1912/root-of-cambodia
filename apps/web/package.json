@@ -4,7 +4,7 @@
   "type": "module",
   "name": "@root-of-cambodia/web",
   "scripts": {
-    "dev": "next dev --webpack --hostname 127.0.0.1 --port 8787",
+    "dev": "next dev --hostname 127.0.0.1 --port 8787",
     "build": "next build --webpack",
     "build:worker": "opennextjs-cloudflare build",
     "preview:worker": "wrangler dev --ip 127.0.0.1 --port 8787 --persist-to ../../.wrangler/state",

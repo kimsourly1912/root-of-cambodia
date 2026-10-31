@@ -1,10 +1,23 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ImageOff,
+  ImagePlus,
+  Images,
+  Trash2,
+  Upload,
+  X,
+} from "lucide-react";
 import type { MediaGallery } from "@root-of-cambodia/backend/media";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Card,
   CardContent,
@@ -12,11 +25,11 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { SectionTitle } from "@/components/typography";
 import { EmptyState } from "@/components/empty-state";
 import { StatusMessage } from "@/components/status-message";
-import { Alert } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 type Attempt =
   | {
       kind: "upload";
@@ -31,6 +44,14 @@ class Rejected extends Error {
     super("Request rejected");
   }
 }
+const accepted = ["image/jpeg", "image/png", "image/webp"],
+  maxBytes = 8 * 1024 * 1024,
+  maxPhotos = 20;
+function fileSize(bytes: number) {
+  return bytes < 1024 * 1024
+    ? `${Math.max(1, Math.round(bytes / 1024))} KB`
+    : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 export function PropertyPhotos({
   propertyId,
   initial,
@@ -39,6 +60,7 @@ export function PropertyPhotos({
   initial: MediaGallery;
 }) {
   const base = `/api/owner/properties/${propertyId}/photos`;
+  const router = useRouter();
   const attempt = useRef<Attempt | null>(null),
     busy = useRef(false),
     fileInput = useRef<HTMLInputElement>(null);
@@ -47,11 +69,17 @@ export function PropertyPhotos({
     [uncertain, setUncertain] = useState(false),
     [conflict, setConflict] = useState(false),
     [error, setError] = useState(""),
-    [message, setMessage] = useState("");
+    [fileError, setFileError] = useState(""),
+    [message, setMessage] = useState(""),
+    [preview, setPreview] = useState(""),
+    [dragging, setDragging] = useState(false),
+    [uploading, setUploading] = useState(false);
   const form = useForm({
     defaultValues: { file: null as File | null },
     onSubmit: async ({ value }) => upload(value.file),
   });
+  // The local preview is an object URL; release it when it is replaced or the page closes.
+  useEffect(() => () => URL.revokeObjectURL(preview), [preview]);
   async function checked(response: Response) {
     if (!response.ok) {
       if (response.status < 500) throw new Rejected(response.status);
@@ -65,10 +93,26 @@ export function PropertyPhotos({
     setGallery(result);
     return result;
   }
+  function choose(file: File | null) {
+    form.setFieldValue("file", file);
+    setPreview(file ? URL.createObjectURL(file) : "");
+    setError("");
+    setMessage("");
+    setFileError(
+      file && (!accepted.includes(file.type) || file.size < 1 || file.size > maxBytes)
+        ? "Choose a JPEG, PNG or WebP file up to 8 MiB."
+        : "",
+    );
+  }
+  function clear() {
+    choose(null);
+    if (fileInput.current) fileInput.current.value = "";
+  }
   async function execute() {
     if (busy.current || !attempt.current) return;
     busy.current = true;
     setPending(true);
+    setUploading(attempt.current.kind === "upload");
     setError("");
     setMessage("");
     try {
@@ -108,10 +152,13 @@ export function PropertyPhotos({
       }
       // Retain the complete attempt until both commit and fresh gallery are confirmed.
       await refresh();
+      router.refresh();
       attempt.current = null;
       setUncertain(false);
-      form.reset();
-      if (fileInput.current) fileInput.current.value = "";
+      if (action.kind === "upload") {
+        form.reset();
+        clear();
+      }
       setMessage(
         action.kind === "upload"
           ? "Photo saved privately."
@@ -140,16 +187,17 @@ export function PropertyPhotos({
     } finally {
       busy.current = false;
       setPending(false);
+      setUploading(false);
     }
   }
   async function upload(file: File | null) {
     if (busy.current || attempt.current || !file) return;
     if (
-      !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
+      !accepted.includes(file.type) ||
       file.size < 1 ||
-      file.size > 8 * 1024 * 1024
+      file.size > maxBytes
     ) {
-      setError("Choose a JPEG, PNG or WebP file up to 8 MiB.");
+      setFileError("Choose a JPEG, PNG or WebP file up to 8 MiB.");
       return;
     }
     // Freeze before hashing too, so a quick second click cannot create another attempt.
@@ -173,7 +221,7 @@ export function PropertyPhotos({
         },
       };
     } catch {
-      setError("The file could not be read. Choose it again.");
+      setFileError("The file could not be read. Choose it again.");
     } finally {
       busy.current = false;
       setPending(false);
@@ -194,12 +242,15 @@ export function PropertyPhotos({
     [ids[index], ids[index + delta]] = [ids[index + delta], ids[index]];
     edit({ action: "reorder", ids });
   }
-  const frozen = pending || uncertain || conflict;
+  const frozen = pending || uncertain || conflict,
+    full = gallery.photos.length >= maxPhotos;
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <Card>
         <CardHeader>
-          <CardTitle>Add a photo</CardTitle>
+          <CardTitle>
+            <h2>Add a photo</h2>
+          </CardTitle>
           <CardDescription>
             Only you can view these draft photos. Uploading does not publish the
             property.
@@ -214,144 +265,272 @@ export function PropertyPhotos({
             }}
             className="space-y-4"
           >
-            <Label htmlFor="property-photo">Photo file</Label>
-            <form.Field name="file">
-              {(field) => (
-                <Input
-                  ref={fileInput}
-                  id="property-photo"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  disabled={frozen || gallery.photos.length >= 20}
-                  onChange={(event) => {
-                    field.handleChange(event.target.files?.[0] ?? null);
-                    setError("");
-                    setMessage("");
-                  }}
-                  aria-describedby="photo-limits"
-                />
+            <Label htmlFor="property-photo" className="sr-only">
+              Photo file
+            </Label>
+            {/* The file input covers the whole zone, so a click, a keypress or a
+                dropped file all reach the browser's own picker. */}
+            <div
+              onDragEnter={() => setDragging(true)}
+              onDragLeave={() => setDragging(false)}
+              onDrop={() => setDragging(false)}
+              className={cn(
+                "relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-6 py-10 text-center transition-colors has-[:focus-visible]:border-ring has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50 has-[:disabled]:opacity-60",
+                dragging ? "border-primary bg-secondary" : "hover:bg-muted/50",
               )}
-            </form.Field>
-            <p id="photo-limits" className="text-xs text-muted-foreground">
-              Still JPEG, PNG or WebP, up to 8 MiB each. Maximum 8,000 pixels
-              per side and 24 megapixels. Up to 20 photos, including unfinished
-              uploads.
-            </p>
+            >
+              <ImagePlus className="size-10 text-primary" aria-hidden="true" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium">
+                  {full
+                    ? "You have reached 20 photos"
+                    : dragging
+                      ? "Drop the photo to choose it"
+                      : "Drag a photo here, or click to browse"}
+                </p>
+                <p id="photo-limits" className="text-xs text-muted-foreground">
+                  {full
+                    ? "Remove a photo to add another."
+                    : "Still JPEG, PNG or WebP, up to 8 MiB each. Maximum 8,000 pixels per side and 24 megapixels. Up to 20 photos, including unfinished uploads."}
+                </p>
+              </div>
+              <form.Field name="file">
+                {() => (
+                  <Input
+                    ref={fileInput}
+                    id="property-photo"
+                    type="file"
+                    accept={accepted.join(",")}
+                    disabled={frozen || full}
+                    onChange={(event) =>
+                      choose(event.target.files?.[0] ?? null)
+                    }
+                    aria-describedby={
+                      fileError ? "photo-limits photo-file-error" : "photo-limits"
+                    }
+                    aria-invalid={fileError ? true : undefined}
+                    className="absolute inset-0 h-full cursor-pointer opacity-0"
+                  />
+                )}
+              </form.Field>
+            </div>
             <form.Subscribe selector={(state) => state.values.file}>
-              {(file) => (
-                <Button
-                  type="submit"
-                  disabled={frozen || !file || gallery.photos.length >= 20}
-                >
-                  {pending ? "Saving." : "Upload photo"}
-                </Button>
-              )}
+              {(file) =>
+                file && (
+                  <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-card p-3 sm:flex-nowrap">
+                    {/* Decorative: the file name beside it says what was chosen. */}
+                    <img
+                      src={preview}
+                      alt=""
+                      className="size-16 shrink-0 rounded-lg bg-muted object-cover"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">{file.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {fileSize(file.size)}
+                      </p>
+                    </div>
+                    <div className="flex w-full gap-2 sm:w-auto">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        disabled={frozen}
+                        aria-label="Clear chosen photo"
+                        onClick={clear}
+                      >
+                        <X />
+                      </Button>
+                      <Button
+                        type="submit"
+                        className="flex-1 sm:flex-none"
+                        disabled={frozen || full || !!fileError}
+                      >
+                        <Upload data-icon="inline-start" />
+                        {pending ? "Saving…" : "Upload photo"}
+                      </Button>
+                    </div>
+                  </div>
+                )
+              }
             </form.Subscribe>
+            {fileError && (
+              <StatusMessage tone="error" id="photo-file-error">
+                {fileError}
+              </StatusMessage>
+            )}
           </form>
         </CardContent>
       </Card>
       {error && (
         <Alert variant="destructive" role="alert">
-          <p>{error}</p>
-          {uncertain && (
-            <Button
-              type="button"
-              disabled={pending}
-              onClick={() => void execute()}
-            >
-              {pending ? "Checking." : "Retry same action"}
-            </Button>
-          )}
-          {!uncertain && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => window.location.reload()}
-            >
-              Reload latest photos
-            </Button>
-          )}
+          <AlertDescription className="space-y-3">
+            <p>{error}</p>
+            {uncertain ? (
+              <Button
+                type="button"
+                disabled={pending}
+                onClick={() => void execute()}
+              >
+                {pending ? "Checking…" : "Retry same action"}
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => window.location.reload()}
+              >
+                Reload latest photos
+              </Button>
+            )}
+          </AlertDescription>
         </Alert>
       )}
-      {message && (
-        <StatusMessage tone="success">
-          {message}
-        </StatusMessage>
-      )}
-      <div className="flex items-center justify-between gap-3">
-        <SectionTitle>Your photos</SectionTitle>
-        <p className="text-sm text-muted-foreground">
-          {gallery.photos.length} / 20
-        </p>
-      </div>
-      {!gallery.photos.length ? (
-        <EmptyState description="No photos yet. Add your first property photo above." />
-      ) : (
-        <ol className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {gallery.photos.map((photo, index) => (
-            <li
-              key={photo.id}
-              className="min-w-0 overflow-hidden rounded-xl border bg-card"
-            >
-              {photo.state === "ready" ? (
-                <img
-                  src={`${base}/${photo.id}`}
-                  alt={`Property photo ${index + 1}`}
-                  className="aspect-[4/3] w-full object-cover"
-                  loading="lazy"
-                />
-              ) : (
-                <div className="flex aspect-[4/3] items-center justify-center bg-muted px-6 text-center text-sm text-muted-foreground">
-                  Unfinished upload. Remove it and upload again if this page was
-                  closed.
-                </div>
-              )}
-              <div className="space-y-3 p-4">
-                <p className="text-sm font-medium">
-                  Photo {index + 1}
-                  {photo.state === "pending" ? " · Unfinished" : ""}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={frozen || index === 0}
-                    aria-label={`Move photo ${index + 1} earlier`}
-                    onClick={() => move(index, -1)}
-                  >
-                    Move earlier
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={frozen || index === gallery.photos.length - 1}
-                    aria-label={`Move photo ${index + 1} later`}
-                    onClick={() => move(index, 1)}
-                  >
-                    Move later
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={frozen}
-                    aria-label={`Remove photo ${index + 1}`}
-                    onClick={() => edit({ action: "remove", id: photo.id })}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ol>
-      )}
+      {message && <StatusMessage tone="success">{message}</StatusMessage>}
+      <section className="space-y-4">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <SectionTitle>Your photos</SectionTitle>
+            <p className="mt-1 text-sm text-muted-foreground">
+              The order here is the order you arrange them in.
+            </p>
+          </div>
+          <Badge variant={full ? "destructive" : "secondary"}>
+            {gallery.photos.length} of {maxPhotos} photos
+          </Badge>
+        </div>
+        {!gallery.photos.length && !uploading ? (
+          <EmptyState
+            icon={<Images />}
+            description="No photos yet. Add your first property photo above."
+          />
+        ) : (
+          <ol className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {gallery.photos.map((photo, index) => (
+              <li key={photo.id} className="min-w-0">
+                <Card className="gap-0 py-0">
+                  <div className="relative aspect-4/3 bg-muted">
+                    {photo.state === "ready" ? (
+                      <GalleryImage
+                        src={`${base}/${photo.id}`}
+                        alt={`Property photo ${index + 1}`}
+                      />
+                    ) : (
+                      <div className="flex h-full flex-col items-center justify-center gap-2 px-6 text-center text-sm text-muted-foreground">
+                        <ImageOff className="size-6" aria-hidden="true" />
+                        Unfinished upload. Remove it and upload again if this
+                        page was closed.
+                      </div>
+                    )}
+                    <Badge
+                      variant="outline"
+                      className="absolute top-3 left-3 bg-card"
+                    >
+                      {index + 1}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between gap-2 p-3">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <p className="text-sm font-medium">Photo {index + 1}</p>
+                      {photo.state === "pending" && (
+                        <Badge variant="destructive">Unfinished</Badge>
+                      )}
+                    </div>
+                    <div className="flex shrink-0 gap-1">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon-sm"
+                        disabled={frozen || index === 0}
+                        aria-label={`Move photo ${index + 1} earlier`}
+                        title="Move earlier"
+                        onClick={() => move(index, -1)}
+                      >
+                        <ArrowLeft />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon-sm"
+                        disabled={frozen || index === gallery.photos.length - 1}
+                        aria-label={`Move photo ${index + 1} later`}
+                        title="Move later"
+                        onClick={() => move(index, 1)}
+                      >
+                        <ArrowRight />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon-sm"
+                        disabled={frozen}
+                        aria-label={`Remove photo ${index + 1}`}
+                        title="Remove"
+                        onClick={() => edit({ action: "remove", id: photo.id })}
+                      >
+                        <Trash2 />
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              </li>
+            ))}
+            {uploading && (
+              <li className="min-w-0" aria-hidden="true">
+                <Card className="gap-0 py-0">
+                  <Skeleton className="aspect-4/3 rounded-none" />
+                  <div className="flex items-center justify-between gap-2 p-3">
+                    <p className="text-sm text-muted-foreground">Uploading…</p>
+                    <Skeleton className="h-7 w-24 rounded-lg" />
+                  </div>
+                </Card>
+              </li>
+            )}
+          </ol>
+        )}
+      </section>
       <p className="text-xs text-muted-foreground">
         Order applies to this private gallery. Public display and publication
         requirements will be reviewed separately.
       </p>
     </div>
+  );
+}
+// A private photo with a skeleton until it arrives, and a plain notice if it cannot load.
+function GalleryImage({ src, alt }: { src: string; alt: string }) {
+  const image = useRef<HTMLImageElement>(null);
+  const [state, setState] = useState<"loading" | "loaded" | "failed">(
+    "loading",
+  );
+  // A cached image can finish before hydration attaches onLoad.
+  useEffect(() => {
+    if (image.current?.complete)
+      setState(image.current.naturalWidth > 0 ? "loaded" : "failed");
+  }, []);
+  return (
+    <>
+      {state === "loading" && (
+        <Skeleton className="absolute inset-0 rounded-none" />
+      )}
+      {state === "failed" ? (
+        <div className="flex h-full flex-col items-center justify-center gap-2 px-6 text-center text-sm text-muted-foreground">
+          <ImageOff className="size-6" aria-hidden="true" />
+          This photo could not be shown. Reload the page to try again.
+        </div>
+      ) : (
+        <img
+          ref={image}
+          src={src}
+          alt={alt}
+          loading="lazy"
+          onLoad={() => setState("loaded")}
+          onError={() => setState("failed")}
+          className={cn(
+            "absolute inset-0 size-full object-cover transition-opacity duration-300",
+            state === "loaded" ? "opacity-100" : "opacity-0",
+          )}
+        />
+      )}
+    </>
   );
 }

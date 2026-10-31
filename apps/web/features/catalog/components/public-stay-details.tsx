@@ -1,6 +1,67 @@
 import type { PublicListing } from "@root-of-cambodia/backend/publication";
 import { StayPhoto } from "./stay-photo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonLine, SkeletonParagraph } from "@/components/page-skeleton";
+// PublicStayDetails while the listing loads: two photos, one room option.
+export function PublicStayDetailsSkeleton() {
+  return (
+    <div className="min-w-0 space-y-7">
+      <div>
+        <SkeletonLine size="sm" className="mb-2 w-36" />
+        <SkeletonLine size="display" className="w-2/3" />
+        <SkeletonLine size="lg" className="mt-2 w-1/3" />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Skeleton className="aspect-[4/3] rounded-lg" />
+        <Skeleton className="aspect-[4/3] rounded-lg" />
+      </div>
+      <Card>
+        <CardHeader>
+          <SkeletonLine className="w-36" />
+        </CardHeader>
+        <CardContent>
+          <SkeletonParagraph lines={3} />
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <SkeletonLine className="w-24" />
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {Array.from({ length: 4 }, (_, index) => (
+              <Skeleton key={index} className="h-9" />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <SkeletonLine className="w-32" />
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-lg border p-4">
+            <SkeletonLine className="w-40" />
+            <SkeletonLine size="sm" className="mt-2 w-3/4" />
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <SkeletonLine className="w-36" />
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <SkeletonLine size="sm" className="w-80 max-w-full" />
+          <div>
+            <SkeletonLine size="sm" className="mb-2 w-24" />
+            <SkeletonParagraph size="sm" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
 export function PublicStayDetails({
   listing,
   photoBase,

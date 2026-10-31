@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
 import type { CalendarNight } from "@root-of-cambodia/backend/calendar";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ export function InventoryNightForm({roomId, night, returnTo}: {
   const [hydrated, setHydrated] = useState(false), [pending, setPending] = useState(false),
     [uncertain, setUncertain] = useState(false), [blocked, setBlocked] = useState(false),
     [done, setDone] = useState(false), [error, setError] = useState(""), [auth, setAuth] = useState(false);
-  const busy = useRef(false), attempt = useRef<{key: string; body: string} | null>(null);
+  const router = useRouter(), busy = useRef(false), attempt = useRef<{key: string; body: string} | null>(null);
   useEffect(() => setHydrated(true), []);
   const defaultValues: InventoryNightFormValues = {
     capacity: String(night.capacity!),
@@ -47,7 +48,7 @@ export function InventoryNightForm({roomId, night, returnTo}: {
           else setBlocked(true);
           setError("Availability or your access changed. Reload the latest week before a new edit."); return;
         }
-        setDone(true); setUncertain(false);
+        setDone(true); setUncertain(false); router.refresh();
       } catch {
         setUncertain(true); setError("Connection interrupted. Keep this tab open and retry the same availability update.");
       } finally { busy.current = false; setPending(false); }

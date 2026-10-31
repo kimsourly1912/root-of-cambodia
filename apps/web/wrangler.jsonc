@@ -36,6 +36,8 @@
       "name": "roc-web-staging",
       "workers_dev": false,
       "preview_urls": false,
+      // Run the Worker near D1: a signed-in page makes several sequential queries.
+      "placement": { "mode": "smart" },
       "routes": [{ "pattern": "staging.rootsofcambodia.com", "custom_domain": true }],
       "vars": {
         "APP_MODE": "staging-test",

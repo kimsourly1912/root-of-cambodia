@@ -1,7 +1,7 @@
 import { requireStagingAccount } from "./staging-accounts";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { runtime } from "./runtime";
+import { renderSession } from "./session";
 import { guestReturn } from "@/lib/return-path";
 import { verified } from "@root-of-cambodia/backend/shared";
 import { diagnostics } from "@root-of-cambodia/backend/shared";
@@ -11,8 +11,8 @@ export async function guestSession(next: string) {
   let result: null | { db: D1Database; actor: { id: string } } = null,
     unverified = false;
   try {
-    const { env, auth, readOnly, fixtureTest } = await runtime();
-    const session = readOnly ? null : await auth.api.getSession({ headers: await headers() });
+    const { env, fixtureTest } = await runtime();
+    const session = await renderSession();
     if (session) {
       requireStagingAccount(session.user.id, fixtureTest);
       const actor = { id: session.user.id };
