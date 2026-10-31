@@ -35,6 +35,9 @@ packages/backend/
 
 apps/web/
 ├── app/                              # Next.js routes: thin pages, layouts, route handlers
+│   ├── (site)/                       # public and guest pages: notice, SiteHeader, footer
+│   ├── (workspace)/                  # owner and reviewer pages: WorkspaceShell sidebar frame
+│   └── api/                          # route handlers (no layout)
 ├── features/<feature>/
 │   ├── components/                   # the feature's components (forms, panels, displays)
 │   ├── screens/                      # optional: full-page compositions extracted from a route
@@ -44,6 +47,7 @@ apps/web/
 ├── components/
 │   ├── ui/                           # shadcn primitives (Button, Card, Input, …)
 │   └── *.tsx                         # shared UI: PageContainer, PageTitle, TextLink, StatusMessage… (docs/design/ui-standard.md)
+├── hooks/                            # shared client hooks from shadcn primitives (use-mobile for Sidebar)
 ├── lib/                              # shared pure helpers: utils, booking-format, return-path
 └── server/                           # shared server-only adapters: http, sessions, runtime, policy
 

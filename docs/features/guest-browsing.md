@@ -6,7 +6,7 @@
 
 **Last source verification:** 30 October 2026; owner-response implementation based on guest PR #25 head [a5bf41f](https://github.com/kimsourly1912/root-of-cambodia/commit/a5bf41ff6d54351358cd307b5ef4b9ded3f9d233).
 
-**Sources:** [public listing projection](../../packages/backend/src/features/publication/public-listing.ts), [catalog reads](../../packages/backend/src/features/catalog/catalog-queries.ts), [public adapters](../../apps/web/server/public-http.ts), [pages](../../apps/web/app/stays), [routes](../../apps/web/app/api/stays), [migration 0012](../../packages/backend/migrations/0012_public_listing_disclosure.sql), [native checks](../../packages/backend/src/features/catalog/tests/catalog.test.ts), [built HTTP checks](../../tests/integration/worker-http.test.ts), [browser flow](../../tests/e2e/owner.spec.ts).
+**Sources:** [public listing projection](../../packages/backend/src/features/publication/public-listing.ts), [catalog reads](../../packages/backend/src/features/catalog/catalog-queries.ts), [public adapters](../../apps/web/server/public-http.ts), [pages](../../apps/web/app/%28site%29/stays), [routes](../../apps/web/app/api/stays), [migration 0012](../../packages/backend/migrations/0012_public_listing_disclosure.sql), [native checks](../../packages/backend/src/features/catalog/tests/catalog.test.ts), [built HTTP checks](../../tests/integration/worker-http.test.ts), [browser flow](../../tests/e2e/owner.spec.ts).
 
 ## Approved scope
 

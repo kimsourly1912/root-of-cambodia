@@ -25,6 +25,7 @@ Defined once in `globals.css` as CSS variables and exposed to Tailwind (`bg-prim
 | `destructive` / `destructive-foreground` | #b42318 / #fff | Errors and destructive actions only |
 | `border` / `input` | #dce1d9 / #c3cdc2 | Dividers and card borders / form control borders |
 | `ring` | #32795a | Focus rings |
+| `sidebar`, `sidebar-foreground`, `sidebar-accent`, `sidebar-border`, `sidebar-ring`… | Same values as `card`, `foreground`, `accent`, `border`, `ring` | The workspace sidebar only (shadcn Sidebar names) |
 
 Opacity modifiers on tokens are fine (`border-destructive/40`, `hover:bg-primary/90`). Do not add a color outside the tokens; propose a new token in `globals.css` instead, in the same PR as its first use.
 
@@ -67,6 +68,7 @@ Prefer `space-y-*` and `gap-*` on the parent over margins on children. Margins (
 ## Layout
 
 - **Page width:** `PageContainer` gives `max-w-6xl` with `px-5` (`sm:px-8`) side gutters. The area layouts (owner, bookings, review, stays) render it once; their pages render fragments or a `div`.
+- **Two frames:** `app/(site)/layout.tsx` gives public and guest pages the notice, `SiteHeader` and footer. `app/(workspace)/layout.tsx` gives owner and reviewer pages `WorkspaceShell`: a 16 rem sidebar from `md` (768 px) up, a slide-in sheet on phones, and a top bar with the menu button and sign-out. URLs do not include the group names.
 - **Readable width:** long text and single forms stay within `max-w-2xl` (forms) or `max-w-md` (auth cards, empty-state text).
 - **Grids:** one column on phones, two from `sm:` or `md:`, three from `lg:` or `xl:` for photo grids.
 - **Breakpoints:** mobile first. `sm` (640 px) and `lg` (1024 px) are the common steps; `md` and `xl` are rare.
