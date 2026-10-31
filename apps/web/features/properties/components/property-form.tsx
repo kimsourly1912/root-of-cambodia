@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "@tanstack/react-form";
 import type { OwnerProperty } from "@root-of-cambodia/backend/properties";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,15 @@ import { StatusMessage } from "@/components/status-message";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 type Attempt = { key: string; body: Record<string, string | number> };
+type PropertyFormValues = {
+  ownerName: string;
+  nameKm: string;
+  nameEn: string;
+  province: string;
+  checkinTime: string;
+  checkoutTime: string;
+  policyText: string;
+};
 export function PropertyForm({
   property,
   ownerName = "",
@@ -43,90 +53,102 @@ export function PropertyForm({
   const [saved, setSaved] = useState(false);
   const [dirty, setDirty] = useState(false);
   const readOnly = !!property && property.publication !== "draft";
-  async function save(event: React.SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (pendingRef.current || completed.current) return;
-    if (!attempt.current) {
-      const data = new FormData(event.currentTarget);
-      const body: Record<string, string | number> = {};
-      for (const name of [
-        "nameKm",
-        "nameEn",
-        "province",
-        "checkinTime",
-        "checkoutTime",
-        "policyText",
-        ...(!property ? ["ownerName"] : []),
-      ])
-        body[name] = String(data.get(name) ?? "");
-      if (property) body.revision = property.revision;
-      attempt.current = { key: crypto.randomUUID(), body };
-    }
-    pendingRef.current = true;
-    setPending(true);
-    setError("");
-    setSaved(false);
-    try {
-      const response = await fetch(
-        property
-          ? `/api/owner/properties/${property.id}`
-          : "/api/owner/properties",
-        {
-          method: property ? "PATCH" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Idempotency-Key": attempt.current.key,
-          },
-          body: JSON.stringify(attempt.current.body),
-        },
-      );
-      if (response.status >= 500) {
-        setUncertain(true);
-        setError(
-          "We couldn’t confirm this save. Your details are held here. Retry the same save to recover the result safely.",
-        );
-        return;
+  const defaultValues: PropertyFormValues = {
+    ownerName,
+    nameKm: property?.nameKm ?? "",
+    nameEn: property?.nameEn ?? "",
+    province: property?.province ?? "",
+    checkinTime: property?.checkinTime ?? "",
+    checkoutTime: property?.checkoutTime ?? "",
+    policyText: property?.policyText ?? "",
+  };
+  const form = useForm({
+    defaultValues,
+    onSubmit: async ({ value }) => {
+      if (pendingRef.current || completed.current) return;
+      if (!attempt.current) {
+        const body: Record<string, string | number> = {
+          nameKm: value.nameKm,
+          nameEn: value.nameEn,
+          province: value.province,
+          checkinTime: value.checkinTime,
+          checkoutTime: value.checkoutTime,
+          policyText: value.policyText,
+        };
+        if (!property) body.ownerName = value.ownerName;
+        if (property) body.revision = property.revision;
+        attempt.current = { key: crypto.randomUUID(), body };
       }
-      if (!response.ok) {
+      pendingRef.current = true;
+      setPending(true);
+      setError("");
+      setSaved(false);
+      try {
+        const response = await fetch(
+          property
+            ? `/api/owner/properties/${property.id}`
+            : "/api/owner/properties",
+          {
+            method: property ? "PATCH" : "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Idempotency-Key": attempt.current.key,
+            },
+            body: JSON.stringify(attempt.current.body),
+          },
+        );
+        if (response.status >= 500) {
+          setUncertain(true);
+          setError(
+            "We couldn’t confirm this save. Your details are held here. Retry the same save to recover the result safely.",
+          );
+          return;
+        }
+        if (!response.ok) {
+          attempt.current = null;
+          setUncertain(false);
+          if (response.status === 409) {
+            setConflict(true);
+            setError(
+              "The property changed since you opened it. Reload the latest version and review your changes before saving again.",
+            );
+          } else
+            setError(
+              response.status === 401 || response.status === 403
+                ? "Your session needs attention. Sign in again, then return to this page."
+                : response.status === 404
+                  ? "This property is no longer available to your account."
+                  : "Check the fields and try again. The Khmer name, province, times and house rules are required.",
+            );
+          return;
+        }
+        const receipt = (await response.json()) as { id: string };
         attempt.current = null;
         setUncertain(false);
-        if (response.status === 409) {
-          setConflict(true);
-          setError(
-            "The property changed since you opened it. Reload the latest version and review your changes before saving again.",
-          );
-        } else
-          setError(
-            response.status === 401 || response.status === 403
-              ? "Your session needs attention. Sign in again, then return to this page."
-              : response.status === 404
-                ? "This property is no longer available to your account."
-                : "Check the fields and try again. The Khmer name, province, times and house rules are required.",
-          );
-        return;
+        completed.current = true;
+        setSettling(true);
+        setDirty(false);
+        setSaved(true);
+        router.replace(`/owner/properties/${receipt.id}`);
+        router.refresh();
+      } catch {
+        setUncertain(true);
+        setError(
+          "The connection was interrupted. Retry the same save to check whether it completed.",
+        );
+      } finally {
+        pendingRef.current = false;
+        setPending(false);
       }
-      const receipt = (await response.json()) as { id: string };
-      attempt.current = null;
-      setUncertain(false);
-      completed.current = true;
-      setSettling(true);
-      setDirty(false);
-      setSaved(true);
-      router.replace(`/owner/properties/${receipt.id}`);
-      router.refresh();
-    } catch {
-      setUncertain(true);
-      setError(
-        "The connection was interrupted. Retry the same save to check whether it completed.",
-      );
-    } finally {
-      pendingRef.current = false;
-      setPending(false);
-    }
-  }
+    },
+  });
   return (
     <form
-      onSubmit={save}
+      onSubmit={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        void form.handleSubmit();
+      }}
       className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_280px]"
       onChange={() => {
         setSaved(false);
@@ -148,15 +170,21 @@ export function PropertyForm({
               </CardHeader>
               <CardContent>
                 <Label htmlFor="ownerName">Owner display name</Label>
-                <Input
-                  className="mt-2"
-                  id="ownerName"
-                  name="ownerName"
-                  defaultValue={ownerName}
-                  readOnly={profileExists}
-                  required
-                  maxLength={200}
-                />
+                <form.Field name="ownerName">
+                  {(field) => (
+                    <Input
+                      className="mt-2"
+                      id="ownerName"
+                      name="ownerName"
+                      value={field.state.value}
+                      onChange={(event) => field.handleChange(event.target.value)}
+                      onBlur={field.handleBlur}
+                      readOnly={profileExists}
+                      required
+                      maxLength={200}
+                    />
+                  )}
+                </form.Field>
                 {profileExists && (
                   <p className="mt-2 text-xs text-muted-foreground">
                     Using your existing owner profile.
@@ -178,14 +206,20 @@ export function PropertyForm({
                   Property name in Khmer{" "}
                   <span lang="km">· ឈ្មោះកន្លែងស្នាក់នៅ</span>
                 </Label>
-                <Input
-                  id="nameKm"
-                  name="nameKm"
-                  lang="km"
-                  defaultValue={property?.nameKm}
-                  required
-                  maxLength={200}
-                />
+                <form.Field name="nameKm">
+                  {(field) => (
+                    <Input
+                      id="nameKm"
+                      name="nameKm"
+                      lang="km"
+                      value={field.state.value}
+                      onChange={(event) => field.handleChange(event.target.value)}
+                      onBlur={field.handleBlur}
+                      required
+                      maxLength={200}
+                    />
+                  )}
+                </form.Field>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="nameEn">
@@ -194,24 +228,36 @@ export function PropertyForm({
                     (optional)
                   </span>
                 </Label>
-                <Input
-                  id="nameEn"
-                  name="nameEn"
-                  defaultValue={property?.nameEn}
-                  maxLength={200}
-                />
+                <form.Field name="nameEn">
+                  {(field) => (
+                    <Input
+                      id="nameEn"
+                      name="nameEn"
+                      value={field.state.value}
+                      onChange={(event) => field.handleChange(event.target.value)}
+                      onBlur={field.handleBlur}
+                      maxLength={200}
+                    />
+                  )}
+                </form.Field>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="province">
                   Province <span lang="km">· ខេត្ត</span>
                 </Label>
-                <Input
-                  id="province"
-                  name="province"
-                  defaultValue={property?.province}
-                  required
-                  maxLength={100}
-                />
+                <form.Field name="province">
+                  {(field) => (
+                    <Input
+                      id="province"
+                      name="province"
+                      value={field.state.value}
+                      onChange={(event) => field.handleChange(event.target.value)}
+                      onBlur={field.handleBlur}
+                      required
+                      maxLength={100}
+                    />
+                  )}
+                </form.Field>
                 <p className="text-xs text-muted-foreground">
                   Address and map details will be added later.
                 </p>
@@ -230,39 +276,63 @@ export function PropertyForm({
               <div className="grid gap-5 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="checkinTime">Check-in time</Label>
-                  <Input
-                    id="checkinTime"
-                    name="checkinTime"
-                    type="time"
-                    step={60}
-                    defaultValue={property?.checkinTime}
-                    required
-                  />
+                  <form.Field name="checkinTime">
+                    {(field) => (
+                      <Input
+                        id="checkinTime"
+                        name="checkinTime"
+                        type="time"
+                        step={60}
+                        value={field.state.value}
+                        onChange={(event) =>
+                          field.handleChange(event.target.value)
+                        }
+                        onBlur={field.handleBlur}
+                        required
+                      />
+                    )}
+                  </form.Field>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="checkoutTime">Check-out time</Label>
-                  <Input
-                    id="checkoutTime"
-                    name="checkoutTime"
-                    type="time"
-                    step={60}
-                    defaultValue={property?.checkoutTime}
-                    required
-                  />
+                  <form.Field name="checkoutTime">
+                    {(field) => (
+                      <Input
+                        id="checkoutTime"
+                        name="checkoutTime"
+                        type="time"
+                        step={60}
+                        value={field.state.value}
+                        onChange={(event) =>
+                          field.handleChange(event.target.value)
+                        }
+                        onBlur={field.handleBlur}
+                        required
+                      />
+                    )}
+                  </form.Field>
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="policyText">Property house rules</Label>
-                <Textarea
-                  id="policyText"
-                  name="policyText"
-                  rows={7}
-                  className="min-h-40"
-                  defaultValue={property?.policyText}
-                  required
-                  maxLength={10000}
-                  aria-describedby="policy-help"
-                />
+                <form.Field name="policyText">
+                  {(field) => (
+                    <Textarea
+                      id="policyText"
+                      name="policyText"
+                      rows={7}
+                      className="min-h-40"
+                      value={field.state.value}
+                      onChange={(event) =>
+                        field.handleChange(event.target.value)
+                      }
+                      onBlur={field.handleBlur}
+                      required
+                      maxLength={10000}
+                      aria-describedby="policy-help"
+                    />
+                  )}
+                </form.Field>
                 <p id="policy-help" className="text-xs text-muted-foreground">
                   Add the house rules you want guests to know. You can revise
                   them while this property is a draft.

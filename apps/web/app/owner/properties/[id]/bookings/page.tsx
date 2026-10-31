@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ownerSession, ownerRead } from "@/server/owner-session";
+import { ownerSession, ownerRead, readTogether } from "@/server/owner-session";
 import { ownerBookings, ownerBookingStatus, ownerBookingStatuses } from "@root-of-cambodia/backend/bookings";
 import { ownerProperty } from "@root-of-cambodia/backend/properties";
 import { DomainError } from "@root-of-cambodia/backend/shared";
@@ -29,9 +29,12 @@ export default async function Page({
     return base + (q.size ? "?" + q.toString() : "");
   };
   try {
-    property = await ownerRead(() => ownerProperty(db, actor, id));
+    // ownerBookings validates the status filter itself after the ownership check.
+    [property, page] = await readTogether(
+      ownerRead(() => ownerProperty(db, actor, id)),
+      ownerRead(() => ownerBookings(db, actor, id, cursor, status)),
+    );
     selected = ownerBookingStatus(status);
-    page = await ownerRead(() => ownerBookings(db, actor, id, cursor, selected));
   } catch (error) {
     if (error instanceof DomainError && error.code === "not_found") notFound();
     if (error instanceof DomainError && error.code === "invalid_request")

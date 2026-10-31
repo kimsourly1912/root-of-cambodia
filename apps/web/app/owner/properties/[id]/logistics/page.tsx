@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { ownerSession, ownerRead } from "@/server/owner-session";
+import { ownerSession, ownerRead, readTogether } from "@/server/owner-session";
 import { ownerProperty } from "@root-of-cambodia/backend/properties";
 import { ownerPropertyLogistics } from "@root-of-cambodia/backend/property-logistics";
 import { DomainError } from "@root-of-cambodia/backend/shared";
@@ -15,10 +15,11 @@ export default async function Page({
   const { id } = await params;
   const data = await ownerRead(async () => {
     try {
-      return {
-        property: await ownerProperty(db, actor, id),
-        logistics: await ownerPropertyLogistics(db, actor, id),
-      };
+      const [property, logistics] = await readTogether(
+        ownerProperty(db, actor, id),
+        ownerPropertyLogistics(db, actor, id),
+      );
+      return { property, logistics };
     } catch (error) {
       if (error instanceof DomainError && error.code === "not_found")
         return null;

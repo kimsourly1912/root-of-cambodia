@@ -1,7 +1,10 @@
+import { cache } from "react";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { makeAuth } from "@root-of-cambodia/backend/accounts";
 import { runtimePolicy } from "./runtime-policy";
-export async function runtime() {
+// Built once per server render: the layout, metadata, page and session checks
+// all call this. Outside a render (route handlers) each call builds its own.
+export const runtime = cache(async () => {
   const { env } = await getCloudflareContext({ async: true });
   const policy = runtimePolicy(env.APP_MODE, env.AUTH_URL);
   const auth = makeAuth(env.DB, {
@@ -26,4 +29,4 @@ export async function runtime() {
     },
   });
   return { env, auth, ...policy };
-}
+});

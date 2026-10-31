@@ -3,9 +3,8 @@ import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 
-// In-text and standalone navigation links. Use <Button asChild><Link/></Button>
-// for links that look like buttons. className is for layout (block, margins),
-// not for color or decoration.
+// In-text and standalone navigation links. Use buttonVariants for links that
+// look like buttons. className is for layout, not color or decoration.
 const textLinkClass =
   "font-medium text-primary underline underline-offset-4 hover:text-primary/80";
 

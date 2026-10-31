@@ -4,7 +4,7 @@
 
 **Responsible role:** maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 31 October 2026, branch `feat/ui-standard`.
+**Last source verification:** 31 October 2026, branch `feat/home-page-ux`.
 
 **Sources:** [UI standard](../design/ui-standard.md), [component catalog](../design/components.md), [UX patterns](../design/ux-patterns.md), [content](../design/content.md), [tests/tooling/ui-standard.test.ts](../../tests/tooling/ui-standard.test.ts), [tests/e2e/](../../tests/e2e/).
 
@@ -43,6 +43,6 @@ pnpm build:worker && pnpm test:browser          # e2e; Linux/CI or Windows Devel
 
 ## Pitfalls seen in this repository
 
-- **Changing an element's role breaks e2e tests you cannot run locally.** A Radix checkbox is a `button` with `role="checkbox"`; a native one is an `input`. Keep native elements where forms rely on them.
+- **Changing an element's role breaks e2e tests you cannot run locally.** A custom checkbox widget may be a `button` with `role="checkbox"`; this project's checkbox is a native `input`. Keep native elements where forms rely on them.
 - **Controls clicked before hydration** submitted native forms (PR #28, PR #34). Gate on `hydrated`.
-- **A link styled as a button by hand** drifted from `Button` (the stay page's "Request to book", fixed in the UI standard migration). Use `Button asChild`.
+- **A link styled as a button by hand** drifted from `Button` (the stay page's "Request to book", fixed in the UI standard migration). Use `buttonVariants` on the `Link`; the configured Base UI `Button` is for button actions, not links.

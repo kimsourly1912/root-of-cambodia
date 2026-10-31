@@ -2,9 +2,6 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-// A styled native checkbox rather than shadcn's Radix button: native `required`,
-// `defaultChecked`, form submission and server-rendered `disabled` behave exactly
-// as before, which the hydration-gated confirmation flows rely on.
 const Checkbox = React.forwardRef<
   HTMLInputElement,
   Omit<React.ComponentProps<"input">, "type">
@@ -21,14 +18,13 @@ const Checkbox = React.forwardRef<
 ));
 Checkbox.displayName = "Checkbox";
 
-// Checkbox with its visible text, so the whole row is the click target.
 function CheckboxField({
   children,
   className,
   ...props
 }: Omit<React.ComponentProps<"input">, "type"> & { children: React.ReactNode }) {
   return (
-    <label className={cn("flex items-start gap-3 text-sm", className)}>
+    <label className={cn("flex min-h-11 items-start gap-3 py-2 text-sm", className)}>
       <Checkbox {...props} />
       <span>{children}</span>
     </label>

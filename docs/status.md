@@ -69,6 +69,7 @@ Release requirements are in [release and recovery](operations/release-and-recove
 | 6 | Deployed jobs, abuse budgets, retention, recovery | D08, D09, D10, D11 |
 | 7 | Khmer copy, accessibility, real-device and performance review | D13 ownership |
 | 8 | Repository governance: required checks, reviewers | D18; settings changes need separate authorization |
+| — | Navigation responsiveness on branch `feat/home-page-ux`, not yet merged: `loading.tsx` for the home/top-level pages and nested owner and stay segments, a `LinkPending` bar on the main and property navigation, `runtime()` built once per render, and independent owner page reads run together | PR with exact-head CI; browser journeys confirm unchanged roles and names |
 | — | UI component standard ([ADR 0009](architecture/decisions/0009-ui-component-standard.md)): applied on branch `feat/ui-standard` (stacked on `refactor/feature-structure`), not yet merged | PR with exact-head CI; browser journeys confirm unchanged roles and names |
 | — | Feature-based code organization ([ADR 0008](architecture/decisions/0008-feature-based-modules.md)): applied on branch `refactor/feature-structure`, not yet merged | PR with exact-head CI for the built-Worker and browser suites (not runnable on the Windows checkout); merge needs owner authorization |
 

@@ -5,7 +5,7 @@ import { publicPage } from "@/server/public-http";
 import { publicStay } from "@root-of-cambodia/backend/catalog";
 import { PublicStayDetails } from "@/features/catalog/components/public-stay-details";
 import { TextLink } from "@/components/text-link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 export default async function Page({
   params,
 }: {
@@ -21,9 +21,12 @@ export default async function Page({
       <TextLink className="mb-8 block w-fit text-sm" href="/stays">
         ← Explore stays
       </TextLink>
-      <Button asChild className="mb-7">
-        <Link href={`/stays/${id}/request`}>Request to book</Link>
-      </Button>
+      <Link
+        href={`/stays/${id}/request`}
+        className={buttonVariants({ className: "mb-7" })}
+      >
+        Request to book
+      </Link>
       <PublicStayDetails
         listing={listing}
         photoBase={`/api/stays/${id}/photos`}

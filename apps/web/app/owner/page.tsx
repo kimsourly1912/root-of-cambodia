@@ -1,8 +1,8 @@
 import { canReview } from "@root-of-cambodia/backend/publication";
 import Link from "next/link";
-import { ownerSession, ownerRead } from "@/server/owner-session";
+import { ownerSession, ownerRead, readTogether } from "@/server/owner-session";
 import { ownerProperties } from "@root-of-cambodia/backend/properties";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageTitle, SectionTitle } from "@/components/typography";
 import { EmptyState } from "@/components/empty-state";
@@ -15,10 +15,12 @@ export default async function Page({
 }) {
   const { db, actor } = await ownerSession();
   const { cursor } = await searchParams;
-  const result = await ownerRead(() =>
-    ownerProperties(db, actor, typeof cursor === "string" ? cursor : ""),
+  const [result, reviewer] = await readTogether(
+    ownerRead(() =>
+      ownerProperties(db, actor, typeof cursor === "string" ? cursor : ""),
+    ),
+    ownerRead(() => canReview(db, actor)),
   );
-  const reviewer = await ownerRead(() => canReview(db, actor));
   return (
     <>
       <div className="mb-8 flex flex-wrap items-start justify-between gap-5">
@@ -36,13 +38,13 @@ export default async function Page({
         </div>
         <div className="flex flex-wrap gap-4">
           {reviewer && (
-            <Button variant="outline" asChild>
-              <Link href="/review">Publication reviews</Link>
-            </Button>
+            <Link href="/review" className={buttonVariants({ variant: "outline" })}>
+              Publication reviews
+            </Link>
           )}
-          <Button asChild>
-            <Link href="/owner/properties/new">+ New property draft</Link>
-          </Button>
+          <Link href="/owner/properties/new" className={buttonVariants()}>
+            + New property draft
+          </Link>
         </div>
       </div>
       {result.items.length ? (
@@ -85,11 +87,12 @@ export default async function Page({
               : "Add the name, location and house rules. You can save a draft and return to it later."
           }
         >
-          <Button asChild>
-            <Link href={cursor ? "/owner" : "/owner/properties/new"}>
-              {cursor ? "First page" : "Create property draft"}
-            </Link>
-          </Button>
+          <Link
+            href={cursor ? "/owner" : "/owner/properties/new"}
+            className={buttonVariants()}
+          >
+            {cursor ? "First page" : "Create property draft"}
+          </Link>
         </EmptyState>
       )}
       <div className="mt-6 flex gap-6 text-sm text-primary">

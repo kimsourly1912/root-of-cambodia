@@ -1,0 +1,14 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node", "@cloudflare/vitest-plugin/types"]
+  },
+  "include": [
+    "**/tests/**/*.ts",
+    "testing/**/*.ts",
+    "../worker-configuration.d.ts",
+    "../../../apps/web/worker-configuration.d.ts",
+    "../../../apps/jobs/worker-configuration.d.ts",
+    "../../../tests/env.d.ts"
+  ]
+}

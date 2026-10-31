@@ -4,7 +4,7 @@
 
 **Responsible role:** product/design owner (direction); technical maintainer (implementation).
 
-**Last source verification:** 31 October 2026, branch `feat/ui-standard`.
+**Last source verification:** 31 October 2026, branch `feat/home-page-ux`.
 
 **Sources:** [apps/web/features/](../../apps/web/features/), [apps/web/app/](../../apps/web/app/), [bookings](../features/bookings.md), [publication review](../features/publication-review.md), [testing](../development/testing.md#select-meaningful-checks).
 
@@ -22,6 +22,8 @@ Every page, top to bottom:
 6. Content sections, each with a `SectionTitle` or inside a `Card`.
 
 Each route area has `loading.tsx` (`LoadingState`), `error.tsx` (`PageTitle`, one sentence, a `Button` that calls `reset`) and `not-found.tsx` (`PageTitle`, one sentence, a `TextLink` back to a safe page).
+
+A `loading.tsx` only shows, and only lets `<Link>` prefetch, when the segment directly below its folder changes. So every folder whose child pages users move between needs its own: for example `owner/properties/[id]/loading.tsx` covers switching property tabs, and `owner/properties/[id]/rooms/loading.tsx` covers opening a room type. Navigation bars also put `LinkPending` in each link so a click is acknowledged even before the loading screen arrives.
 
 ## Every screen handles these states
 
@@ -41,6 +43,7 @@ Each route area has `loading.tsx` (`LoadingState`), `error.tsx` (`PageTitle`, on
 
 - Every field has a visible `Label`. Put required-ness in the label text or the form intro, not only in an asterisk.
 - Group related fields in a `fieldset` with a `legend`; use `space-y-2` between a label and its control and `space-y-4` or `space-y-5` between fields.
+- Interactive forms use TanStack React Form: initialize typed `defaultValues`, bind each editable control with `form.Field`, and submit through `form.handleSubmit()`. Use the shadcn `base-nova` primitives for field controls; retain native input constraints and names/labels. Plain GET search/filter forms remain native so they work as shareable URL navigation without client state.
 - Validate on the server (the backend services are the authority). Client checks only prevent obvious mistakes and must not be the only check.
 - Show form-level errors with `StatusMessage tone="error"` directly above or below the submit button; give a field-specific error `aria-describedby` on that input.
 - Keep the user's input after an error. Never clear a form because a save failed.
@@ -50,6 +53,8 @@ Each route area has `loading.tsx` (`LoadingState`), `error.tsx` (`PageTitle`, on
 ## Hydration and double submits
 
 Server-rendered controls can be clicked before React attaches its handlers. Forms and action buttons that call JavaScript are **disabled until hydration** (a `hydrated` state set in `useEffect`); see `listing-controls.tsx` and `payment-records.tsx`. A required `CheckboxField` in such a form is also disabled until hydrated. While a request is pending, disable the submit button so it cannot be sent twice.
+
+Authentication forms submit through JavaScript and have no native action. Keep their inputs and submit button disabled until hydration so a pre-hydration submit cannot send credentials in a browser URL. A show-password control is also disabled until hydration and must expose its state through an accessible name and `aria-pressed`.
 
 ## Retries and uncertain results
 

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "@tanstack/react-form";
 import type { PropertyInformation } from "@root-of-cambodia/backend/property-information";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -35,8 +36,7 @@ export function PropertyInformationForm({
     busy = useRef(false),
     completed = useRef(false),
     attempt = useRef<{ key: string; body: PropertyInformation } | null>(null);
-  const [form, setForm] = useState(() => formFrom(information)),
-    [dirty, setDirty] = useState(false),
+  const [dirty, setDirty] = useState(false),
     [pending, setPending] = useState(false),
     [settling, setSettling] = useState(false),
     [uncertain, setUncertain] = useState(false),
@@ -44,114 +44,115 @@ export function PropertyInformationForm({
     [error, setError] = useState(""),
     [needsSignIn, setNeedsSignIn] = useState(false),
     [saved, setSaved] = useState(false);
+  const form = useForm({
+    defaultValues: formFrom(information),
+    onSubmit: async ({ value }) => {
+      if (busy.current || completed.current) return;
+      setNeedsSignIn(false);
+      setError("");
+      if (!attempt.current) {
+        const facilities = value.facilitiesText
+          .split(/\r?\n/)
+          .map((item) => item.trim())
+          .filter(Boolean);
+        if (
+          facilities.length > 30 ||
+          facilities.some((item) => item.length > 120) ||
+          new Set(facilities).size !== facilities.length
+        ) {
+          setError(
+            "List up to 30 different facilities, one per line, with no more than 120 characters per entry.",
+          );
+          return;
+        }
+        attempt.current = {
+          key: crypto.randomUUID(),
+          body: {
+            description: value.description,
+            address: value.address,
+            facilities,
+            revision: value.revision,
+          },
+        };
+      }
+      busy.current = true;
+      setPending(true);
+      setSaved(false);
+      try {
+        const response = await fetch(
+          `/api/owner/properties/${propertyId}/information`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              "Idempotency-Key": attempt.current.key,
+            },
+            body: JSON.stringify(attempt.current.body),
+          },
+        );
+        if (response.status >= 500) {
+          setUncertain(true);
+          setError(
+            "We couldn’t confirm this save. Retry the same save to recover its result safely.",
+          );
+          return;
+        }
+        if (!response.ok) {
+          attempt.current = null;
+          setUncertain(false);
+          setNeedsSignIn(response.status === 401 || response.status === 403);
+          if (response.status === 409) {
+            setConflict(true);
+            setError(
+              "The property information or access changed since you opened it. Reload the latest details before saving again.",
+            );
+          } else
+            setError(
+              response.status === 401 || response.status === 403
+                ? "Your session needs attention. Sign in again, then return to this page."
+                : response.status === 404
+                  ? "This property is no longer available to your account."
+                  : "Check the description, address and facility entries, then try again.",
+            );
+          return;
+        }
+        await response.json();
+        attempt.current = null;
+        completed.current = true;
+        setSettling(true);
+        setUncertain(false);
+        setDirty(false);
+        setSaved(true);
+        router.refresh();
+      } catch {
+        setUncertain(true);
+        setError(
+          "The connection was interrupted. Retry the same save to check whether it completed.",
+        );
+      } finally {
+        busy.current = false;
+        setPending(false);
+      }
+    },
+  });
   // Keep displayed values and their expected version together after a confirmed refresh.
   useEffect(() => {
-    setForm(formFrom(information));
+    const values = formFrom(information);
+    for (const field of Object.keys(values) as (keyof typeof values)[]) {
+      form.setFieldValue(field, values[field]);
+    }
     setDirty(false);
     completed.current = false;
     setSettling(false);
   }, [information.revision]);
-  function change(
-    field: "description" | "address" | "facilitiesText",
-    value: string,
-  ) {
-    setForm((current) => ({ ...current, [field]: value }));
-    setDirty(true);
-    setSaved(false);
-  }
-  async function save(event: React.SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (busy.current || completed.current) return;
-    setNeedsSignIn(false);
-    setError("");
-    if (!attempt.current) {
-      const facilities = form.facilitiesText
-        .split(/\r?\n/)
-        .map((item) => item.trim())
-        .filter(Boolean);
-      if (
-        facilities.length > 30 ||
-        facilities.some((item) => item.length > 120) ||
-        new Set(facilities).size !== facilities.length
-      ) {
-        setError(
-          "List up to 30 different facilities, one per line, with no more than 120 characters per entry.",
-        );
-        return;
-      }
-      attempt.current = {
-        key: crypto.randomUUID(),
-        body: {
-          description: form.description,
-          address: form.address,
-          facilities,
-          revision: form.revision,
-        },
-      };
-    }
-    busy.current = true;
-    setPending(true);
-    setSaved(false);
-    try {
-      const response = await fetch(
-        `/api/owner/properties/${propertyId}/information`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "Idempotency-Key": attempt.current.key,
-          },
-          body: JSON.stringify(attempt.current.body),
-        },
-      );
-      if (response.status >= 500) {
-        setUncertain(true);
-        setError(
-          "We couldn’t confirm this save. Retry the same save to recover its result safely.",
-        );
-        return;
-      }
-      if (!response.ok) {
-        attempt.current = null;
-        setUncertain(false);
-        setNeedsSignIn(response.status === 401 || response.status === 403);
-        if (response.status === 409) {
-          setConflict(true);
-          setError(
-            "The property information or access changed since you opened it. Reload the latest details before saving again.",
-          );
-        } else
-          setError(
-            response.status === 401 || response.status === 403
-              ? "Your session needs attention. Sign in again, then return to this page."
-              : response.status === 404
-                ? "This property is no longer available to your account."
-                : "Check the description, address and facility entries, then try again.",
-          );
-        return;
-      }
-      await response.json();
-      attempt.current = null;
-      completed.current = true;
-      setSettling(true);
-      setUncertain(false);
-      setDirty(false);
-      setSaved(true);
-      router.refresh();
-    } catch {
-      setUncertain(true);
-      setError(
-        "The connection was interrupted. Retry the same save to check whether it completed.",
-      );
-    } finally {
-      busy.current = false;
-      setPending(false);
-    }
-  }
   const frozen = !editable || pending || settling || uncertain || conflict;
   return (
     <form
-      onSubmit={save}
+      onSubmit={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        void form.handleSubmit();
+      }}
       className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_280px]"
     >
       <fieldset disabled={frozen} className="min-w-0 space-y-6">
@@ -164,14 +165,21 @@ export function PropertyInformationForm({
           </CardHeader>
           <CardContent className="space-y-2">
             <Label htmlFor="description">Property description</Label>
-            <Textarea
-              id="description"
-              rows={6}
-              maxLength={5000}
-              value={form.description}
-              onChange={(e) => change("description", e.target.value)}
-              aria-describedby="description-help"
-            />
+            <form.Field name="description">{(field) =>
+              <Textarea
+                id="description"
+                rows={6}
+                maxLength={5000}
+                value={field.state.value}
+                onChange={(event) => {
+                  field.handleChange(event.target.value);
+                  setDirty(true);
+                  setSaved(false);
+                }}
+                onBlur={field.handleBlur}
+                aria-describedby="description-help"
+              />
+            }</form.Field>
             <p id="description-help" className="text-xs text-muted-foreground">
               Describe the property in your own words. Khmer and English text
               are supported.
@@ -189,14 +197,21 @@ export function PropertyInformationForm({
             <Label htmlFor="address">
               Property address <span lang="km">· អាសយដ្ឋាន</span>
             </Label>
-            <Textarea
-              id="address"
-              rows={4}
-              maxLength={1000}
-              value={form.address}
-              onChange={(e) => change("address", e.target.value)}
-              aria-describedby="address-help"
-            />
+            <form.Field name="address">{(field) =>
+              <Textarea
+                id="address"
+                rows={4}
+                maxLength={1000}
+                value={field.state.value}
+                onChange={(event) => {
+                  field.handleChange(event.target.value);
+                  setDirty(true);
+                  setSaved(false);
+                }}
+                onBlur={field.handleBlur}
+                aria-describedby="address-help"
+              />
+            }</form.Field>
             <p id="address-help" className="text-xs text-muted-foreground">
               Include useful village, street and locality details. This address
               is not checked against a map.
@@ -213,13 +228,20 @@ export function PropertyInformationForm({
           </CardHeader>
           <CardContent className="space-y-2">
             <Label htmlFor="facilities">Facilities — one per line</Label>
-            <Textarea
-              id="facilities"
-              rows={6}
-              value={form.facilitiesText}
-              onChange={(e) => change("facilitiesText", e.target.value)}
-              aria-describedby="facilities-help"
-            />
+            <form.Field name="facilitiesText">{(field) =>
+              <Textarea
+                id="facilities"
+                rows={6}
+                value={field.state.value}
+                onChange={(event) => {
+                  field.handleChange(event.target.value);
+                  setDirty(true);
+                  setSaved(false);
+                }}
+                onBlur={field.handleBlur}
+                aria-describedby="facilities-help"
+              />
+            }</form.Field>
             <p id="facilities-help" className="text-xs text-muted-foreground">
               Up to 30 different entries. A blank list means no facilities are
               listed yet.
@@ -246,7 +268,7 @@ export function PropertyInformationForm({
             <p className="text-xs text-muted-foreground">
               {dirty
                 ? "Unsaved changes"
-                : form.revision === null
+                : information.revision === null
                   ? "No additional details saved yet"
                   : "Saved to your account"}
             </p>
