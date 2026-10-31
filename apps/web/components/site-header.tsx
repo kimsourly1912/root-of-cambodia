@@ -69,7 +69,7 @@ function SiteHeader({ fixtureTest, readOnly, viewer }: SiteHeaderProps) {
                 {viewer?.admin && (
                   <li>
                     <Link
-                      href="/review"
+                      href="/admin"
                       className={buttonVariants({ variant: "ghost", size: "sm", className: "relative" })}
                     >
                       Admin

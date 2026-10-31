@@ -44,9 +44,9 @@ CI results are GitHub Ubuntu/emulator runs. Staging evidence covers fictional fi
 | Payment records | Implemented | Full pay-at-property attestation with private correction history; no money movement; [payments](features/payments.md) |
 | Notifications and jobs | Local substitute only | Outbox, queue, leases, capture locally; jobs, queue consumer, Cron, expiry/cleanup sweeps and email not deployed (D07); [notifications](features/notifications.md) |
 | Automatic staging delivery | Existing pipeline active; optimization pending merge | [CI/CD contract](operations/ci-cd.md): isolated parallel jobs, shared test build, docs-only gate, equivalent PR receipt reuse/full fallback, caches/reports. Current branch is not yet active staging evidence |
-| Account capabilities | Slices 2–3: admin/owner rows, admin-only review, operator `admin:local`, role-based header; owner applications with admin approve/decline and the property-creation gate | [ADR 0010](architecture/decisions/0010-account-capabilities.md), [owner access](features/owner-access.md); owner terms wait for D15; admin console is slice 4 |
+| Account capabilities | Slices 2–3: admin/owner rows, admin-only review, operator `admin:local`, role-based header; owner applications with admin approve/decline and the property-creation gate; slice 4 admin console (`/admin` overview, `/admin/reviews`, `/admin/owners`, read-only `/admin/properties`) | [ADR 0010](architecture/decisions/0010-account-capabilities.md), [owner access](features/owner-access.md); owner terms wait for D15; suspension/support access remain D06 |
 | Workspace shell | Implemented (#44) | Route groups: public `(site)` header frame, owner/reviewer `(workspace)` shadcn sidebar frame; URLs unchanged. Slice 1 of the roles and workspaces decision (PR #43); [UI standard](design/ui-standard.md) |
-| Partner/admin/support | Planned | No broad account, moderation or support dashboard (D06) |
+| Partner/admin/support | Admin console implemented locally | Review, owner applications and a read-only directory with no guest data; account management, moderation, suspension and support access remain D06 |
 | Language/design | Partial | Khmer fonts/names and some labels; working UI mostly English (D13) |
 | Other-category reservations, online payment | Deferred by [scope](product/scope.md) | Reopen only by explicit scope decision |
 

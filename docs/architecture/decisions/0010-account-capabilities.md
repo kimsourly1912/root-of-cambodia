@@ -1,6 +1,6 @@
 # ADR 0010: Account capabilities and role-based areas
 
-**Status:** accepted, 31 October 2026; slice 1 (workspace shell, PR #44) merged; slice 2 (migration 0021, capabilities, admin review, operator command, role-based header) merged in PR #45; slice 3 (owner applications, admin decisions, property-creation gate, migration 0022) implemented; slice 4 pending ([roles and workspaces decision](../../product/roles-and-workspaces-proposal.md)).
+**Status:** accepted, 31 October 2026; slice 1 (workspace shell, PR #44) merged; slice 2 (migration 0021, capabilities, admin review, operator command, role-based header) merged in PR #45; slice 3 (owner applications, admin decisions, property-creation gate, migration 0022) in PR #46; slice 4 (admin console: overview, reviews at /admin/reviews, owner applications, read-only property directory) implemented ([roles and workspaces decision](../../product/roles-and-workspaces-proposal.md)).
 **Responsible role:** project owner (policy); maintainer (implementation).
 **Last source verification:** 31 October 2026, main [4d2bffb](https://github.com/kimsourly1912/root-of-cambodia/commit/4d2bffb).
 **Sources:** [accepted recommendation, alternatives and approval](../../product/roles-and-workspaces-proposal.md), [actor type](../../../packages/backend/src/shared/operations.ts), [reviewer check](../../../packages/backend/src/features/publication/publication-queries.ts), [atomic operations](0002-atomic-booking-operations.md), [feature modules](0008-feature-based-modules.md).

@@ -33,7 +33,7 @@ export default async function Page({
               </SectionTitle>
               <p className="text-sm">{r.province}</p>
               <TextLink className="text-sm"
-                href={`/review/${r.id}`}>
+                href={`/admin/reviews/${r.id}`}>
                 Review submission
               </TextLink>
             </CardContent>
@@ -43,13 +43,13 @@ export default async function Page({
       {!result.items.length && <p>No pending submissions on this page.</p>}
       <div className="mt-6 flex gap-6 text-sm text-primary">
         {cursor && (
-          <TextLink href="/review">
+          <TextLink href="/admin/reviews">
             First page
           </TextLink>
         )}
         {result.nextCursor && (
           <TextLink
-            href={`/review?cursor=${result.nextCursor}`}>
+            href={`/admin/reviews?cursor=${encodeURIComponent(result.nextCursor)}`}>
             Next page →
           </TextLink>
         )}

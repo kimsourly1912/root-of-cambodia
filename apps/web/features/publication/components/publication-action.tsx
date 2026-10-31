@@ -135,7 +135,7 @@ export function PublicationAction({
       attempt.current = null;
       setUncertain(false);
       setDone(true);
-      if (reviewer) router.push("/review");
+      if (reviewer) router.push("/admin/reviews");
       router.refresh();
     } catch {
       setUncertain(true);

@@ -90,6 +90,7 @@ Web folders use the same names as backend folders.
 | `shared` | errors, operations, access, schema, diagnostics, outbox | `components/ui/` primitives, shared `components/` (see [UI standard](../design/ui-standard.md)), `lib/`, `server/` | — | [overview](overview.md), [database](database.md), [notifications](../features/notifications.md) |
 | `accounts` | auth | account-form, auth-form | `/sign-in`, `/sign-up`, `/verify-email`, `/forgot-password`, `/reset-password`, `/api/auth` | [setup](../development/setup.md), [staging](../operations/staging.md) |
 | `owner-access` | owner-access, owner-access-queries, owner-access-persistence | owner-application-form, owner-application-decision | `/owner/apply`, `/admin/owners`, `/api/owner-access`, `/api/admin/owner-applications` | [owner access](../features/owner-access.md) |
+| `platform-admin` | platform-admin-queries (read-only) | — | `/admin`, `/admin/properties` | [ADR 0010](decisions/0010-account-capabilities.md) |
 | `properties` | property-drafts, property-queries, property-persistence | property-form, property-navigation | `/owner`, `/owner/properties/[id]`, `/api/owner/properties` | [owner supply](../features/owner-supply.md) |
 | `property-information` | property-information, -queries, -persistence | property-information-form | `…/information` | [owner supply](../features/owner-supply.md) |
 | `property-logistics` | property-logistics, -queries, -persistence | property-logistics-form | `…/logistics` | [owner supply](../features/owner-supply.md) |
@@ -119,7 +120,7 @@ A backend feature may import features in **lower** layers only. The tooling test
 | Layer | Features | Depends on |
 | --- | --- | --- |
 | 0 | `shared` | nothing |
-| 1 | `accounts`, `owner-access`, `properties`, `property-information`, `property-logistics`, `media`, `rooms`, `inventory`, `quotes`, `payments` | shared |
+| 1 | `accounts`, `owner-access`, `platform-admin`, `properties`, `property-information`, `property-logistics`, `media`, `rooms`, `inventory`, `quotes`, `payments` | shared |
 | 2 | `calendar`, `publication` | rooms; media |
 | 3 | `catalog` | publication, media |
 | 4 | `listing-controls`, `bookings` | catalog, publication; quotes, catalog, payments |

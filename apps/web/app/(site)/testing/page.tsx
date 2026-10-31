@@ -19,7 +19,7 @@ export default async function Testing() {
         <SectionTitle>{account.name}</SectionTitle>
         <p className="break-all text-sm text-muted-foreground">{account.email}</p>
         <p className="text-sm">{account.role === "guest" ? "Browse sample stays, review prices and terms, request a booking, track it and cancel." : account.role === "owner" ? "Edit drafts, manage rooms and availability, respond to bookings, record external stays and payments, and pause or correct listings." : "Review a submitted demo property, return it for changes or approve its public listing."}</p>
-        <TextLink className="inline-block" href={`/sign-in?next=${account.role === "guest" ? "/bookings" : account.role === "reviewer" ? "/review" : "/owner"}`}>Sign in to test</TextLink>
+        <TextLink className="inline-block" href={`/sign-in?next=${account.role === "guest" ? "/bookings" : account.role === "reviewer" ? "/admin" : "/owner"}`}>Sign in to test</TextLink>
       </section>)}
     </div>
     <section className="space-y-4 rounded-xl border p-6">

@@ -118,3 +118,9 @@ export async function capabilities(db: D1Database, actor: Actor) {
 export async function adminConfigured(db: D1Database) {
   return !!(await db.prepare(`SELECT 1 ok WHERE ${anyAdminSQL}`).first());
 }
+// Admin pages and APIs hide whether a resource exists from everyone else.
+export async function requireAdmin(db: D1Database, actor: Actor) {
+  await verified(db, actor);
+  if (!(await db.prepare("SELECT 1 ok WHERE " + adminSQL).bind(actor.id).first()))
+    throw new DomainError("not_found", 404);
+}

@@ -7,6 +7,7 @@
     "./shared": "./src/shared/index.ts",
     "./accounts": "./src/features/accounts/index.ts",
     "./owner-access": "./src/features/owner-access/index.ts",
+    "./platform-admin": "./src/features/platform-admin/index.ts",
     "./properties": "./src/features/properties/index.ts",
     "./property-information": "./src/features/property-information/index.ts",
     "./property-logistics": "./src/features/property-logistics/index.ts",
