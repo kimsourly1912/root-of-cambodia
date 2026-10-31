@@ -192,7 +192,220 @@ test("guest and owner recover requests/responses and reveal logistics only while
     await page.getByLabel("Email address").fill(email);
     await page.getByLabel("Password", { exact: true }).fill(password);
     await page.getByRole("button", { name: "Sign in", exact: true }).click();
-    await expect(page).toHaveURL(new RegExp(`/stays/${property.id}/request$`));
+    await expect(page).toHaveURL(new RegExp(`/stays/${property.id}/requestimport {
+  test,
+  expect,
+  devices,
+  type APIRequestContext,
+} from "@playwright/test";
+import { createHash } from "node:crypto";
+import photos from "../../packages/backend/src/testing/photo-fixtures.json" with { type: "json" };
+const origin = "http://127.0.0.1:8787",
+  password = "LocalOnly-GuestPassword-123!";
+async function account(
+  request: APIRequestContext,
+  email: string,
+  signIn = true,
+) {
+  const created = await request.post("/api/auth/sign-up/email", {
+    headers: { Origin: origin },
+    data: { name: "Local Guest", email, password },
+  });
+  expect(created.ok()).toBeTruthy();
+  const mail = await (
+    await request.get(`/__test/mail?email=${encodeURIComponent(email)}`)
+  ).json();
+  expect((await request.get(mail.url)).ok()).toBeTruthy();
+  if (signIn)
+    expect(
+      (
+        await request.post("/api/auth/sign-in/email", {
+          headers: { Origin: origin },
+          data: { email, password },
+        })
+      ).ok(),
+    ).toBeTruthy();
+  return (await created.json()).user.id as string;
+}
+async function post(
+  request: APIRequestContext,
+  path: string,
+  data: unknown,
+  method: "post" | "patch" = "post",
+) {
+  const r = await request[method](path, {
+    headers: { Origin: origin, "Idempotency-Key": crypto.randomUUID() },
+    data,
+  });
+  expect(r.ok(), await r.text()).toBeTruthy();
+  return r.json();
+}
+test("guest and owner recover requests/responses and reveal logistics only while confirmed", async ({
+  page,
+  browser,
+}, info) => {
+  const contexts = await Promise.all(
+    ["owner", "reviewer"].map((role) =>
+      browser.newContext({
+        ...devices[
+          info.project.name.startsWith("mobile") ? "Pixel 7" : "Desktop Chrome"
+        ],
+        baseURL: origin,
+        extraHTTPHeaders: {
+          "X-Test-Client": `guest-${role}-${info.project.name}`,
+        },
+      }),
+    ),
+  );
+  const [owner, reviewer] = contexts.map((c) => c.request);
+  await page
+    .context()
+    .setExtraHTTPHeaders({ "X-Test-Client": "guest-ui-" + info.project.name });
+  try {
+    const ownerId = await account(owner, `guest-owner-${info.project.name}@example.invalid`);
+    // This journey is not about the owner application (ADR 0010).
+    expect((await owner.post("/__test/owner-access", { data: { userId: ownerId } })).status()).toBe(200);
+    const reviewerId = await account(
+      reviewer,
+      `guest-reviewer-${info.project.name}@example.invalid`,
+    );
+    expect(
+      (
+        await reviewer.post("/__test/pilot-reviewer", {
+          data: {
+            userId: reviewerId,
+            termsVersion: "browser-approved-v1",
+            termsDocument: true,
+          },
+        })
+      ).status(),
+    ).toBe(200);
+    const property = await post(owner, "/api/owner/properties", {
+        ownerName: "Local owner",
+        nameKm: "ផ្ទះសំណាក់",
+        nameEn: "Request journey stay",
+        province: "Kampot",
+        checkinTime: "14:00",
+        checkoutTime: "11:00",
+        policyText: "Quiet nights.",
+      }),
+      base = `/api/owner/properties/${property.id}`;
+    await post(
+      owner,
+      base + "/information",
+      {
+        description: "A fictional stay for booking tests.",
+        address: "PRIVATE_GUEST_ADDRESS",
+        facilities: [],
+        revision: null,
+      },
+      "patch",
+    );
+    await post(
+      owner,
+      base + "/logistics",
+      {
+        latitude: null,
+        longitude: null,
+        contactName: "Private reception",
+        contactPhone: "",
+        contactEmail: "private-reception@example.invalid",
+        arrivalInstructions: "PRIVATE_GUEST_ARRIVAL",
+        revision: null,
+      },
+      "patch",
+    );
+    const room = await post(owner, base + "/rooms", {
+      name: "Garden room",
+      adultCapacity: 2,
+      childCapacity: 0,
+      totalCapacity: 2,
+    });
+    const night = new Date(Date.now() + 3 * 86400000)
+        .toISOString()
+        .slice(0, 10),
+      checkout = new Date(Date.parse(night) + 86400000)
+        .toISOString()
+        .slice(0, 10);
+    await post(
+      owner,
+      base + `/rooms/${room.id}/calendar`,
+      {
+        roomRevision: 1,
+        nights: [
+          {
+            night,
+            capacity: 1,
+            blocked: 0,
+            unitCents: 3500,
+            inventoryRevision: null,
+            rateRevision: null,
+          },
+        ],
+      },
+      "patch",
+    );
+    const bytes = Buffer.from(photos.jpeg, "base64"),
+      photo = await post(owner, base + "/photos", {
+        contentType: "image/jpeg",
+        byteSize: bytes.length,
+        sha256: createHash("sha256").update(bytes).digest("hex"),
+        revision: null,
+      });
+    expect(
+      (
+        await owner.put(base + "/photos/" + photo.id, {
+          headers: { Origin: origin, "Content-Type": "image/jpeg" },
+          data: bytes,
+        })
+      ).status(),
+    ).toBe(200);
+    const state = await (await owner.get(base + "/review")).json();
+    const review = await post(owner, base + "/review", {
+      action: "submit",
+      propertyRevision: state.propertyRevision,
+      publicDisclosure: {
+        version: state.publicPreview.version,
+        previewHash: state.publicPreview.previewHash,
+      },
+    });
+    await post(reviewer, "/api/property-reviews/" + review.id, {
+      action: "approve",
+      revision: 1,
+      configRevision: (
+        await (await reviewer.get("/api/property-reviews/" + review.id)).json()
+      ).configRevision,
+    });
+    const email = `guest-ui-${info.project.name}@example.invalid`;
+    await account(page.request, email, false);
+    await page.goto(`/stays/${property.id}`);
+    await page
+      .getByRole("link", { name: "Request to book", exact: true })
+      .click();
+    await expect(page).toHaveURL(/\/sign-in\?next=/);
+    await page.getByLabel("Email address").fill(email);
+    await page.getByLabel("Password", { exact: true }).fill(password);
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+));
+    // Inputs must not accept a selection before hydration can preserve it.
+    let releaseRequestScripts!: () => void;
+    const requestScriptsReady = new Promise<void>((resolve) => {
+      releaseRequestScripts = resolve;
+    });
+    await page.route("**/_next/static/**/*.js*", async (route) => {
+      await requestScriptsReady;
+      await route.continue();
+    });
+    try {
+      await page.reload({ waitUntil: "commit" });
+      await expect(page.getByLabel("Check-in date", { exact: true })).toBeDisabled();
+      await expect(page.getByLabel("Check-out date", { exact: true })).toBeDisabled();
+      await expect(page.getByLabel("Rooms / units", { exact: true })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Review request", exact: true })).toBeDisabled();
+    } finally {
+      releaseRequestScripts();
+      await page.unrouteAll({ behavior: "wait" });
+    }
     await page.getByLabel("Check-in date", { exact: true }).fill(night);
     await page.getByLabel("Check-out date", { exact: true }).fill(checkout);
     await page.getByLabel("Rooms / units", { exact: true }).fill("1");
