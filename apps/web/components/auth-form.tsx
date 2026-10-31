@@ -51,11 +51,13 @@ export function AuthForm({
   token,
   verified = false,
   next: requestedNext,
+  fixtureTest = false,
 }: {
   mode: AuthMode;
   token?: string;
   verified?: boolean;
   next?: string;
+  fixtureTest?: boolean;
 }) {
   const router = useRouter();
   const next = guestReturn(requestedNext);
@@ -258,7 +260,7 @@ export function AuthForm({
             )}
           </form>
         )}
-        {!done && (
+        {!done && !fixtureTest && (
           <div className="mt-6 space-y-3 border-t pt-5 text-sm">
             {mode === "sign-in" ? (
               <>

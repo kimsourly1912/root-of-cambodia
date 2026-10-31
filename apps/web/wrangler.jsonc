@@ -25,4 +25,26 @@
   "observability": {
     "enabled": true,
   },
+  // Staging admits only fictional seeded accounts while email is deferred.
+  "env": {
+    "staging": {
+      "account_id": "dcfd514b7e29898cd93e1bbb17b1aa22",
+      "name": "roc-web-staging",
+      "workers_dev": false,
+      "preview_urls": false,
+      "routes": [{ "pattern": "staging.rootsofcambodia.com", "custom_domain": true }],
+      "vars": {
+        "APP_MODE": "staging-test",
+        "AUTH_URL": "https://staging.rootsofcambodia.com",
+      },
+      "d1_databases": [{
+        "binding": "DB",
+        "database_name": "roc-staging",
+        "database_id": "169e1c39-c59a-40c8-8646-b82bbad08a2c",
+        "migrations_dir": "../../packages/backend/migrations",
+      }],
+      "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "roc-media-staging", "remote": false }],
+      "images": { "binding": "IMAGES", "remote": false },
+    },
+  },
 }

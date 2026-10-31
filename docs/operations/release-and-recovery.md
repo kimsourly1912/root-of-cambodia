@@ -10,6 +10,12 @@
 
 This is a readiness/gap record, not an executable deployment authorization. No deploy/provision/migrate commands are prescribed for the current documentation phase. [Status](../status.md) owns current evidence; [open decisions](../product/open-decisions.md) owns approvals.
 
+On 30 October 2026 the owner separately authorized Cloudflare-only staging and
+email setup. [Staging setup](staging.md) records actual provisioning, account
+blockers and the next deployment prerequisites. The older local-only matrix
+below describes the runtime baseline; prepared staging configuration does not
+establish deployed provider behavior or production readiness.
+
 ## Environment and configuration matrix
 
 | Item | Local repository implementation | Staging / production requirement (not yet established) |

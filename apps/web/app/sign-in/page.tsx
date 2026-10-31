@@ -1,4 +1,4 @@
-import { AuthForm } from "@/components/auth-form";
+import { AccountForm } from "@/components/account-form";
 export default async function Page({
   searchParams,
 }: {
@@ -15,7 +15,7 @@ export default async function Page({
           Verification link invalid or expired. Request a fresh link.
         </p>
       )}
-      <AuthForm
+      <AccountForm
         mode="sign-in"
         next={params.next}
         verified={params.verified === "1" && !params.error}

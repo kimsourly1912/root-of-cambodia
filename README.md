@@ -20,6 +20,6 @@ Start with the [documentation map](docs/README.md) and [current status/evidence]
 
 The root manifests pin active pnpm/Node tooling; the [independent proof](proofs/foundation/README.md) alone retains historical npm reproduction instructions. Use one canonical [setup sequence](docs/development/setup.md#full-local-verification-sequence), including both Worker builds before the full suite.
 
-[Accepted product rules](docs/product/scope.md), [architecture/ADRs](docs/architecture/overview.md), [open decisions](docs/product/open-decisions.md) and [release/recovery gates](docs/operations/release-and-recovery.md) separate policy, implementation and future work. Checked-in runtime configurations are local-only and fail closed outside local capture mode.
+[Accepted product rules](docs/product/scope.md), [architecture/ADRs](docs/architecture/overview.md), [open decisions](docs/product/open-decisions.md) and [release/recovery gates](docs/operations/release-and-recovery.md) separate policy, implementation and future work. Runtime guards retain loopback local capture and an explicit [read-only staging mode](docs/operations/staging.md) while email is deferred; other nonlocal behavior fails closed.
 
 Historical reviews and the previous READMEs are preserved with a complete [disposition map](docs/archive/README.md). Their old commands/counts/PR states are snapshots, not active instructions.
