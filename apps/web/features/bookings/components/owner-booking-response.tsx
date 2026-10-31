@@ -110,11 +110,12 @@ export function OwnerBookingResponse({
     ? selectedAction
     : (choices[0] ?? "cancel_owner");
   useEffect(() => {
-    if (action !== selectedAction) {
+    // Empty choices before the clock loads must not replace the default accept action.
+    if (now !== null && action !== selectedAction) {
       setAction(action);
       form.setFieldValue("action", action);
     }
-  }, [action, form, selectedAction]);
+  }, [action, form, now, selectedAction]);
   const label = (value: string) =>
     ({
       accept: "Accept and confirm stay",
