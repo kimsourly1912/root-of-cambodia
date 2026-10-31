@@ -38,7 +38,7 @@ Both builds are required before the full Vitest suite: the Worker project loads 
 
 ## What initialization changes
 
-[init-local.mjs](../../apps/web/scripts/init-local.mjs) first runs the legacy handoff, creates apps/web/.dev.vars with a random BETTER_AUTH_SECRET if absent, applies the single [migration directory](../../packages/backend/migrations/) to local DB via the web config, and creates local_email/local_notification capture tables. It does not seed business properties. Repeating initialization keeps data and skips applied migrations.
+[init-local.mjs](../../apps/web/scripts/init-local.mjs) first runs the legacy handoff, creates apps/web/.dev.vars with a random BETTER_AUTH_SECRET if absent, applies the single [migration directory](../../packages/backend/migrations/) to local DB via the web config, and creates local_email/local_notification capture tables. It does not seed business properties; `pnpm seed:local` does (see the quick start above). Repeating initialization keeps data and skips applied migrations.
 
 Generated binding declarations live in the backend and each app and are excluded from Git. The backend declaration supplies runtime types; each app has its own environment interface. Root types:bindings regenerates them.
 
@@ -49,6 +49,25 @@ Web/jobs previews share root .wrangler/state and the same local D1 identifier; l
 Stop local previews before first handoff. [handoff-local.ts](../../scripts/handoff-local.ts) copies legacy application/.dev.vars to apps/web/.dev.vars if absent; different existing secrets cause refusal. It copies application/.wrangler/state once into root .wrangler/state, retaining the original and an import marker. Competing destination state is refused. The marker prevents a subsequent overwrite of newer workspace data.
 
 Reconcile conflicts explicitly. Never delete a populated database or secret to force initialization. Preserve the application compatibility location and handoff script; they are not active source or disposable cosmetic leftovers.
+
+## Quick start: run the app locally with test data
+
+From the repository root, after a frozen install:
+
+~~~sh
+pnpm init:local          # migrations, capture tables, .dev.vars (safe to repeat)
+pnpm types:bindings
+pnpm seed:local          # fictional accounts, stays and bookings (safe to repeat)
+pnpm dev                 # hot reload at http://127.0.0.1:8787
+~~~
+
+`pnpm dev` runs `next dev` with the same local D1/R2/Images state through OpenNext's `initOpenNextCloudflareForDev` (see [next.config.ts](../../apps/web/next.config.ts)). It uses port 8787 because local auth only accepts the `http://127.0.0.1:8787` origin. It runs in Node, not workerd, so before a PR also check the real Worker with `pnpm build:worker` and `pnpm preview:worker` (same URL; stop one before starting the other). Tests and CI always use the built Worker.
+
+[seed-local.ts](../../scripts/seed-local.ts) loads the same fictional fixtures as staging into local state only, through the normal backend services: owner, guest and reviewer accounts (`owner@`, `guest@`, `reviewer@roc-staging.invalid`), two published stays with processed photos, one stay pending review, an empty draft, and one Pending and one Confirmed booking. It configures the demo reviewer and clearly fictional demo terms, so publication approval works locally. Generated passwords are written to `.wrangler/state/local-fixture-credentials.json`, which is git-ignored local state; never commit or share it. Re-running keeps existing data and passwords. It refuses when non-fixture accounts or a different reviewer/terms configuration already exist; it never touches staging or remote bindings.
+
+**Windows:** `pnpm dev` works without extra setup. The OpenNext build (`build:worker`) creates symlinks, which fails with `EPERM: operation not permitted, symlink` unless Windows Developer Mode is on (Settings → System → For developers → Developer Mode) or the terminal runs as Administrator. WSL with a Linux distribution also works.
+
+Local scripts that use `getPlatformProxy` pass `.wrangler/state/v3` because `wrangler dev` and `wrangler d1 --persist-to .wrangler/state` append `v3` themselves; passing `.wrangler/state` would open a different, empty database.
 
 ## Local previews and email capture
 

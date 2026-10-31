@@ -22,7 +22,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const proxy = await getPlatformProxy<{ DB: D1Database }>({
   configPath: path.join(root, "apps/web/wrangler.jsonc"),
   remoteBindings: false,
-  persist: { path: path.join(root, ".wrangler/state") },
+  // Same database as wrangler dev/d1 --persist-to .wrangler/state, which append v3.
+  persist: { path: path.join(root, ".wrangler/state/v3") },
 });
 try {
   await proxy.env.DB.prepare(

@@ -9,6 +9,7 @@
   },
   "scripts": {
     "init:local": "pnpm --filter @root-of-cambodia/web run init:local",
+    "dev": "pnpm --filter @root-of-cambodia/web run dev",
     "build": "pnpm --filter @root-of-cambodia/web run build",
     "build:worker": "pnpm --filter @root-of-cambodia/web run build:worker",
     "build:jobs": "pnpm --filter @root-of-cambodia/jobs run build",
@@ -21,7 +22,8 @@
     "test:worker": "vitest run --project worker-http",
     "test": "vitest run",
     "test:browser": "playwright test",
-    "reviewer:local": "node scripts/configure-reviewer-local.ts"
+    "reviewer:local": "node scripts/configure-reviewer-local.ts",
+    "seed:local": "node --import tsx scripts/seed-local.ts"
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "1.4.9",
