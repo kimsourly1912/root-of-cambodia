@@ -34,18 +34,24 @@ policy disagree, report the conflict and its impact before changing behavior.
 
 ## Repository layout
 
-- `apps/web`: Next.js/React UI and thin OpenNext/Workers route adapters.
-- `apps/jobs`: scheduled and queue adapters that call shared services.
-- `packages/backend`: business services, authorized reads, atomic persistence.
-- `packages/backend/migrations`: authoritative ordered SQL schema.
-- `tests`: native D1, built-Worker, tooling and Playwright browser tests.
+Code is organized **by feature**: one folder per business area holds its code,
+UI and tests. Read [feature structure](docs/architecture/feature-structure.md)
+before adding or moving files; the tooling test enforces its import rules.
+
+- `packages/backend/src/features/<feature>/`: services, queries, persistence and
+  `tests/`; `index.ts` is the only public entry (`@root-of-cambodia/backend/<feature>`).
+- `packages/backend/src/shared/`: kernel (errors, operations, access, schema,
+  diagnostics, outbox); `packages/backend/src/testing/`: test fixtures.
+- `packages/backend/tests/`: cross-feature backend tests.
+- `packages/backend/migrations/`: authoritative ordered SQL schema (one directory).
+- `apps/web/app/`: thin Next.js routes. `apps/web/features/<feature>/`: that
+  feature's components (and `server.ts` when it has server-only adapters).
+- `apps/web/components/` (`ui/` primitives, shell), `lib/` (pure helpers),
+  `server/` (http, sessions, runtime): shared by two or more features only.
+- `apps/jobs`: scheduled and queue adapters that call backend features.
+- `tests/integration`, `tests/e2e`, `tests/tooling`: whole-app tests.
 - `proofs/foundation`: independent historical npm fixture; not the active app.
 - `application/` and `scripts/handoff-local.ts`: legacy local-state bridge; keep.
-
-A feature-based layout (one folder per business area for code, UI and tests) is
-**proposed** in [ADR 0008](docs/architecture/decisions/0008-feature-based-modules.md)
-and described in [feature structure](docs/architecture/feature-structure.md).
-Until it is accepted and migrated, follow the current flat layout above.
 
 ## Commands
 
@@ -69,6 +75,8 @@ node scripts/check-doc-links.ts        # read-only Markdown link/anchor check
 ## Architecture rules
 
 - Routes and pages stay thin. Business rules live in backend services.
+- Feature code stays in its feature; other features use only its public entry.
+  Promote code to shared folders only when a second feature needs it.
 - One named persistence function owns each complete atomic save.
 - `packages/backend` must not import Next.js, React or either app.
 - Browser code must not import runtime bindings, persistence or secrets.

@@ -12,7 +12,7 @@
 
 **Last source verification:** 30 October 2026; main abe6ee4c13fbf755c8f0e9d3e67d106a5c5d0edb after authorized PRs #29/#30 merges; subsequent owner-list work is described below.
 
-**Sources:** [.github/workflows/verify.yml](../../../.github/workflows/verify.yml), [apps/web/app/](../../../apps/web/app), [apps/jobs/src/index.ts](../../../apps/jobs/src/index.ts), [apps/web/src/runtime.ts](../../../apps/web/src/runtime.ts), [apps/jobs/src/runtime.ts](../../../apps/jobs/src/runtime.ts).
+**Sources:** [.github/workflows/verify.yml](../../../.github/workflows/verify.yml), [apps/web/app/](../../../apps/web/app), [apps/jobs/src/index.ts](../../../apps/jobs/src/index.ts), [apps/web/src/runtime.ts](../../../apps/web/server/runtime.ts), [apps/jobs/src/runtime.ts](../../../apps/jobs/src/runtime.ts).
 
 This is the single current delivery/evidence page. Feature docs define contracts; archive reviews retain older results without becoming additional roadmaps.
 

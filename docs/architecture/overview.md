@@ -4,9 +4,9 @@
 
 **Responsible role:** technical maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 30 October 2026; owner-response implementation based on guest PR #25 head [a5bf41f](https://github.com/kimsourly1912/root-of-cambodia/commit/a5bf41ff6d54351358cd307b5ef4b9ded3f9d233).
+**Last source verification:** 31 October 2026; module map and topology rechecked after the [ADR 0008](decisions/0008-feature-based-modules.md) feature reorganization (branch `refactor/feature-structure`).
 
-**Sources:** [apps/web/src/runtime.ts](../../apps/web/src/runtime.ts), [apps/jobs/src/index.ts](../../apps/jobs/src/index.ts), [packages/backend/package.json](../../packages/backend/package.json), [tests/workspace.test.ts](../../tests/workspace.test.ts).
+**Sources:** [apps/web/server/runtime.ts](../../apps/web/server/runtime.ts), [apps/jobs/src/index.ts](../../apps/jobs/src/index.ts), [packages/backend/package.json](../../packages/backend/package.json), [tests/tooling/workspace.test.ts](../../tests/tooling/workspace.test.ts).
 
 The system is a modular monolith with two runtime adapters using one shared backend library and initially one D1 database per environment. Shared code is not a third network service. [Status](../status.md) distinguishes local implementation from planned product and live verification.
 
@@ -14,11 +14,11 @@ The system is a modular monolith with two runtime adapters using one shared back
 
 | Location | Responsibility |
 | --- | --- |
-| [apps/web](../../apps/web/README.md) | Next.js App Router/React UI, authorized server reads, thin HTTP handlers and OpenNext/Workers runtime/media adapters |
+| [apps/web](../../apps/web/README.md) | Next.js App Router routes (`app/`), feature UI (`features/<feature>/`), shared UI (`components/`, `lib/`) and shared server adapters (`server/`) for OpenNext/Workers |
 | [apps/jobs](../../apps/jobs/README.md) | Scheduled/queue entrypoints calling shared expiry, outbox and removed-photo maintenance |
-| [packages/backend](../../packages/backend/README.md) | Framework-independent business services, scoped reads, named atomic D1 persistence, diagnostics and provider contracts |
+| [packages/backend](../../packages/backend/README.md) | Framework-independent business services, scoped reads and named atomic D1 persistence in `src/features/<feature>/`, with the `src/shared/` kernel; one package entry per feature |
 | [migrations](../../packages/backend/migrations/) | Authoritative ordered SQL schema, constraints, triggers and history |
-| [tests](../../tests/) | Native Workers/D1, built-Worker HTTP/jobs, tooling/state-handoff and browser verification |
+| [tests](../../tests/) | Whole-app tests: `integration/` (built web/jobs Worker, staging runtime), `e2e/` (browser) and `tooling/` (workspace, handoff, feature boundaries). Feature tests live beside their feature |
 | [proofs/foundation](../../proofs/foundation/README.md) | Independent historical npm compatibility fixture, outside the active workspace |
 | [application](../../application/) and [handoff-local.ts](../../scripts/handoff-local.ts) | Legacy ignored-state compatibility bridge; preserve until a separately reviewed state migration |
 
@@ -33,29 +33,32 @@ Next.js/React/TypeScript, shadcn/Radix/Tailwind and bundled Khmer fonts remain s
 5. Jobs calls the same lifecycle/delivery services. Providers run after business commit; email failure does not roll back a booking.
 6. Backend must not import Next.js, React or either app. Browser code must not import bindings, persistence or secrets. Use explicit existing types and boundary interfaces where useful.
 
-Package exports currently expose low-level modules too. These are conceptual boundaries, not a claim that exports or comprehensive import enforcement already prevent bypass. The existing regex-based workspace test checks only part of the dependency direction. Narrow export/contract surfaces and stronger boundary checks are proposed follow-ups, not implemented by this phase.
+The backend package exports one entry per feature plus `shared`; persistence modules are not exported. The [tooling test](../../tests/tooling/workspace.test.ts) enforces the [feature structure](feature-structure.md#enforcement) rules: index-only cross-feature imports, the backend [layer order](feature-structure.md#feature-layers), no backend file imports from apps, and no server-only imports in client components. It is a regex check, not a type-level guarantee; review still matters for anything it cannot see, such as dynamic imports built from strings.
 
 ## Module map
 
-| Responsibility | Current files under packages/backend/src |
+Backend folders under `packages/backend/src/`; the web side uses the same feature names under `apps/web/features/`. The [feature catalog](feature-structure.md#feature-catalog) lists every file, route and docs contract.
+
+| Responsibility | Folder (files) |
 | --- | --- |
-| Identity/access | `auth.ts`, `access.ts`, `operations.ts` verified actor primitive |
-| Draft properties | `property-drafts.ts`, `property-queries.ts`, `property-persistence.ts` |
-| Rooms/calendar | `room-types.ts`, `room-queries.ts`, `room-persistence.ts`; `calendar.ts`, `calendar-dates.ts`, `calendar-queries.ts`, `calendar-persistence.ts` |
-| Property information/media | `property-information*.ts`; `media.ts`, `media-queries.ts`, `media-persistence.ts` |
-| Private location/contact/arrival | property-logistics.ts, property-logistics-queries.ts, property-logistics-persistence.ts; private source details, separately authorized acceptance copies |
-| Pilot publication review | publication.ts, publication-queries.ts, publication-persistence.ts, publication-readiness.ts; configured single reviewer, shared completeness predicates and explicit terms gate |
-| Guest browsing | public-listing.ts and catalog-queries.ts; explicit public projection, display-version/digest binding, current eligibility and processed-only media |
-| Booking/quotes | `bookings.ts`, `quotes.ts`, `quote-queries.ts`, `booking-persistence.ts`; `guest-bookings.ts`, `owner-bookings.ts`, `booking-logistics.ts` for private journey projections/recovery/acceptance copies |
-| Owner external reviews | external-bookings.ts, external-booking-queries.ts, external-booking-persistence.ts; saved catalog-priced anonymous allocation reviews/recovery over the existing booking engine |
-| Stay actions | `stay-queries.ts`, existing `bookings.ts`/`booking-persistence.ts`; exact scheduled arrival window and manual completion |
-| Property payment bookkeeping | `payments.ts`, `payment-queries.ts`, `payment-persistence.ts`; full immutable-total attestation, owner-private correction history and independent guest-safe summary |
-| Inventory | `inventory.ts`, `inventory-persistence.ts` |
-| Delivery/diagnostics | `jobs.ts`, `outbox.ts`, `diagnostics.ts`, `errors.ts` |
+| Kernel: errors, verified actor/operations, access, schema, diagnostics, outbox | `shared/` |
+| Identity | `features/accounts/` (auth) |
+| Draft properties | `features/properties/` (property-drafts, -queries, -persistence) |
+| Rooms and calendar | `features/rooms/` (room-types, room-queries, room-persistence); `features/calendar/` (calendar, calendar-dates, -queries, -persistence) |
+| Property information and media | `features/property-information/`; `features/media/` (media, media-queries, media-persistence) |
+| Private location/contact/arrival | `features/property-logistics/`; private source details, separately authorized acceptance copies |
+| Pilot publication review and public projection | `features/publication/` (publication, -queries, -persistence, -readiness, public-listing); configured single reviewer, shared completeness predicates, explicit terms gate, display-version/digest binding |
+| Guest browsing | `features/catalog/` (catalog-queries); current eligibility and processed-only media |
+| Quotes | `features/quotes/` (quotes, quote-queries) |
+| Bookings and stays | `features/bookings/` (bookings, booking-persistence, booking-logistics, guest-bookings, owner-bookings, stay-queries); journey projections, recovery, acceptance copies, scheduled arrival and manual completion |
+| Owner external reviews | `features/external-bookings/`; catalog-priced anonymous allocation reviews over the booking engine |
+| Property payment bookkeeping | `features/payments/`; full immutable-total attestation, owner-private correction history, guest-safe summary |
+| Inventory | `features/inventory/` (inventory, inventory-persistence) |
+| Scheduled maintenance | `features/jobs/` (jobs) |
 
-Use straightforward typed functions and existing patterns. Do not introduce generic table repositories, services, a new framework/ORM or feature folders just to match a proposed tree. A feature-based layout is **proposed** in [ADR 0008](decisions/0008-feature-based-modules.md) with its target in [feature structure](feature-structure.md); until it is accepted and applied, keep this flat layout. Broader support/admin and money-moving payment processing need separately approved contracts; do not scaffold speculative modules.
+Use straightforward typed functions and existing patterns. Do not introduce generic table repositories, a new framework/ORM or speculative modules. New code follows the [feature structure](feature-structure.md). Broader support/admin and money-moving payment processing need separately approved contracts; do not scaffold speculative modules.
 
-Owner visibility uses listing-controls.ts, listing-control-queries.ts and listing-control-persistence.ts with the shared owner operation receipt and immutable listing_control_event ledger; [ADR 0007](decisions/0007-owner-listing-controls.md) records accepted pause/resume and later offline corrections.
+Owner visibility uses `features/listing-controls/` (listing-controls, -queries, -persistence) with the shared owner operation receipt and immutable listing_control_event ledger; [ADR 0007](decisions/0007-owner-listing-controls.md) records accepted pause/resume and later offline corrections.
 
 ## Consistency, growth and operations
 
@@ -78,7 +81,7 @@ Local, staging and production need distinct resources/secrets/data. Current runt
 
 - [0007: Owner listing visibility and reviewed corrections](decisions/0007-owner-listing-controls.md): accepted and implemented in PRs #33 and #34.
 
-- [0008: Feature-based code organization](decisions/0008-feature-based-modules.md): **proposed**; target layout in [feature structure](feature-structure.md), staged migration, no code moved yet.
+- [0008: Feature-based code organization](decisions/0008-feature-based-modules.md): accepted and applied; layout and rules in [feature structure](feature-structure.md).
 
 The [database contract](database.md), [features](../README.md#feature-contracts), [contributing standard](../development/contributing.md) and [open decisions](../product/open-decisions.md) provide detail.
 

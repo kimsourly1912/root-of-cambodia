@@ -1,12 +1,12 @@
 # ADR 0008: Feature-based code organization
 
-**Status:** accepted, 31 October 2026; migration in progress (see [approval record](#approval-record)).
+**Status:** accepted and implemented, 31 October 2026 (stages 1–5 on branch `refactor/feature-structure`; see [approval record](#approval-record) and [implementation notes](#implementation-notes)).
 
 **Responsible role:** project owner (acceptance); technical maintainer (implementation).
 
 **Last source verification:** 31 October 2026, main [77b992a](https://github.com/kimsourly1912/root-of-cambodia/commit/77b992a71ab4ceac8d9ba08abfa6c0133cc84c8a).
 
-**Sources:** [target structure](../feature-structure.md), [architecture overview](../overview.md), [ADR 0001](0001-modular-monolith.md), [packages/backend/package.json](../../../packages/backend/package.json), [tests/workspace.test.ts](../../../tests/workspace.test.ts).
+**Sources:** [target structure](../feature-structure.md), [architecture overview](../overview.md), [ADR 0001](0001-modular-monolith.md), [packages/backend/package.json](../../../packages/backend/package.json), [tests/tooling/workspace.test.ts](../../../tests/tooling/workspace.test.ts).
 
 ## Context
 
@@ -69,3 +69,15 @@ Do you accept option C, the full feature-based layout, implemented in the five s
 ## Approval record
 
 On 31 October 2026, after reviewing this proposal and the [target structure](../feature-structure.md), the project owner replied "alright now help me organize the project to this new architecture". This accepts option C and authorizes the behavior-neutral moves and local checks for stages 1–5. It does not authorize merging, deployment, remote migrations or behavior changes.
+
+## Implementation notes
+
+Implemented in five commits on `refactor/feature-structure`, each a pure move verified with the same test count (backend and tooling Vitest 215/215 before and after; Playwright lists the same 26 browser tests). Decisions taken during the move, all recorded in [feature structure](../feature-structure.md):
+
+- `outbox` joined `shared`, not a separate notifications feature: `diagnostics` (shared) imports its type, and a kernel may not import a feature.
+- Routes import feature components directly. Extracting all 32 pages into `screens/` files would have rewritten every route beyond a move; screens are created when a page grows.
+- Web features get `index.ts` only when another feature needs a building block; none does yet. `media` and `publication` have a `server.ts` for their server adapters.
+- The money/time formatters and the pure return-path check are used by several features and by client components, so they live in `apps/web/lib/`.
+- The new boundary checks found two real issues during stage 4 (a client component importing a module placed in `server/`, and relative paths leaving a feature); both were fixed by placement, not exemptions.
+
+Built-Worker HTTP tests and browser journeys need the OpenNext build, which this Windows checkout cannot produce without Developer Mode; their results come from the PR's CI run.

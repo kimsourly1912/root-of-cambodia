@@ -6,7 +6,7 @@
 
 **Last source verification:** 29 October 2026; based on merged main [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
-**Sources:** [accepted browsing scope](../../product/guest-browsing-proposal.md), [public model](../../../packages/backend/src/public-listing.ts), [scoped public reads](../../../packages/backend/src/catalog-queries.ts), [disclosure migration](../../../packages/backend/migrations/0012_public_listing_disclosure.sql), [private media ADR](0004-private-media-lifecycle.md).
+**Sources:** [accepted browsing scope](../../product/guest-browsing-proposal.md), [public model](../../../packages/backend/src/features/publication/public-listing.ts), [scoped public reads](../../../packages/backend/src/features/catalog/catalog-queries.ts), [disclosure migration](../../../packages/backend/migrations/0012_public_listing_disclosure.sql), [private media ADR](0004-private-media-lifecycle.md).
 
 **Approval provenance:** after the explicit browsing/public-private proposal and request for agreement, the project owner instructed “Merged and continue” on 29 October 2026. This authorizes the stated field split, first-photo cover, routed processed-only photos, explicit owner acknowledgement and local implementation. It is not inferred solely from a merged PR. PR #22 was still open with passing CI when inspected; the authorized merge was completed at ef971f1 before starting this branch. No deployment/spend, real legal terms or D17 booking disclosure is approved.
 

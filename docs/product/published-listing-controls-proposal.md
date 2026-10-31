@@ -4,7 +4,7 @@
 **Responsible role:** project owner (policy); technical maintainer (implementation).
 **Last source verification:** 30 October 2026, main [42e8c29](https://github.com/kimsourly1912/root-of-cambodia/commit/42e8c294cacc3a1658d2447cfb8825d9305a911a).
 
-**Sources:** [accepted scope](scope.md), [open decisions](open-decisions.md), [publication service](../../packages/backend/src/publication.ts), [publication persistence](../../packages/backend/src/publication-persistence.ts), [snapshot/read model](../../packages/backend/src/publication-queries.ts), [public reader](../../packages/backend/src/catalog-queries.ts), [public-boundary ADR](../architecture/decisions/0005-public-listing-boundary.md), [booking disclosure ADR](../architecture/decisions/0006-booking-journey.md).
+**Sources:** [accepted scope](scope.md), [open decisions](open-decisions.md), [publication service](../../packages/backend/src/features/publication/publication.ts), [publication persistence](../../packages/backend/src/features/publication/publication-persistence.ts), [snapshot/read model](../../packages/backend/src/features/publication/publication-queries.ts), [public reader](../../packages/backend/src/features/catalog/catalog-queries.ts), [public-boundary ADR](../architecture/decisions/0005-public-listing-boundary.md), [booking disclosure ADR](../architecture/decisions/0006-booking-journey.md).
 
 ## Where we are and why this step matters
 

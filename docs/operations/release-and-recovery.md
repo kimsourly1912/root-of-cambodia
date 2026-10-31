@@ -6,7 +6,7 @@
 
 **Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
 
-**Sources:** [apps/web/wrangler.jsonc](../../apps/web/wrangler.jsonc), [apps/jobs/wrangler.jsonc](../../apps/jobs/wrangler.jsonc), [apps/web/src/runtime.ts](../../apps/web/src/runtime.ts), [apps/jobs/src/runtime.ts](../../apps/jobs/src/runtime.ts), [apps/web/scripts/init-local.mjs](../../apps/web/scripts/init-local.mjs).
+**Sources:** [apps/web/wrangler.jsonc](../../apps/web/wrangler.jsonc), [apps/jobs/wrangler.jsonc](../../apps/jobs/wrangler.jsonc), [apps/web/server/runtime.ts](../../apps/web/server/runtime.ts), [apps/jobs/src/runtime.ts](../../apps/jobs/src/runtime.ts), [apps/web/scripts/init-local.mjs](../../apps/web/scripts/init-local.mjs).
 
 This is a readiness/gap record, not an executable deployment authorization. No deploy/provision/migrate commands are prescribed for the current documentation phase. [Status](../status.md) owns current evidence; [open decisions](../product/open-decisions.md) owns approvals.
 

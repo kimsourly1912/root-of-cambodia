@@ -6,7 +6,7 @@
 
 **Last source verification:** 31 October 2026, main [40f7ffa](https://github.com/kimsourly1912/root-of-cambodia/commit/40f7ffa553a14005f622aa5c846f0f9dc5e70f42).
 
-**Sources:** [database contract](../architecture/database.md), [migrations](../../packages/backend/migrations/), [listing-corrections.test.ts](../../tests/listing-corrections.test.ts), [migrations.test.ts](../../tests/migrations.test.ts).
+**Sources:** [database contract](../architecture/database.md), [migrations](../../packages/backend/migrations/), [listing-corrections.test.ts](../../packages/backend/src/features/listing-controls/tests/listing-corrections.test.ts), [migrations.test.ts](../../packages/backend/tests/migrations.test.ts).
 
 ## Use when
 
@@ -24,14 +24,14 @@ A [feature slice](feature-slice.md) needs a new table, column, index, trigger or
    // then apply 00NN and assert everything is preserved and the new guard works
    ~~~
 5. Older upgrade tests that compare whole schemas must stay scoped to their own migration (filter `m.name < "<their next number>"`), so a new empty table does not break them.
-6. Fresh install is covered by [migrations.test.ts](../../tests/migrations.test.ts); run it.
+6. Fresh install is covered by [migrations.test.ts](../../packages/backend/tests/migrations.test.ts); run it.
 7. Add the migration to the migration list in the [database contract](../architecture/database.md) and update the migration range in [status](../status.md).
 
 ## Checks
 
 ~~~sh
 pnpm init:local                     # applies the new migration to local state; only if authorized
-pnpm exec vitest run --project backend tests/migrations.test.ts tests/<feature>.test.ts
+pnpm exec vitest run --project backend packages/backend/tests/migrations.test.ts packages/backend/src/features/<feature>/tests
 pnpm test                           # after both builds
 ~~~
 

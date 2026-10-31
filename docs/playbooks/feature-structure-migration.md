@@ -1,6 +1,6 @@
 # Feature structure migration playbook
 
-**Status:** active task procedure for [ADR 0008](../architecture/decisions/0008-feature-based-modules.md); usable only after the owner accepts that ADR. Does not grant authorization.
+**Status:** completed 31 October 2026 (all five stages); kept as the record of how the move was done and as the procedure for any later large move. Does not grant authorization.
 
 **Responsible role:** technical maintainer (responsibility, not an assigned person).
 
@@ -78,7 +78,7 @@ Check that every `*.test.ts` file is matched by exactly one Vitest project (`pnp
 
 ## Stage 4: enforcement
 
-Extend [tests/workspace.test.ts](../../tests/workspace.test.ts) (now in `tests/tooling/`) with the [enforcement rules](../architecture/feature-structure.md#enforcement). Prove each rule by temporarily adding a violating import locally, seeing the test fail, and removing it. Do not commit the violation.
+Extend [tests/tooling/workspace.test.ts](../../tests/tooling/workspace.test.ts) (now in `tests/tooling/`) with the [enforcement rules](../architecture/feature-structure.md#enforcement). Prove each rule by temporarily adding a violating import locally, seeing the test fail, and removing it. Do not commit the violation.
 
 ## Stage 5: docs
 

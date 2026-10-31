@@ -6,7 +6,7 @@
 
 **Last source verification:** 31 October 2026; main [77b992a](https://github.com/kimsourly1912/root-of-cambodia/commit/77b992a71ab4ceac8d9ba08abfa6c0133cc84c8a) after PR #35.
 
-**Sources:** [.github/workflows/verify.yml](../.github/workflows/verify.yml), [apps/web/app/](../apps/web/app), [packages/backend/migrations/](../packages/backend/migrations/), [apps/web/src/runtime.ts](../apps/web/src/runtime.ts), [apps/jobs/src/runtime.ts](../apps/jobs/src/runtime.ts), [staging contract](operations/staging.md).
+**Sources:** [.github/workflows/verify.yml](../.github/workflows/verify.yml), [apps/web/app/](../apps/web/app), [packages/backend/migrations/](../packages/backend/migrations/), [apps/web/server/runtime.ts](../apps/web/server/runtime.ts), [apps/jobs/src/runtime.ts](../apps/jobs/src/runtime.ts), [staging contract](operations/staging.md).
 
 This is the single current delivery page: what exists, what evidence supports it and what comes next. It is a snapshot, not a log. Per-PR narrative, failed-run repairs, deployment IDs and older counts live in the PRs, the [staging contract](operations/staging.md) and the [status log through PR #35](archive/2026-10/status-log-2026-10-30.md). Update rules are at the end of this page.
 
@@ -69,7 +69,7 @@ Release requirements are in [release and recovery](operations/release-and-recove
 | 6 | Deployed jobs, abuse budgets, retention, recovery | D08, D09, D10, D11 |
 | 7 | Khmer copy, accessibility, real-device and performance review | D13 ownership |
 | 8 | Repository governance: required checks, reviewers | D18; settings changes need separate authorization |
-| — | Feature-based code organization (backend, web, tests) | Owner acceptance of [ADR 0008](architecture/decisions/0008-feature-based-modules.md); then five behavior-neutral stages, one PR each, with no other code PR open |
+| — | Feature-based code organization ([ADR 0008](architecture/decisions/0008-feature-based-modules.md)): applied on branch `refactor/feature-structure`, not yet merged | PR with exact-head CI for the built-Worker and browser suites (not runnable on the Windows checkout); merge needs owner authorization |
 
 Policy-sensitive items start with a decision proposal (see [playbooks](playbooks/README.md)), not code.
 

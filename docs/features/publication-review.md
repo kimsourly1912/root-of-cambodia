@@ -6,7 +6,7 @@
 
 **Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
-**Sources:** [shared readiness predicates/read](../../packages/backend/src/publication-readiness.ts), [checklist regressions](../../tests/publication-readiness.test.ts), [services](../../packages/backend/src/publication.ts), [scoped reads](../../packages/backend/src/publication-queries.ts), [atomic persistence](../../packages/backend/src/publication-persistence.ts), [migration 0011](../../packages/backend/migrations/0011_property_publication_review.sql), [native regressions](../../tests/publication.test.ts), [browser journey](../../tests/browser/owner.spec.ts).
+**Sources:** [shared readiness predicates/read](../../packages/backend/src/features/publication/publication-readiness.ts), [checklist regressions](../../packages/backend/src/features/publication/tests/publication-readiness.test.ts), [services](../../packages/backend/src/features/publication/publication.ts), [scoped reads](../../packages/backend/src/features/publication/publication-queries.ts), [atomic persistence](../../packages/backend/src/features/publication/publication-persistence.ts), [migration 0011](../../packages/backend/migrations/0011_property_publication_review.sql), [native regressions](../../packages/backend/src/features/publication/tests/publication.test.ts), [browser journey](../../tests/e2e/owner.spec.ts).
 
 ## Approved scope and remaining decisions
 
@@ -18,7 +18,7 @@ The project owner approved the [minimum publication checklist](../product/public
 
 ## Minimum checklist and time boundary
 
-[publication-readiness.ts](../../packages/backend/src/publication-readiness.ts) owns one set of SQL predicates for the scoped guidance read, service refusal and named atomic submit/approval saves. Content checks are basics, description, address, contact, photos, uploads, rooms and calendar. Blank-text checks match existing JavaScript input trimming, including tabs, line breaks and Unicode spaces in earlier stored values. A result contains ready, missing item codes and boolean checks; it is distinct from reviewer/terms configuration. Blank/incomplete private drafts still save normally.
+[publication-readiness.ts](../../packages/backend/src/features/publication/publication-readiness.ts) owns one set of SQL predicates for the scoped guidance read, service refusal and named atomic submit/approval saves. Content checks are basics, description, address, contact, photos, uploads, rooms and calendar. Blank-text checks match existing JavaScript input trimming, including tabs, line breaks and Unicode spaces in earlier stored values. A result contains ready, missing item codes and boolean checks; it is distinct from reviewer/terms configuration. Blank/incomplete private drafts still save normally.
 
 The calendar requirement is one active room with a matching nightly USD rate and inventory row of capacity greater than zero whose scheduled Cambodia check-in is at least 24 hours ahead at validation time. It uses D1 unixepoch(), the property's saved check-in time and UTC+7, includes equality and is repeated inside the write batch. No 30/90-day horizon or new minimum price is imposed. Rates on another room/property or date, past nights, zero capacity and inactive rooms do not qualify. Reserved and blocked quantities do not affect completeness; booking-time full-stay coverage and actual free-stock checks remain authoritative.
 

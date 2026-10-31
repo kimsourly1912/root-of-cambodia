@@ -6,7 +6,7 @@
 
 **Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
-**Sources:** [docs/archive/2026-10/Root-of-Cambodia-Architecture.md](../../archive/2026-10/Root-of-Cambodia-Architecture.md), [docs/archive/2026-10/Root-of-Cambodia-Property-Photos-Review.md](../../archive/2026-10/Root-of-Cambodia-Property-Photos-Review.md), [packages/backend/src/media.ts](../../../packages/backend/src/media.ts), [packages/backend/migrations/0009_property_media.sql](../../../packages/backend/migrations/0009_property_media.sql).
+**Sources:** [docs/archive/2026-10/Root-of-Cambodia-Architecture.md](../../archive/2026-10/Root-of-Cambodia-Architecture.md), [docs/archive/2026-10/Root-of-Cambodia-Property-Photos-Review.md](../../archive/2026-10/Root-of-Cambodia-Property-Photos-Review.md), [packages/backend/src/features/media/media.ts](../../../packages/backend/src/features/media/media.ts), [packages/backend/migrations/0009_property_media.sql](../../../packages/backend/migrations/0009_property_media.sql).
 
 **Recorded:** 29 October 2026.
 **Provenance:** R2/Images and private originals are part of the owner-approved architecture. The photo review records journal/preview/tombstone choices as routine implementation inside that direction; photo code is merged via PR #15 at the verified baseline. This ADR records that implemented pattern, not a separately evidenced owner approval of retention, fees, quotas or public delivery.

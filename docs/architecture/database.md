@@ -6,11 +6,11 @@
 
 **Last source verification:** 30 October 2026; owner-response implementation based on guest PR #25 head [a5bf41f](https://github.com/kimsourly1912/root-of-cambodia/commit/a5bf41ff6d54351358cd307b5ef4b9ded3f9d233). Migration table rechecked against main [40f7ffa](https://github.com/kimsourly1912/root-of-cambodia/commit/40f7ffa553a14005f622aa5c846f0f9dc5e70f42) on 31 October 2026.
 
-**Sources:** [packages/backend/migrations/](../../packages/backend/migrations), [packages/backend/src/operations.ts](../../packages/backend/src/operations.ts), [packages/backend/src/booking-persistence.ts](../../packages/backend/src/booking-persistence.ts), [packages/backend/src/schema.ts](../../packages/backend/src/schema.ts), [tests/migrations.test.ts](../../tests/migrations.test.ts), [tests/safeguards.test.ts](../../tests/safeguards.test.ts).
+**Sources:** [packages/backend/migrations/](../../packages/backend/migrations), [packages/backend/src/shared/operations.ts](../../packages/backend/src/shared/operations.ts), [packages/backend/src/features/bookings/booking-persistence.ts](../../packages/backend/src/features/bookings/booking-persistence.ts), [packages/backend/src/shared/schema.ts](../../packages/backend/src/shared/schema.ts), [packages/backend/tests/migrations.test.ts](../../packages/backend/tests/migrations.test.ts), [packages/backend/tests/safeguards.test.ts](../../packages/backend/tests/safeguards.test.ts).
 
 ## Schema authority and migration ownership
 
-[SQL migrations](../../packages/backend/migrations/) own the complete schema, including constraints, composite foreign keys, delete restrictions and triggers. [schema.ts](../../packages/backend/src/schema.ts) is a partial Drizzle read projection. It is not a second schema/deployment authority. Review Better Auth schema changes into the same migration process; do not use runtime auto-migration or schema push against live requests.
+[SQL migrations](../../packages/backend/migrations/) own the complete schema, including constraints, composite foreign keys, delete restrictions and triggers. [schema.ts](../../packages/backend/src/shared/schema.ts) is a partial Drizzle read projection. It is not a second schema/deployment authority. Review Better Auth schema changes into the same migration process; do not use runtime auto-migration or schema push against live requests.
 
 | Migration | Responsibility |
 | --- | --- |
@@ -55,13 +55,13 @@ Private property information, location/contact/arrival details and media/gallery
 - Operation, actual writes, required history/outbox, receipt and final assertion share one D1 batch. Zero-row writes cannot leave success receipts or unconditional side effects. Failed required history/outbox work aborts the save.
 - Submitted snapshots and history are immutable/retained by database guards. Current catalog/rate edits cannot rewrite submitted prices or accepted policies.
 
-The named boundaries include [booking-persistence.ts](../../packages/backend/src/booking-persistence.ts), [inventory-persistence.ts](../../packages/backend/src/inventory-persistence.ts), draft/room/calendar/information/logistics/media persistence and [publication-persistence.ts](../../packages/backend/src/publication-persistence.ts). Do not expose arbitrary CRUD that independently mutates reservation state.
+The named boundaries include [booking-persistence.ts](../../packages/backend/src/features/bookings/booking-persistence.ts), [inventory-persistence.ts](../../packages/backend/src/features/inventory/inventory-persistence.ts), draft/room/calendar/information/logistics/media persistence and [publication-persistence.ts](../../packages/backend/src/features/publication/publication-persistence.ts). Do not expose arbitrary CRUD that independently mutates reservation state.
 
 Constraints protect relationships/numbers; bounded triggers validate transitions and perform defined allocation/release/history/outbox effects. They never call external providers or decide unresolved policies. BEFORE triggers validate/reject, while critical effects use reviewed AFTER triggers; correctness must not depend on unspecified ordering between triggers. Read SQL and its regressions together; [0002 ADR](decisions/0002-atomic-booking-operations.md) preserves the tradeoff.
 
 ## Replay and uncertain outcomes
 
-[operations.ts](../../packages/backend/src/operations.ts) scopes a key to a principal (`user:<id>` or system), with role and normalized operation payload in the fingerprint. The same key with another kind/payload conflicts; it is not a separate key namespace per endpoint. Keys accept 1–128 ASCII letters/digits/colon/underscore/hyphen.
+[operations.ts](../../packages/backend/src/shared/operations.ts) scopes a key to a principal (`user:<id>` or system), with role and normalized operation payload in the fingerprint. The same key with another kind/payload conflicts; it is not a separate key namespace per endpoint. Keys accept 1–128 ASCII letters/digits/colon/underscore/hyphen.
 
 Publication submit/approval additionally repeat the shared minimum-content/calendar predicates inside the guarded state write using database time. This needs no schema change; existing receipts are replayed before new eligibility checks and existing published listings are not automatically unpublished.
 
@@ -83,7 +83,7 @@ Use [testing](../development/testing.md) for rollback, races, authorization revo
 
 [Guest browsing](../features/guest-browsing.md) uses an allowlist of immutable approved content. Public-display evidence is part of the same submission batch and records the current owner, request, policy version, displayed digest and database timestamp. New submit seals and approvals require it. Earlier sealed receipts still replay; earlier approved data is not backfilled or exposed. Ordered gallery construction is explicit for new snapshots; earlier stored snapshots remain immutable. Migration 0012 is additive, but older code cannot create new submissions without its required evidence; future rollout/rollback must preserve this privacy guard. No booking schema/operation rule changes.
 
-Accepted D17 is implemented by [booking logistics](../../packages/backend/src/booking-logistics.ts), [owner responses](../../packages/backend/src/owner-bookings.ts) and the named booking transition save. The acceptance copy and transition/allocation/history/outbox/receipt are one atomic operation; terms/guest quote snapshots stay immutable at submission. New migration 0014 preserves prior receipts and old Confirmed records without fabricating copies. New native fixtures explicitly prepare required logistics; historical migration fixtures construct the old protocol only in tests, with no application compatibility bypass.
+Accepted D17 is implemented by [booking logistics](../../packages/backend/src/features/bookings/booking-logistics.ts), [owner responses](../../packages/backend/src/features/bookings/owner-bookings.ts) and the named booking transition save. The acceptance copy and transition/allocation/history/outbox/receipt are one atomic operation; terms/guest quote snapshots stay immutable at submission. New migration 0014 preserves prior receipts and old Confirmed records without fabricating copies. New native fixtures explicitly prepare required logistics; historical migration fixtures construct the old protocol only in tests, with no application compatibility bypass.
 
 ## External-payment bookkeeping
 

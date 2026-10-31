@@ -6,7 +6,7 @@
 
 **Last source verification:** 30 October 2026, main [4cf4e14](https://github.com/kimsourly1912/root-of-cambodia/commit/4cf4e1405cd707e1c266b2c893aa274676f74b8c), after merged PR #23.
 
-**Sources:** [accepted scope](scope.md), [open decisions](open-decisions.md), [booking contract](../features/bookings.md), [guest browsing](../features/guest-browsing.md), [architecture](../architecture/overview.md), [atomic booking ADR](../architecture/decisions/0002-atomic-booking-operations.md), [booking reads](../../packages/backend/src/access.ts), [quote implementation](../../packages/backend/src/quotes.ts), [persistence](../../packages/backend/src/booking-persistence.ts), [private logistics](../../packages/backend/src/property-logistics-queries.ts), [screen brief](../design/screen-brief.md).
+**Sources:** [accepted scope](scope.md), [open decisions](open-decisions.md), [booking contract](../features/bookings.md), [guest browsing](../features/guest-browsing.md), [architecture](../architecture/overview.md), [atomic booking ADR](../architecture/decisions/0002-atomic-booking-operations.md), [booking reads](../../packages/backend/src/shared/access.ts), [quote implementation](../../packages/backend/src/features/quotes/quotes.ts), [persistence](../../packages/backend/src/features/bookings/booking-persistence.ts), [private logistics](../../packages/backend/src/features/property-logistics/property-logistics-queries.ts), [screen brief](../design/screen-brief.md).
 
 ## Where we are and the next outcome
 
