@@ -5,6 +5,7 @@ import { publicPage } from "@/server/public-http";
 import { publicStay } from "@root-of-cambodia/backend/catalog";
 import { PublicStayDetails } from "@/features/catalog/components/public-stay-details";
 import { TextLink } from "@/components/text-link";
+import { Button } from "@/components/ui/button";
 export default async function Page({
   params,
 }: {
@@ -17,16 +18,12 @@ export default async function Page({
   if (!listing) notFound();
   return (
     <>
-      <TextLink className="mb-8 inline-block text-sm"
-        href="/stays">
+      <TextLink className="mb-8 block w-fit text-sm" href="/stays">
         ← Explore stays
       </TextLink>
-      <Link
-        href={`/stays/${id}/request`}
-        className="mb-7 block w-fit rounded-md bg-primary px-5 py-3 text-sm font-medium text-primary-foreground"
-      >
-        Request to book
-      </Link>
+      <Button asChild className="mb-7">
+        <Link href={`/stays/${id}/request`}>Request to book</Link>
+      </Button>
       <PublicStayDetails
         listing={listing}
         photoBase={`/api/stays/${id}/photos`}
