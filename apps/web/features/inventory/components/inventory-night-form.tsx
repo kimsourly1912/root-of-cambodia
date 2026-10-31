@@ -5,6 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { usd } from "@/lib/booking-format";
+import { SectionTitle } from "@/components/typography";
+import { StatusMessage } from "@/components/status-message";
+import { textLinkClass } from "@/components/text-link";
+import { cn } from "@/lib/utils";
 export function InventoryNightForm({roomId, night, returnTo}: {
   roomId: string; night: CalendarNight; returnTo: string;
 }) {
@@ -43,7 +47,7 @@ export function InventoryNightForm({roomId, night, returnTo}: {
     } finally { busy.current = false; setPending(false); }
   }
   return <section aria-label={"Availability for " + night.night} className="min-w-0 space-y-4 rounded-xl border p-5">
-    <h2 className="text-lg font-semibold">{night.night}</h2>
+    <SectionTitle size="sm">{night.night}</SectionTitle>
     {night.inventoryRevision === null ? <p>No inventory configured for this night.</p> : <>
       <p className="text-sm">Reserved: {night.reserved} · Available when loaded: {night.capacity! - night.blocked! - night.reserved!}</p>
       <p className="text-sm">{night.unitCents === null ? "No price configured; this night cannot be booked." : "Saved nightly price: " + usd(night.unitCents)}</p>
@@ -54,11 +58,11 @@ export function InventoryNightForm({roomId, night, returnTo}: {
         </fieldset>
         {!done && !blocked && <Button type="submit" disabled={!hydrated || pending}>{pending ? "Saving…" : uncertain ? "Retry same availability update" : "Save night"}</Button>}
       </form>
-      {done && <p role="status">Availability saved. Reload the latest week to see current counts or edit again.</p>}
+      {done && <StatusMessage tone="info">Availability saved. Reload the latest week to see current counts or edit again.</StatusMessage>}
     </>}
-    {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-    {auth && <a href={"/sign-in?next=" + encodeURIComponent(returnTo)} target="_blank" rel="noopener" className="block text-primary underline">Sign in in a new tab, then retry here</a>}
-    {!uncertain && <a href={returnTo} className="inline-block text-primary underline">Reload latest week</a>}
+    {error && <StatusMessage tone="error">{error}</StatusMessage>}
+    {auth && <a href={"/sign-in?next=" + encodeURIComponent(returnTo)} target="_blank" rel="noopener" className={cn(textLinkClass, "block")}>Sign in in a new tab, then retry here</a>}
+    {!uncertain && <a href={returnTo} className={cn(textLinkClass, "inline-block")}>Reload latest week</a>}
     {uncertain && <p className="text-xs">Keep this tab open to preserve the exact save. Reloading or changing weeks discards this pending attempt.</p>}
   </section>;
 }

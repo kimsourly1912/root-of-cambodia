@@ -1,12 +1,13 @@
-import Link from "next/link";
+import { PageTitle } from "@/components/typography";
+import { TextLink } from "@/components/text-link";
 export default function Missing() {
   return (
     <section className="space-y-4">
-      <h1 className="text-2xl font-semibold">Booking unavailable</h1>
+      <PageTitle>Booking unavailable</PageTitle>
       <p>This booking is not available to your account.</p>
-      <Link href="/bookings" className="text-primary underline">
+      <TextLink href="/bookings">
         My bookings
-      </Link>
+      </TextLink>
     </section>
   );
 }

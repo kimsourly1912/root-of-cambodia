@@ -1,10 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ExternalReview } from "@root-of-cambodia/backend/external-bookings";
 import { usd, cambodiaTime } from "@/lib/booking-format";
 import { Button } from "@/components/ui/button";
+import { PageTitle, SectionTitle } from "@/components/typography";
+import { TextLink, textLinkClass } from "@/components/text-link";
+import { StatusMessage } from "@/components/status-message";
+import { CheckboxField } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 export function ExternalReservationReview({propertyId, review, base}: {
   propertyId: string; review: ExternalReview; base: string;
 }) {
@@ -31,23 +35,23 @@ export function ExternalReservationReview({propertyId, review, base}: {
     finally {busy.current = false; setPending(false);}
   }
   return <section className="space-y-6">
-    <h1 className="text-3xl font-semibold">Review external reservation</h1>
+    <PageTitle>Review external reservation</PageTitle>
     <p className="break-words font-semibold">{q.propertyName}</p>
     <p>Check-in: {cambodiaTime(q.checkinAt)} · Checkout: {cambodiaTime(q.checkoutAt)} Cambodia time</p>
     <p className="text-sm">This saved review holds no stock. Confirmation rechecks all nights and reserves them immediately. No guest contact or account is created.</p>
     <div className="space-y-4">{q.lines.map(line => <div key={line.selection.roomId} className="min-w-0 space-y-2 rounded-xl border p-5">
-      <h2 className="break-words font-semibold">{line.roomName} · {line.selection.quantity} room(s)</h2>
+      <SectionTitle size="sm">{line.roomName} · {line.selection.quantity} room(s)</SectionTitle>
       <p>{line.selection.adults} adults · {line.selection.children} children across these rooms</p>
       {line.rates.map(rate => <p key={rate.night} className="text-sm">{rate.night} · {usd(rate.unitCents)} × {line.selection.quantity} = {usd(rate.unitCents * line.selection.quantity)}</p>)}
     </div>)}</div>
     {q.charges.map((charge, i) => <p key={i}>{charge.label}: {usd(charge.amountCents)}</p>)}
     <p className="text-2xl font-semibold">Total: {usd(q.totalCents)}</p>
-    <section className="space-y-2"><h2 className="font-semibold">Saved property rules</h2><p className="whitespace-pre-wrap">{q.policyText}</p><p className="text-sm">Recorded terms version: {q.input.termsVersion}. This owner stock record does not establish a guest’s agreement to legal terms.</p></section>
-    <label className="flex items-start gap-3 text-sm"><input type="checkbox" className="mt-1 size-4 shrink-0" checked={confirmed} disabled={!hydrated || pending || uncertain || blocked} onChange={e => setConfirmed(e.target.checked)} /><span>I want to reserve these rooms immediately at this catalog total. This does not record a payment.</span></label>
+    <section className="space-y-2"><SectionTitle size="sm">Saved property rules</SectionTitle><p className="whitespace-pre-wrap">{q.policyText}</p><p className="text-sm">Recorded terms version: {q.input.termsVersion}. This owner stock record does not establish a guest’s agreement to legal terms.</p></section>
+    <CheckboxField checked={confirmed} disabled={!hydrated || pending || uncertain || blocked} onChange={e => setConfirmed(e.target.checked)}>I want to reserve these rooms immediately at this catalog total. This does not record a payment.</CheckboxField>
     {!blocked && <Button onClick={apply} disabled={!hydrated || pending || !confirmed}>{pending ? "Confirming reservation…" : uncertain ? "Retry same external reservation" : "Confirm external reservation"}</Button>}
-    {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-    {auth && <Link href={"/sign-in?next=" + encodeURIComponent(base + "/" + review.id)} className="block text-primary underline">Sign in and recover this reservation</Link>}
-    <a href={base + "/" + review.id} className="block text-primary underline">Reload saved review and check result</a>
-    {!uncertain && <Link href={base} className="block text-primary underline">Prepare a new external review</Link>}
+    {error && <StatusMessage tone="error">{error}</StatusMessage>}
+    {auth && <TextLink className="block" href={"/sign-in?next=" + encodeURIComponent(base + "/" + review.id)}>Sign in and recover this reservation</TextLink>}
+    <a href={base + "/" + review.id} className={cn(textLinkClass, "block")}>Reload saved review and check result</a>
+    {!uncertain && <TextLink className="block" href={base}>Prepare a new external review</TextLink>}
   </section>;
 }

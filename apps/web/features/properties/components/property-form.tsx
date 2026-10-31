@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { OwnerProperty } from "@root-of-cambodia/backend/properties";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { TextLink } from "@/components/text-link";
+import { StatusMessage } from "@/components/status-message";
+import { Alert } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 type Attempt = { key: string; body: Record<string, string | number> };
 export function PropertyForm({
   property,
@@ -136,7 +139,7 @@ export function PropertyForm({
           className="space-y-6"
         >
           {!property && (
-            <Card className="shadow-none">
+            <Card>
               <CardHeader>
                 <CardTitle>Owner details</CardTitle>
                 <CardDescription>
@@ -162,7 +165,7 @@ export function PropertyForm({
               </CardContent>
             </Card>
           )}
-          <Card className="shadow-none">
+          <Card>
             <CardHeader>
               <CardTitle>Property essentials</CardTitle>
               <CardDescription>
@@ -215,7 +218,7 @@ export function PropertyForm({
               </div>
             </CardContent>
           </Card>
-          <Card className="shadow-none">
+          <Card>
             <CardHeader>
               <CardTitle>Stay details</CardTitle>
               <CardDescription>
@@ -270,11 +273,11 @@ export function PropertyForm({
         </fieldset>
       </div>
       <aside className="space-y-5 lg:sticky lg:top-8">
-        <Card className="shadow-none">
+        <Card>
           <CardHeader>
-            <span className="mb-2 w-fit rounded-full bg-secondary px-3 py-1 text-xs font-medium">
+            <Badge className="mb-2">
               {property?.publication ?? "Private draft"}
-            </span>
+            </Badge>
             <CardTitle>
               {readOnly ? "Saved property" : "Your progress is private"}
             </CardTitle>
@@ -291,7 +294,7 @@ export function PropertyForm({
               </p>
             )}
             {error && (
-              <div role="alert" className="space-y-3 text-sm text-destructive">
+              <Alert variant="destructive" role="alert">
                 <p>{error}</p>
                 {conflict ? (
                   <Button
@@ -303,17 +306,17 @@ export function PropertyForm({
                   </Button>
                 ) : (
                   !uncertain && (
-                    <Link href="/sign-in" className="text-primary underline">
+                    <TextLink href="/sign-in">
                       Sign in again
-                    </Link>
+                    </TextLink>
                   )
                 )}
-              </div>
+              </Alert>
             )}
             {saved && (
-              <p role="status" className="text-sm font-medium text-primary">
+              <StatusMessage tone="success">
                 Draft saved.
-              </p>
+              </StatusMessage>
             )}
             {!readOnly && !conflict && (
               <Button
@@ -328,12 +331,10 @@ export function PropertyForm({
                     : "Save private draft"}
               </Button>
             )}
-            <Link
-              href="/owner"
-              className="block text-center text-sm font-medium text-primary underline underline-offset-4"
-            >
+            <TextLink className="block text-center text-sm"
+              href="/owner">
               Back to your properties
-            </Link>
+            </TextLink>
             {uncertain && (
               <p className="text-xs text-muted-foreground">
                 Keep this page open until the save is confirmed.

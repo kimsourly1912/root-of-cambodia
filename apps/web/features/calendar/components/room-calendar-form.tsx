@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { CalendarNight } from "@root-of-cambodia/backend/calendar";
 import type { CalendarEdit } from "@root-of-cambodia/backend/calendar";
@@ -14,6 +13,9 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { TextLink } from "@/components/text-link";
+import { StatusMessage } from "@/components/status-message";
+import { Alert } from "@/components/ui/alert";
 type Row = CalendarNight & { units: string; blocks: string; price: string };
 const rowsFrom = (nights: CalendarNight[]): Row[] =>
   nights.map((n) => ({
@@ -218,7 +220,7 @@ export function RoomCalendarForm({
   return (
     <form onSubmit={save} className="space-y-6">
       <fieldset disabled={frozen} aria-label="Fill this week">
-        <Card className="shadow-none">
+        <Card>
           <CardHeader>
             <CardTitle className="text-base">
               Fill this week{" "}
@@ -360,10 +362,8 @@ export function RoomCalendarForm({
         })}
       </div>
       {error && (
-        <div
-          role="alert"
-          className="space-y-3 rounded-lg border border-destructive/30 bg-white p-4 text-sm text-destructive"
-        >
+        <Alert variant="destructive"
+          role="alert">
           <p>{error}</p>
           {conflict && (
             <Button
@@ -375,16 +375,16 @@ export function RoomCalendarForm({
             </Button>
           )}
           {needsSignIn && (
-            <Link href="/sign-in" className="text-primary underline">
+            <TextLink href="/sign-in">
               Sign in again
-            </Link>
+            </TextLink>
           )}
-        </div>
+        </Alert>
       )}
       {saved && (
-        <p role="status" className="text-sm font-medium text-primary">
+        <StatusMessage tone="success">
           Calendar saved.
-        </p>
+        </StatusMessage>
       )}
       <div className="sticky bottom-0 flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-white p-4 shadow-sm">
         <div>

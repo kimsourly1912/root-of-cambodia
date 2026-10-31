@@ -12,6 +12,10 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 
+import { SectionTitle } from "@/components/typography";
+import { EmptyState } from "@/components/empty-state";
+import { StatusMessage } from "@/components/status-message";
+import { Alert } from "@/components/ui/alert";
 type Attempt =
   | {
       kind: "upload";
@@ -190,7 +194,7 @@ export function PropertyPhotos({
   const frozen = pending || uncertain || conflict;
   return (
     <div className="space-y-6">
-      <Card className="shadow-none">
+      <Card>
         <CardHeader>
           <CardTitle>Add a photo</CardTitle>
           <CardDescription>
@@ -229,8 +233,8 @@ export function PropertyPhotos({
         </CardContent>
       </Card>
       {error && (
-        <div role="alert" className="space-y-3 text-sm">
-          <p className="text-destructive">{error}</p>
+        <Alert variant="destructive" role="alert">
+          <p>{error}</p>
           {uncertain && (
             <Button
               type="button"
@@ -249,23 +253,21 @@ export function PropertyPhotos({
               Reload latest photos
             </Button>
           )}
-        </div>
+        </Alert>
       )}
       {message && (
-        <p role="status" className="text-sm font-medium text-primary">
+        <StatusMessage tone="success">
           {message}
-        </p>
+        </StatusMessage>
       )}
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold">Your photos</h2>
+        <SectionTitle>Your photos</SectionTitle>
         <p className="text-sm text-muted-foreground">
           {gallery.photos.length} / 20
         </p>
       </div>
       {!gallery.photos.length ? (
-        <p className="rounded-lg border border-dashed p-8 text-center text-muted-foreground">
-          No photos yet. Add your first property photo above.
-        </p>
+        <EmptyState description="No photos yet. Add your first property photo above." />
       ) : (
         <ol className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {gallery.photos.map((photo, index) => (

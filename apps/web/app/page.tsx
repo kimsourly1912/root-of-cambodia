@@ -1,19 +1,21 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { runtime } from "@/server/runtime";
+import { PageTitle, SectionTitle } from "@/components/typography";
+import { PageContainer } from "@/components/page-container";
 export default async function Home() {
   const { readOnly, fixtureTest } = await runtime();
   return (
-    <main id="main" className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24">
+    <PageContainer>
       <div className="max-w-2xl">
         <p className="mb-5 text-sm font-semibold uppercase tracking-widest text-primary">
           {readOnly ? "Staging preview" : "For property owners"}
         </p>
-        <h1 className="text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+        <PageTitle size="hero">
           A place to begin.
           <br />
           <span className="text-primary">Your property, your details.</span>
-        </h1>
+        </PageTitle>
         <p lang="km" className="mt-7 text-lg">
           ការកក់កន្លែងស្នាក់នៅ
         </p>
@@ -47,12 +49,12 @@ export default async function Home() {
           ].map(([n, title, copy]) => (
             <div key={n}>
               <span className="text-xs text-muted-foreground">{n}</span>
-              <h2 className="mt-2 font-semibold">{title}</h2>
+              <SectionTitle size="sm" className="mt-2">{title}</SectionTitle>
               <p className="mt-1 text-sm text-muted-foreground">{copy}</p>
             </div>
           ))}
         </div>}
       </div>
-    </main>
+    </PageContainer>
   );
 }

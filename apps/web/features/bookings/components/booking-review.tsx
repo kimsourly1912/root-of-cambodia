@@ -1,12 +1,15 @@
 "use client";
 import { useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { GuestQuote } from "@root-of-cambodia/backend/bookings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { usd, cambodiaTime } from "@/lib/booking-format";
 import { requestError } from "./guest-request-form";
+import { SectionTitle } from "@/components/typography";
+import { TextLink } from "@/components/text-link";
+import { StatusMessage } from "@/components/status-message";
+import { CheckboxField } from "@/components/ui/checkbox";
 export function BookingReview({
   id,
   preview: q,
@@ -82,7 +85,7 @@ export function BookingReview({
                 key={line.selection.roomId}
                 className="space-y-2 border-t pt-4"
               >
-                <h2 className="font-semibold">{line.roomName}</h2>
+                <SectionTitle size="sm">{line.roomName}</SectionTitle>
                 <p className="text-sm">
                   {line.selection.quantity} units · {line.selection.adults}{" "}
                   adults · {line.selection.children} children
@@ -149,31 +152,26 @@ export function BookingReview({
             request means Pending confirmation.
           </p>
           <form onSubmit={send} className="space-y-5">
-            <label className="flex items-start gap-3 text-sm">
-              <input
-                className="mt-1 size-4 shrink-0"
-                type="checkbox"
+            <CheckboxField
+               
+               
                 required
                 disabled={pending || uncertain || blocked}
-                defaultChecked={uncertain}
-              />
-              <span>
+                defaultChecked={uncertain}>
                 I accept booking terms {q.terms.version}, the house rules and
                 cancellation policy shown here.
-              </span>
-            </label>
+              </CheckboxField>
             {error && (
-              <p role="alert" className="text-sm text-destructive">
+              <StatusMessage tone="error">
                 {error}
-              </p>
+              </StatusMessage>
             )}
             {auth && (
-              <Link
-                className="block text-primary underline"
-                href={`/sign-in?next=${encodeURIComponent(`/bookings/requests/${id}`)}`}
-              >
+              <TextLink className="block"
+               
+                href={`/sign-in?next=${encodeURIComponent(`/bookings/requests/${id}`)}`}>
                 Sign in and recover this request
-              </Link>
+              </TextLink>
             )}
             {!blocked && (
               <Button className="w-full" disabled={pending} type="submit">
@@ -186,12 +184,10 @@ export function BookingReview({
             )}
           </form>
           {!uncertain && (
-            <Link
-              href={`/stays/${q.input.propertyId}/request`}
-              className="block text-sm text-primary underline"
-            >
+            <TextLink className="block text-sm"
+              href={`/stays/${q.input.propertyId}/request`}>
               {blocked ? "Review a fresh request" : "Change selection"}
-            </Link>
+            </TextLink>
           )}
           <p className="text-xs text-muted-foreground">
             This review is saved to your account. Opening it again recovers the

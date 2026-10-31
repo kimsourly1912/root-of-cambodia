@@ -5,6 +5,9 @@ import type { OwnerRoomType } from "@root-of-cambodia/backend/rooms";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { StatusMessage } from "@/components/status-message";
+import { textLinkClass } from "@/components/text-link";
+import { cn } from "@/lib/utils";
 export function ExternalReservationForm({propertyId, rooms, base}: {
   propertyId: string; rooms: OwnerRoomType[]; base: string;
 }) {
@@ -50,7 +53,7 @@ export function ExternalReservationForm({propertyId, rooms, base}: {
     </fieldset>
     {!recovery && <Button type="submit" disabled={!hydrated || pending}>{pending ? "Preparing review…" : "Review external reservation"}</Button>}
   </form>
-  {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-  {recovery && <a href={base + "/" + recovery} className="inline-block text-primary underline">Check saved external review</a>}
+  {error && <StatusMessage tone="error">{error}</StatusMessage>}
+  {recovery && <a href={base + "/" + recovery} className={cn(textLinkClass, "inline-block")}>Check saved external review</a>}
   </div>;
 }

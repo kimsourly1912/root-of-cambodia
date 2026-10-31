@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { SignOut } from "@/components/sign-out";
+import { TextLink } from "@/components/text-link";
+import { PageContainer } from "@/components/page-container";
 export const dynamic = "force-dynamic";
 export const metadata = {
   robots: {
@@ -10,20 +11,20 @@ export const metadata = {
 };
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <main id="main" className="mx-auto max-w-6xl px-5 py-8 sm:px-8">
+    <PageContainer>
       <nav
         aria-label="Reviewer navigation"
         className="mb-8 flex flex-wrap items-center justify-between gap-4 border-b pb-5"
       >
-        <Link href="/review" className="font-medium text-primary">
+        <TextLink href="/review">
           Publication reviews
-        </Link>
-        <Link href="/owner" className="text-sm underline">
+        </TextLink>
+        <TextLink className="text-sm" href="/owner">
           Your properties
-        </Link>
+        </TextLink>
         <SignOut />
       </nav>
       {children}
-    </main>
+    </PageContainer>
   );
 }

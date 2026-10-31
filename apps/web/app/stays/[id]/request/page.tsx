@@ -1,10 +1,11 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { guestSession } from "@/server/guest-session";
 import { ownerRead } from "@/server/owner-session";
 import { requestContext } from "@root-of-cambodia/backend/bookings";
 import { DomainError } from "@root-of-cambodia/backend/shared";
 import { GuestRequestForm } from "@/features/bookings/components/guest-request-form";
+import { PageTitle } from "@/components/typography";
+import { TextLink } from "@/components/text-link";
 export const dynamic = "force-dynamic";
 export default async function Page({
   params,
@@ -32,26 +33,26 @@ export default async function Page({
     )
       return (
         <section className="space-y-5">
-          <h1 className="text-3xl font-semibold">
+          <PageTitle>
             Requests currently unavailable
-          </h1>
+          </PageTitle>
           <p>
             Approved booking terms have not been configured for this stay. You
             can still browse its listing.
           </p>
-          <Link href={`/stays/${id}`} className="text-primary underline">
+          <TextLink href={`/stays/${id}`}>
             Back to stay
-          </Link>
+          </TextLink>
         </section>
       );
     throw error;
   }
   return (
     <div className="space-y-7">
-      <Link href={`/stays/${id}`} className="text-primary underline">
+      <TextLink href={`/stays/${id}`}>
         ← Back to stay
-      </Link>
-      <h1 className="text-3xl font-semibold">Request to book</h1>
+      </TextLink>
+      <PageTitle>Request to book</PageTitle>
       <GuestRequestForm context={context} initial={selection.toString()} />
     </div>
   );

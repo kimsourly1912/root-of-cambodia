@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { guestSession } from "@/server/guest-session";
 import { ownerRead } from "@/server/owner-session";
@@ -8,6 +7,10 @@ import { usd, cambodiaTime, bookingStatus } from "@/lib/booking-format";
 import { BookingLogistics } from "@/features/bookings/components/booking-logistics";
 import { GuestPaymentRecord } from "@/features/payments/components/payment-records";
 import { GuestCancel } from "@/features/bookings/components/guest-cancel";
+import { PageTitle, SectionTitle } from "@/components/typography";
+import { TextLink, textLinkClass } from "@/components/text-link";
+import { StatusMessage } from "@/components/status-message";
+import { cn } from "@/lib/utils";
 export default async function Page({
   params,
   searchParams,
@@ -34,12 +37,12 @@ export default async function Page({
   }
   return (
     <div className="space-y-7">
-      <Link href="/bookings" className="text-primary underline">
+      <TextLink href="/bookings">
         ← My bookings
-      </Link>
+      </TextLink>
       <div className="space-y-3">
         <p className="font-medium text-primary">{bookingStatus(b.status)}</p>
-        <h1 className="break-words text-3xl font-semibold">{b.propertyName}</h1>
+        <PageTitle>{b.propertyName}</PageTitle>
         <p className="break-all text-xs text-muted-foreground">
           Booking reference: {b.id}
         </p>
@@ -56,19 +59,19 @@ export default async function Page({
               time. Your room is not held until confirmation.
             </p>
             {b.expiresAt <= Date.now() / 1000 && (
-              <p role="status">
+              <StatusMessage tone="info">
                 The response deadline has passed. Owner acceptance is no longer
                 allowed; the expiry record may still be updating.
-              </p>
+              </StatusMessage>
             )}
           </>
         )}
         <GuestPaymentRecord payment={b.payment} />
         {b.status === "confirmed" && <p>Your stay is confirmed.</p>}
         {["declined", "expired", "cancelled"].includes(b.status) && (
-          <Link href="/stays" className="block text-primary underline">
+          <TextLink className="block" href="/stays">
             Explore stays for a new request
-          </Link>
+          </TextLink>
         )}
       </section>
       {b.status === "confirmed" &&
@@ -85,7 +88,7 @@ export default async function Page({
           </p>
         ))}
       <section className="space-y-4 rounded-xl border p-6">
-        <h2 className="text-xl font-semibold">Rooms and price</h2>
+        <SectionTitle>Rooms and price</SectionTitle>
         <ul className="space-y-3">
           {b.lines.map((l) => (
             <li
@@ -116,7 +119,7 @@ export default async function Page({
         </p>
       </section>
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold">Booking updates</h2>
+        <SectionTitle>Booking updates</SectionTitle>
         <ol className="space-y-3">
           {b.events.map((e) => (
             <li key={e.kind} className="rounded-lg bg-secondary p-4 text-sm">
@@ -132,7 +135,7 @@ export default async function Page({
         </ol>
         <a
           href={`/bookings/${id}${cancelAttempt ? "?cancelAttempt=" + cancelAttempt : ""}`}
-          className="inline-block text-primary underline"
+          className={cn(textLinkClass, "inline-block")}
         >
           Refresh booking status
         </a>

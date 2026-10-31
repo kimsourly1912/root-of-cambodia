@@ -5,6 +5,7 @@ import { ownerPropertyLogistics } from "@root-of-cambodia/backend/property-logis
 import { DomainError } from "@root-of-cambodia/backend/shared";
 import { PropertyNavigation } from "@/features/properties/components/property-navigation";
 import { PropertyLogisticsForm } from "@/features/property-logistics/components/property-logistics-form";
+import { PageTitle } from "@/components/typography";
 export default async function Page({
   params,
 }: {
@@ -30,9 +31,9 @@ export default async function Page({
       <p lang="km" className="mb-2 break-words text-sm text-primary">
         {data.property.nameKm}
       </p>
-      <h1 className="text-3xl font-semibold tracking-tight">
+      <PageTitle>
         Location &amp; contact
-      </h1>
+      </PageTitle>
       <p className="mt-3 text-muted-foreground">
         Save your location, contact details and arrival instructions privately.
       </p>

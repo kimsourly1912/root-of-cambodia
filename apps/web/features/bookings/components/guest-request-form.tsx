@@ -1,6 +1,5 @@
 "use client";
 import { useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type {
   requestContext,
@@ -10,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { TextLink } from "@/components/text-link";
+import { StatusMessage } from "@/components/status-message";
 type Context = Awaited<ReturnType<typeof requestContext>>;
 export function GuestRequestForm({
   context,
@@ -196,25 +197,22 @@ export function GuestRequestForm({
         ))}
       </fieldset>
       {error && (
-        <p role="alert" className="text-destructive">
+        <StatusMessage tone="error">
           {error}
-        </p>
+        </StatusMessage>
       )}
       {auth && (
-        <Link
-          className="block text-primary underline"
-          href={`/sign-in?next=${encodeURIComponent(typeof window !== "undefined" ? window.location.pathname + window.location.search : `/stays/${listing.id}/request`)}`}
-        >
+        <TextLink className="block"
+         
+          href={`/sign-in?next=${encodeURIComponent(typeof window !== "undefined" ? window.location.pathname + window.location.search : `/stays/${listing.id}/request`)}`}>
           Sign in and return to this selection
-        </Link>
+        </TextLink>
       )}
       {recovery ? (
-        <Link
-          href={`/bookings/requests/${recovery}`}
-          className="text-primary underline"
-        >
+        <TextLink
+          href={`/bookings/requests/${recovery}`}>
           Check saved review
-        </Link>
+        </TextLink>
       ) : (
         <Button type="submit" disabled={pending || !listing.rooms.length}>
           {pending ? "Checking price and availability…" : "Review request"}

@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { PropertyInformation } from "@root-of-cambodia/backend/property-information";
 import { Button } from "@/components/ui/button";
@@ -13,6 +12,10 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { TextLink } from "@/components/text-link";
+import { StatusMessage } from "@/components/status-message";
+import { Alert } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 const formFrom = (information: PropertyInformation) => ({
   description: information.description,
   address: information.address,
@@ -152,7 +155,7 @@ export function PropertyInformationForm({
       className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_280px]"
     >
       <fieldset disabled={frozen} className="min-w-0 space-y-6">
-        <Card className="shadow-none">
+        <Card>
           <CardHeader>
             <CardTitle>About your property</CardTitle>
             <CardDescription>
@@ -175,7 +178,7 @@ export function PropertyInformationForm({
             </p>
           </CardContent>
         </Card>
-        <Card className="shadow-none">
+        <Card>
           <CardHeader>
             <CardTitle>Address</CardTitle>
             <CardDescription>
@@ -200,7 +203,7 @@ export function PropertyInformationForm({
             </p>
           </CardContent>
         </Card>
-        <Card className="shadow-none">
+        <Card>
           <CardHeader>
             <CardTitle>Facilities</CardTitle>
             <CardDescription>
@@ -225,11 +228,11 @@ export function PropertyInformationForm({
         </Card>
       </fieldset>
       <aside className="space-y-5 lg:sticky lg:top-8">
-        <Card className="shadow-none">
+        <Card>
           <CardHeader>
-            <span className="mb-2 w-fit rounded-full bg-secondary px-3 py-1 text-xs font-medium">
+            <Badge className="mb-2">
               Private information
-            </span>
+            </Badge>
             <CardTitle>
               {editable ? "Save your progress" : "Property information"}
             </CardTitle>
@@ -248,7 +251,7 @@ export function PropertyInformationForm({
                   : "Saved to your account"}
             </p>
             {error && (
-              <div role="alert" className="space-y-3 text-sm text-destructive">
+              <Alert variant="destructive" role="alert">
                 <p>{error}</p>
                 {conflict && (
                   <Button
@@ -260,16 +263,16 @@ export function PropertyInformationForm({
                   </Button>
                 )}
                 {needsSignIn && (
-                  <Link href="/sign-in" className="text-primary underline">
+                  <TextLink href="/sign-in">
                     Sign in again
-                  </Link>
+                  </TextLink>
                 )}
-              </div>
+              </Alert>
             )}
             {saved && (
-              <p role="status" className="text-sm font-medium text-primary">
+              <StatusMessage tone="success">
                 Property information saved.
-              </p>
+              </StatusMessage>
             )}
             {editable && !conflict && (
               <Button
@@ -284,12 +287,10 @@ export function PropertyInformationForm({
                     : "Save property information"}
               </Button>
             )}
-            <Link
-              href={`/owner/properties/${propertyId}`}
-              className="block text-center text-sm font-medium text-primary underline underline-offset-4"
-            >
+            <TextLink className="block text-center text-sm"
+              href={`/owner/properties/${propertyId}`}>
               Back to property details
-            </Link>
+            </TextLink>
             {uncertain && (
               <p className="text-xs text-muted-foreground">
                 Keep this page open until the save is confirmed.

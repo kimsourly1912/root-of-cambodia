@@ -7,6 +7,9 @@ import { DomainError } from "@root-of-cambodia/backend/shared";
 import { PropertyNavigation } from "@/features/properties/components/property-navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { PageTitle, SectionTitle } from "@/components/typography";
+import { EmptyState } from "@/components/empty-state";
+import { TextLink } from "@/components/text-link";
 export default async function Page({
   params,
   searchParams,
@@ -44,7 +47,7 @@ export default async function Page({
       </p>
       <div className="flex flex-wrap items-start justify-between gap-5">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Room types</h1>
+          <PageTitle>Room types</PageTitle>
           <p className="mt-3 text-muted-foreground">
             Organise the kinds of rooms guests can choose from.
           </p>
@@ -59,11 +62,11 @@ export default async function Page({
       {data.items.length ? (
         <div className="grid gap-4 sm:grid-cols-2">
           {data.items.map((room) => (
-            <Card key={room.id} className="shadow-none">
+            <Card key={room.id}>
               <CardContent className="space-y-4 p-6">
-                <h2 className="break-words text-xl font-semibold">
+                <SectionTitle>
                   {room.name}
-                </h2>
+                </SectionTitle>
                 <dl className="grid grid-cols-3 gap-3 text-sm">
                   {[
                     ["Adults", room.adultCapacity],
@@ -76,48 +79,41 @@ export default async function Page({
                     </div>
                   ))}
                 </dl>
-                <Link
-                  href={base + "/" + room.id}
-                  className="inline-block py-2 text-sm font-semibold text-primary underline underline-offset-4"
-                >
+                <TextLink className="inline-block text-sm"
+                  href={base + "/" + room.id}>
                   Open room type →
-                </Link>
+                </TextLink>
               </CardContent>
             </Card>
           ))}
         </div>
       ) : (
-        <Card className="shadow-none">
-          <CardContent className="py-14 text-center">
-            <h2 className="text-xl font-semibold">
-              {cursor ? "No more room types" : "No room types yet"}
-            </h2>
-            <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
-              {cursor
-                ? "Return to the first page to see your saved room types."
-                : "Start with a name and guest limits. Configure prices and dated availability from a saved room type."}
-            </p>
-            {data.property.publication === "draft" && !cursor && (
-              <Button asChild className="mt-6">
-                <Link href={base + "/new"}>Create first room type</Link>
-              </Button>
-            )}
-          </CardContent>
-        </Card>
+        <EmptyState
+          title={cursor ? "No more room types" : "No room types yet"}
+          description={
+            cursor
+              ? "Return to the first page to see your saved room types."
+              : "Start with a name and guest limits. Configure prices and dated availability from a saved room type."
+          }
+        >
+          {data.property.publication === "draft" && !cursor && (
+            <Button asChild>
+              <Link href={base + "/new"}>Create first room type</Link>
+            </Button>
+          )}
+        </EmptyState>
       )}
       <div className="mt-6 flex gap-6 text-sm text-primary">
         {cursor && (
-          <Link href={base} className="underline">
+          <TextLink href={base}>
             First page
-          </Link>
+          </TextLink>
         )}
         {data.nextCursor && (
-          <Link
-            href={base + "?cursor=" + encodeURIComponent(data.nextCursor)}
-            className="underline"
-          >
+          <TextLink
+            href={base + "?cursor=" + encodeURIComponent(data.nextCursor)}>
             Next page →
-          </Link>
+          </TextLink>
         )}
       </div>
       <p className="mt-8 text-xs text-muted-foreground">

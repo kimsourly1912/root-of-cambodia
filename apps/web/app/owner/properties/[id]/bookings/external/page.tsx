@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ownerSession, ownerRead } from "@/server/owner-session";
 import { ownerProperty } from "@root-of-cambodia/backend/properties";
@@ -7,6 +6,8 @@ import { externalReviews } from "@root-of-cambodia/backend/external-bookings";
 import { DomainError } from "@root-of-cambodia/backend/shared";
 import { PropertyNavigation } from "@/features/properties/components/property-navigation";
 import { ExternalReservationForm } from "@/features/external-bookings/components/external-reservation-form";
+import { PageTitle, SectionTitle } from "@/components/typography";
+import { TextLink } from "@/components/text-link";
 export default async function Page({params, searchParams}: {
   params: Promise<{id: string}>; searchParams: Promise<{cursor?: string}>;
 }) {
@@ -21,24 +22,24 @@ export default async function Page({params, searchParams}: {
   } catch (error) {
     if (error instanceof DomainError && error.code === "not_found") notFound();
     if (error instanceof DomainError && error.code === "invalid_request")
-      return <Link href={base} className="text-primary underline">Invalid page. Open external reservations.</Link>;
+      return <TextLink href={base}>Invalid page. Open external reservations.</TextLink>;
     throw error;
   }
   return <div className="space-y-6">
-    <h1 className="text-3xl font-semibold">Record an external reservation</h1>
+    <PageTitle>Record an external reservation</PageTitle>
     <p>{property.nameEn || property.nameKm}</p>
     <PropertyNavigation propertyId={id} active="bookings" />
     <p>Record room stock for a booking taken outside this website. Confirmation reserves every booked night immediately at the saved catalog price. Preparing a review reserves nothing.</p>
     <p className="text-sm text-muted-foreground">This record has no guest account or contact details. Negotiated prices, deposits, infant handling and physical room assignment are not supported here. It does not collect money or record a guest’s agreement to terms.</p>
     <ExternalReservationForm key={cursor ?? ""} propertyId={id} rooms={rooms.items} base={base} />
     <nav aria-label="External reservation room pages" className="flex flex-wrap gap-5">
-      {cursor && <Link href={base} className="text-primary underline">First room types</Link>}
-      {rooms.nextCursor && <Link href={base + "?cursor=" + encodeURIComponent(rooms.nextCursor)} className="text-primary underline">Next room types</Link>}
+      {cursor && <TextLink href={base}>First room types</TextLink>}
+      {rooms.nextCursor && <TextLink href={base + "?cursor=" + encodeURIComponent(rooms.nextCursor)}>Next room types</TextLink>}
     </nav>
     <p className="text-sm">Choose from the room types on this page. Changing room pages discards unsaved selections. Each reservation supports up to ten selected room types.</p>
-    {!!reviews.length && <section className="space-y-3"><h2 className="text-xl font-semibold">Recent saved external reviews</h2>
-      {reviews.map(a => <Link key={a.id} href={base + "/" + a.id} className="block break-all text-primary underline">Open saved review {a.id.slice(0,8)}</Link>)}
+    {!!reviews.length && <section className="space-y-3"><SectionTitle>Recent saved external reviews</SectionTitle>
+      {reviews.map(a => <TextLink className="block" key={a.id} href={base + "/" + a.id}>Open saved review {a.id.slice(0,8)}</TextLink>)}
     </section>}
-    <Link href={`/owner/properties/${id}/bookings`} className="inline-block text-primary underline">Back to property bookings</Link>
+    <TextLink className="inline-block" href={`/owner/properties/${id}/bookings`}>Back to property bookings</TextLink>
   </div>;
 }

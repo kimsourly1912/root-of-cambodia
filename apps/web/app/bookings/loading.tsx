@@ -1,3 +1,4 @@
+import { LoadingState } from "@/components/status-message";
 export default function Loading() {
-  return <p role="status">Loading your booking…</p>;
+  return <LoadingState>Loading your booking…</LoadingState>;
 }

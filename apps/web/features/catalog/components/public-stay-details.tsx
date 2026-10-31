@@ -38,7 +38,7 @@ export function PublicStayDetails({
           />
         ))}
       </div>
-      <Card className="shadow-none">
+      <Card>
         <CardHeader>
           <CardTitle>
             <Section>About this stay</Section>
@@ -49,7 +49,7 @@ export function PublicStayDetails({
         </CardContent>
       </Card>
       {!!listing.facilities.length && (
-        <Card className="shadow-none">
+        <Card>
           <CardHeader>
             <CardTitle>
               <Section>Facilities</Section>
@@ -69,7 +69,7 @@ export function PublicStayDetails({
           </CardContent>
         </Card>
       )}
-      <Card className="shadow-none">
+      <Card>
         <CardHeader>
           <CardTitle>
             <Section>Room options</Section>
@@ -88,7 +88,7 @@ export function PublicStayDetails({
           ))}
         </CardContent>
       </Card>
-      <Card className="shadow-none">
+      <Card>
         <CardHeader>
           <CardTitle>
             <Section>Stay information</Section>

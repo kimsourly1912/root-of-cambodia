@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { PropertyLogistics } from "@root-of-cambodia/backend/property-logistics";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,10 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { TextLink } from "@/components/text-link";
+import { StatusMessage } from "@/components/status-message";
+import { Alert } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 const formFrom = (logistics: PropertyLogistics) => ({
   latitude: logistics.latitude === null ? "" : String(logistics.latitude),
   longitude: logistics.longitude === null ? "" : String(logistics.longitude),
@@ -152,7 +155,7 @@ export function PropertyLogisticsForm({
       className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_280px]"
     >
       <fieldset disabled={frozen} className="min-w-0 space-y-6">
-        <Card className="shadow-none">
+        <Card>
           <CardHeader>
             <CardTitle>Location coordinates</CardTitle>
             <CardDescription>Optional coordinates for the property you are preparing.</CardDescription>
@@ -176,7 +179,7 @@ export function PropertyLogisticsForm({
             </p>
           </CardContent>
         </Card>
-        <Card className="shadow-none">
+        <Card>
           <CardHeader>
             <CardTitle>Property contact</CardTitle>
             <CardDescription>Keep the contact details you plan to use for your property.</CardDescription>
@@ -203,7 +206,7 @@ export function PropertyLogisticsForm({
             </p>
           </CardContent>
         </Card>
-        <Card className="shadow-none">
+        <Card>
           <CardHeader>
             <CardTitle>Arrival instructions</CardTitle>
             <CardDescription>Add useful directions and practical information for a future stay.</CardDescription>
@@ -222,11 +225,11 @@ export function PropertyLogisticsForm({
         </Card>
       </fieldset>
       <aside className="space-y-5 lg:sticky lg:top-8">
-        <Card className="shadow-none">
+        <Card>
           <CardHeader>
-            <span className="mb-2 w-fit rounded-full bg-secondary px-3 py-1 text-xs font-medium">
+            <Badge className="mb-2">
               Private draft details
-            </span>
+            </Badge>
             <CardTitle>
               {editable ? "Save your progress" : "Location & contact"}
             </CardTitle>
@@ -245,7 +248,7 @@ export function PropertyLogisticsForm({
                   : "Saved to your account"}
             </p>
             {error && (
-              <div role="alert" className="space-y-3 text-sm text-destructive">
+              <Alert variant="destructive" role="alert">
                 <p>{error}</p>
                 {conflict && (
                   <Button
@@ -257,16 +260,16 @@ export function PropertyLogisticsForm({
                   </Button>
                 )}
                 {needsSignIn && (
-                  <Link href="/sign-in" className="text-primary underline">
+                  <TextLink href="/sign-in">
                     Sign in again
-                  </Link>
+                  </TextLink>
                 )}
-              </div>
+              </Alert>
             )}
             {saved && (
-              <p role="status" className="text-sm font-medium text-primary">
+              <StatusMessage tone="success">
                 Location and contact details saved.
-              </p>
+              </StatusMessage>
             )}
             {editable && !conflict && (
               <Button
@@ -281,12 +284,10 @@ export function PropertyLogisticsForm({
                     : "Save location and contact"}
               </Button>
             )}
-            <Link
-              href={`/owner/properties/${propertyId}`}
-              className="block text-center text-sm font-medium text-primary underline underline-offset-4"
-            >
+            <TextLink className="block text-center text-sm"
+              href={`/owner/properties/${propertyId}`}>
               Back to property details
-            </Link>
+            </TextLink>
             {uncertain && (
               <p className="text-xs text-muted-foreground">
                 Keep this page open until the save is confirmed.

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ownerSession, ownerRead } from "@/server/owner-session";
 import { ownerProperty } from "@root-of-cambodia/backend/properties";
@@ -14,6 +13,8 @@ import { RoomCalendarForm } from "@/features/calendar/components/room-calendar-f
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/typography";
+import { TextLink } from "@/components/text-link";
 export default async function Page({
   params,
   searchParams,
@@ -59,19 +60,17 @@ export default async function Page({
       <p className="mb-2 break-words text-sm text-primary">
         {data.property.nameKm} · {data.room.name}
       </p>
-      <h1 className="text-3xl font-semibold tracking-tight">
+      <PageTitle>
         Prices and availability
-      </h1>
+      </PageTitle>
       <p className="mt-3 text-muted-foreground">
         Set prices and unit counts for each night. Dates use Cambodia time.
       </p>
       <PropertyNavigation propertyId={id} active="rooms" />
-      <Link
-        href={base}
-        className="mb-6 inline-block py-2 text-sm font-medium text-primary underline"
-      >
+      <TextLink className="mb-6 inline-block text-sm"
+        href={base}>
         ← Room type details
-      </Link>
+      </TextLink>
       <div className="mb-6 flex flex-wrap items-end justify-between gap-5">
         <form method="get" className="flex flex-wrap items-end gap-3">
           <div className="space-y-2">
@@ -93,20 +92,16 @@ export default async function Page({
           className="flex gap-5 text-sm text-primary"
         >
           {previous && (
-            <Link
-              href={base + "/calendar?start=" + previous}
-              className="py-2 underline"
-            >
+            <TextLink
+              href={base + "/calendar?start=" + previous}>
               ← Previous week
-            </Link>
+            </TextLink>
           )}
           {next && (
-            <Link
-              href={base + "/calendar?start=" + next}
-              className="py-2 underline"
-            >
+            <TextLink
+              href={base + "/calendar?start=" + next}>
               Next week →
-            </Link>
+            </TextLink>
           )}
         </nav>
       </div>

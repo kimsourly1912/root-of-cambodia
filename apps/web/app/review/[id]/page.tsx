@@ -6,6 +6,8 @@ import { PublicationAction } from "@/features/publication/components/publication
 import { PublicationChecklist } from "@/features/publication/components/publication-checklist";
 import { PublicStayDetails } from "@/features/catalog/components/public-stay-details";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { PageTitle } from "@/components/typography";
+import { Disclosure } from "@/components/disclosure";
 export default async function Page({
   params,
 }: {
@@ -18,9 +20,9 @@ export default async function Page({
   const data = await reviewerRead(() => reviewDetails(db, actor, id));
   return (
     <>
-      <h1 className="text-3xl font-semibold tracking-tight">
+      <PageTitle>
         Review submission
-      </h1>
+      </PageTitle>
       <p className="mb-8 mt-3 text-muted-foreground">
         Assess the saved submission and send clear correction notes if changes
         are needed.
@@ -28,28 +30,22 @@ export default async function Page({
       <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0 space-y-6">
           <PublicationChecklist readiness={data.readiness} />
-          <details open className="rounded-xl border bg-card p-5">
-            <summary className="mb-5 cursor-pointer text-lg font-semibold">
-              Guest listing preview
-            </summary>
+          <Disclosure open summary="Guest listing preview">
             <PublicStayDetails
               listing={data.publicPreview.listing}
               heading="h3"
               photoBase={`/api/property-reviews/${id}/photos`}
             />
-          </details>
-          <details className="rounded-xl border bg-card p-5">
-            <summary className="mb-5 cursor-pointer text-lg font-semibold">
-              Private review context
-            </summary>
+          </Disclosure>
+          <Disclosure summary="Private review context">
             <ReviewSnapshot
               snapshot={data.request.snapshot}
               previewBase={`/api/property-reviews/${id}/photos`}
             />
-          </details>
+          </Disclosure>
         </div>
         <aside className="lg:sticky lg:top-8">
-          <Card className="shadow-none">
+          <Card>
             <CardHeader>
               <CardTitle>
                 <h2>Your decision</h2>

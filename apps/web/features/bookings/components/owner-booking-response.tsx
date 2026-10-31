@@ -1,6 +1,5 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type {
   OwnerAttempt,
@@ -10,6 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BookingLogistics } from "./booking-logistics";
+import { SectionTitle } from "@/components/typography";
+import { TextLink } from "@/components/text-link";
+import { StatusMessage } from "@/components/status-message";
+import { CheckboxField } from "@/components/ui/checkbox";
+import { NativeSelect } from "@/components/ui/native-select";
 export function OwnerBookingResponse({
   booking: b,
   attempt,
@@ -142,7 +146,7 @@ export function OwnerBookingResponse({
     }
   }
   if (now === null && !attempt)
-    return <p role="status">Loading booking actions…</p>;
+    return <StatusMessage tone="info">Loading booking actions…</StatusMessage>;
   if (!attempt && !choices.length)
     return (
       <p className="text-sm text-muted-foreground">
@@ -152,9 +156,9 @@ export function OwnerBookingResponse({
     );
   return (
     <section className="space-y-5 rounded-xl border p-6">
-      <h2 className="text-xl font-semibold">
+      <SectionTitle>
         {attempt ? "Review saved response" : "Respond to this booking"}
-      </h2>
+      </SectionTitle>
       {attempt ? (
         <div className="space-y-5">
           <p className="font-semibold">{label(attempt.action)}</p>
@@ -184,9 +188,9 @@ export function OwnerBookingResponse({
             </Button>
           )}
           {!uncertain && (
-            <Link className="block text-primary underline" href={base}>
+            <TextLink className="block" href={base}>
               {blocked ? "Reload current booking" : "Return without applying"}
-            </Link>
+            </TextLink>
           )}
         </div>
       ) : (
@@ -194,18 +198,17 @@ export function OwnerBookingResponse({
           <fieldset disabled={pending || !!recovery} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="booking-response">Response</Label>
-              <select
+              <NativeSelect
                 id="booking-response"
                 value={action}
                 onChange={(e) => setAction(e.target.value)}
-                className="h-10 w-full rounded-md border bg-background px-3 text-sm"
               >
                 {choices.map((value) => (
                   <option key={value} value={value}>
                     {label(value)}
                   </option>
                 ))}
-              </select>
+              </NativeSelect>
             </div>
             {action === "accept" && b.preview && (
               <>
@@ -214,23 +217,17 @@ export function OwnerBookingResponse({
                   heading="Details shared after confirmation"
                 />
                 {!b.preview.ready ? (
-                  <p role="alert" className="text-sm text-destructive">
+                  <StatusMessage tone="error">
                     A property address and at least one contact method are
                     required. Acceptance is unavailable until these details are
                     complete.
-                  </p>
+                  </StatusMessage>
                 ) : (
-                  <label className="flex gap-3 text-sm">
-                    <input
-                      required
-                      type="checkbox"
-                      className="mt-1 size-4 shrink-0"
-                    />
-                    <span>
+                  <CheckboxField
+                      required>
                       I reviewed the exact property details shown here and will
                       share this copy with the confirmed guest.
-                    </span>
-                  </label>
+                    </CheckboxField>
                 )}
               </>
             )}
@@ -260,25 +257,23 @@ export function OwnerBookingResponse({
         </form>
       )}
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <StatusMessage tone="error">
           {error}
-        </p>
+        </StatusMessage>
       )}
       {recovery && (
-        <Link
-          className="block text-primary underline"
-          href={base + "?response=" + recovery}
-        >
+        <TextLink className="block"
+         
+          href={base + "?response=" + recovery}>
           Check saved response review
-        </Link>
+        </TextLink>
       )}
       {auth && (
-        <Link
-          className="block text-primary underline"
-          href={`/sign-in?next=${encodeURIComponent(base + (attempt ? "?response=" + attempt.id : ""))}`}
-        >
+        <TextLink className="block"
+         
+          href={`/sign-in?next=${encodeURIComponent(base + (attempt ? "?response=" + attempt.id : ""))}`}>
           Sign in and return to this response
-        </Link>
+        </TextLink>
       )}
     </section>
   );

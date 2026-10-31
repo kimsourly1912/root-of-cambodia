@@ -1,4 +1,5 @@
 import { AccountForm } from "@/features/accounts/components/account-form";
+import { PageContainer } from "@/components/page-container";
 export default async function Page({
   searchParams,
 }: {
@@ -6,12 +7,12 @@ export default async function Page({
 }) {
   const params = await searchParams;
   return (
-    <main id="main" className="px-5 py-12 sm:py-16">
+    <PageContainer variant="focused">
       <AccountForm
         mode="reset-password"
         next={params.next}
         token={typeof params.token === "string" ? params.token : undefined}
       />
-    </main>
+    </PageContainer>
   );
 }

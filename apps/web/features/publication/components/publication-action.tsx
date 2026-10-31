@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { PublicDisclosure } from "@root-of-cambodia/backend/publication";
+import { TextLink } from "@/components/text-link";
+import { StatusMessage } from "@/components/status-message";
+import { CheckboxField } from "@/components/ui/checkbox";
 type Choice = {
   action: string;
   label: string;
@@ -154,19 +156,15 @@ export function PublicationAction({
             arrival notes stay private. Check your description and photos for
             information you intend to share.
           </p>
-          <label className="flex items-start gap-3 text-sm">
-            <input
-              type="checkbox"
-              className="mt-1 h-4 w-4 shrink-0 accent-primary"
+          <CheckboxField
+             
+             
               checked={publicConfirmed}
               disabled={!hydrated || pending || uncertain || done || conflict}
-              onChange={(event) => setPublicConfirmed(event.target.checked)}
-            />
-            <span>
+              onChange={(event) => setPublicConfirmed(event.target.checked)}>
               I understand these listing details and processed photos will be
               visible publicly after approval.
-            </span>
-          </label>
+            </CheckboxField>
         </div>
       )}
       {reviewer && (
@@ -190,19 +188,19 @@ export function PublicationAction({
         </div>
       )}
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <StatusMessage tone="error">
           {error}
-        </p>
+        </StatusMessage>
       )}
       {signIn && (
-        <Link href="/sign-in" className="block text-sm underline">
+        <TextLink className="block text-sm" href="/sign-in">
           Sign in again
-        </Link>
+        </TextLink>
       )}
       {done && (
-        <p role="status" className="text-sm text-primary">
+        <StatusMessage tone="success">
           Action confirmed. Updating status…
-        </p>
+        </StatusMessage>
       )}
       {conflict ? (
         <Button variant="outline" onClick={() => window.location.reload()}>

@@ -1,12 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/typography";
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
     <div className="space-y-5 py-12">
-      <h1 className="text-2xl font-semibold">
+      <PageTitle>
         We couldn’t load your workspace
-      </h1>
+      </PageTitle>
       <p className="text-muted-foreground">
         Please try again shortly. Your saved details are held in your account.
       </p>

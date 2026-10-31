@@ -10,6 +10,10 @@ import { StayPhoto } from "@/features/catalog/components/stay-photo";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { PageTitle, SectionTitle } from "@/components/typography";
+import { EmptyState } from "@/components/empty-state";
+import { TextLink } from "@/components/text-link";
+import { Alert } from "@/components/ui/alert";
 export default async function Page({
   searchParams,
 }: {
@@ -37,9 +41,9 @@ export default async function Page({
         <p className="mb-3 text-sm font-medium text-primary">
           Root of Cambodia
         </p>
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+        <PageTitle size="hero">
           Stays in Cambodia
-        </h1>
+        </PageTitle>
         <p className="mt-4 leading-relaxed text-muted-foreground">
           Explore accommodation from participating property owners.
         </p>
@@ -72,24 +76,20 @@ export default async function Page({
         <Button type="submit">Search stays</Button>
       </form>
       {(input.q || input.province || input.cursor || invalid) && (
-        <Link
-          href="/stays"
-          className="mb-6 inline-block text-sm text-primary underline"
-        >
+        <TextLink className="mb-6 inline-block text-sm"
+          href="/stays">
           Clear search
-        </Link>
+        </TextLink>
       )}
       {invalid ? (
-        <p role="alert" className="rounded-lg border p-6">
+        <Alert role="alert">
           Check the search details and try again.
-        </p>
+        </Alert>
       ) : !result?.items.length ? (
-        <div className="rounded-xl border border-dashed p-10 text-center">
-          <h2 className="text-xl font-semibold">No stays found</h2>
-          <p className="mt-3 text-muted-foreground">
-            Try another name or province, or check back for new listings.
-          </p>
-        </div>
+        <EmptyState
+          title="No stays found"
+          description="Try another name or province, or check back for new listings."
+        />
       ) : (
         <>
           <p className="mb-5 text-sm text-muted-foreground">
@@ -117,9 +117,9 @@ export default async function Page({
                   />
                   <div className="space-y-2 px-1 pb-2 pt-4 break-words">
                     <p className="text-sm text-primary">{stay.province}</p>
-                    <h2 lang="km" className="text-xl font-semibold">
+                    <SectionTitle lang="km">
                       {stay.nameKm}
-                    </h2>
+                    </SectionTitle>
                     {stay.nameEn && (
                       <p className="text-sm text-muted-foreground">
                         {stay.nameEn}

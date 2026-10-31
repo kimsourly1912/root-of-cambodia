@@ -1,7 +1,4 @@
+import { LoadingState } from "@/components/status-message";
 export default function Loading() {
-  return (
-    <p role="status" className="py-12 text-muted-foreground">
-      Loading your workspace…
-    </p>
-  );
+  return <LoadingState>Loading your workspace…</LoadingState>;
 }

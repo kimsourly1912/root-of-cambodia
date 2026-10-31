@@ -4,6 +4,7 @@ import { ownerProperty } from "@root-of-cambodia/backend/properties";
 import { DomainError } from "@root-of-cambodia/backend/shared";
 import { PropertyNavigation } from "@/features/properties/components/property-navigation";
 import { RoomTypeForm } from "@/features/rooms/components/room-type-form";
+import { PageTitle } from "@/components/typography";
 export default async function Page({
   params,
 }: {
@@ -26,7 +27,7 @@ export default async function Page({
       <p lang="km" className="mb-2 break-words text-sm text-primary">
         {property.nameKm}
       </p>
-      <h1 className="text-3xl font-semibold tracking-tight">New room type</h1>
+      <PageTitle>New room type</PageTitle>
       <p className="mt-3 text-muted-foreground">
         Enter a name and the guest limits for one unit.
       </p>

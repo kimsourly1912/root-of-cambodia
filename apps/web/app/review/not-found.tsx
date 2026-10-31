@@ -1,14 +1,15 @@
-import Link from "next/link";
+import { PageTitle } from "@/components/typography";
+import { TextLink } from "@/components/text-link";
 export default function Missing() {
   return (
     <div className="space-y-4 py-12">
-      <h1 className="text-2xl font-semibold">Review unavailable</h1>
+      <PageTitle>Review unavailable</PageTitle>
       <p className="text-muted-foreground">
         It may not be available to your account.
       </p>
-      <Link href="/owner" className="text-primary underline">
+      <TextLink href="/owner">
         Back to your properties
-      </Link>
+      </TextLink>
     </div>
   );
 }

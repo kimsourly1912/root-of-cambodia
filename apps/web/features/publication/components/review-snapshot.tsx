@@ -1,5 +1,6 @@
 import type { ReviewSnapshot as Snapshot } from "@root-of-cambodia/backend/publication";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { SectionTitle } from "@/components/typography";
 const text = (value: string | null | undefined) => value || "Not provided";
 const money = (value: number) => `$${(value / 100).toFixed(2)}`;
 export function ReviewSnapshot({
@@ -11,16 +12,16 @@ export function ReviewSnapshot({
 }) {
   return (
     <div className="min-w-0 space-y-6">
-      <Card className="shadow-none">
+      <Card>
         <CardHeader>
           <CardTitle>
             <h2>Property details</h2>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 break-words text-sm">
-          <h3 lang="km" className="text-xl font-semibold">
+          <SectionTitle as="h3" lang="km">
             {s.property.nameKm}
-          </h3>
+          </SectionTitle>
           <p>
             {text(s.property.nameEn)} · {s.property.province}
           </p>
@@ -29,9 +30,9 @@ export function ReviewSnapshot({
             Check-in: {s.property.checkinTime} · Check-out:{" "}
             {s.property.checkoutTime}
           </p>
-          <h3 className="font-semibold">House rules</h3>
+          <SectionTitle as="h3" size="sm">House rules</SectionTitle>
           <p className="whitespace-pre-wrap">{s.property.policyText}</p>
-          <h3 className="font-semibold">Charges per stay</h3>
+          <SectionTitle as="h3" size="sm">Charges per stay</SectionTitle>
           {s.property.charges.length ? (
             <ul>
               {s.property.charges.map((c) => (
@@ -45,24 +46,24 @@ export function ReviewSnapshot({
           )}
         </CardContent>
       </Card>
-      <Card className="shadow-none">
+      <Card>
         <CardHeader>
           <CardTitle>
             <h2>Information</h2>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 break-words text-sm">
-          <h3 className="font-semibold">Description</h3>
+          <SectionTitle as="h3" size="sm">Description</SectionTitle>
           <p className="whitespace-pre-wrap">
             {text(s.information.description)}
           </p>
-          <h3 className="font-semibold">Address</h3>
+          <SectionTitle as="h3" size="sm">Address</SectionTitle>
           <p className="whitespace-pre-wrap">{text(s.information.address)}</p>
-          <h3 className="font-semibold">Facilities</h3>
+          <SectionTitle as="h3" size="sm">Facilities</SectionTitle>
           <p>{s.information.facilities.join(", ") || "Not provided"}</p>
         </CardContent>
       </Card>
-      <Card className="shadow-none">
+      <Card>
         <CardHeader>
           <CardTitle>
             <h2>Location &amp; contact</h2>
@@ -81,13 +82,13 @@ export function ReviewSnapshot({
           <p className="text-muted-foreground">
             Owner-entered contact details are unverified.
           </p>
-          <h3 className="font-semibold">Arrival instructions</h3>
+          <SectionTitle as="h3" size="sm">Arrival instructions</SectionTitle>
           <p className="whitespace-pre-wrap">
             {text(s.logistics.arrivalInstructions)}
           </p>
         </CardContent>
       </Card>
-      <Card className="shadow-none">
+      <Card>
         <CardHeader>
           <CardTitle>
             <h2>Rooms, prices &amp; availability</h2>
@@ -97,9 +98,9 @@ export function ReviewSnapshot({
           {!s.rooms.length && <p>No room types configured.</p>}
           {s.rooms.map((r) => (
             <div key={r.id} className="space-y-1 break-words">
-              <h3 className="font-semibold">
+              <SectionTitle as="h3" size="sm">
                 {r.name} · {r.active ? "Active" : "Inactive"}
-              </h3>
+              </SectionTitle>
               <p>
                 Capacity: {r.adultCapacity} adults, {r.childCapacity} children,{" "}
                 {r.totalCapacity} total
@@ -116,7 +117,7 @@ export function ReviewSnapshot({
           </p>
         </CardContent>
       </Card>
-      <Card className="shadow-none">
+      <Card>
         <CardHeader>
           <CardTitle>
             <h2>Photos</h2>

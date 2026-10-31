@@ -4,6 +4,7 @@ import { ownerProperty } from "@root-of-cambodia/backend/properties";
 import { DomainError } from "@root-of-cambodia/backend/shared";
 import { PropertyNavigation } from "@/features/properties/components/property-navigation";
 import { PropertyForm } from "@/features/properties/components/property-form";
+import { PageTitle } from "@/components/typography";
 export default async function Page({
   params,
 }: {
@@ -23,9 +24,9 @@ export default async function Page({
       <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-primary">
         Property setup / 01
       </p>
-      <h1 className="text-3xl font-semibold tracking-tight">
+      <PageTitle>
         Property details
-      </h1>
+      </PageTitle>
       <p className="mb-8 mt-3 text-muted-foreground">
         Review and update your saved details.
       </p>

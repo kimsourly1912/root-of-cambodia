@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ownerSession, ownerRead } from "@/server/owner-session";
 import {
@@ -21,6 +20,9 @@ import { DomainError } from "@root-of-cambodia/backend/shared";
 import { usd, cambodiaTime, bookingStatus } from "@/lib/booking-format";
 import { BookingLogistics } from "@/features/bookings/components/booking-logistics";
 import { OwnerBookingResponse } from "@/features/bookings/components/owner-booking-response";
+import { PageTitle, SectionTitle } from "@/components/typography";
+import { TextLink, textLinkClass } from "@/components/text-link";
+import { cn } from "@/lib/utils";
 export default async function Page({
   params,
   searchParams,
@@ -83,23 +85,23 @@ export default async function Page({
       if (responseId || paymentAttemptId)
         return (
           <section className="space-y-5">
-            <h1 className="text-2xl font-semibold">Saved review unavailable</h1>
+            <PageTitle>Saved review unavailable</PageTitle>
             <p>
               This response is not available to your account. If preparation was
               interrupted, reload to check again. Preparing a review never
               changes a booking.
             </p>
             <a
-              className="block text-primary underline"
+              className={cn(textLinkClass, "block")}
               href={
                 base + (responseId ? "?response=" + responseId : paymentQuery)
               }
             >
               Check again
             </a>
-            <Link href={base} className="block text-primary underline">
+            <TextLink className="block" href={base}>
               Return to current booking
-            </Link>
+            </TextLink>
           </section>
         );
       notFound();
@@ -114,17 +116,15 @@ export default async function Page({
     redirect(base);
   return (
     <div className="space-y-7">
-      <Link
-        href={`/owner/properties/${id}/bookings`}
-        className="text-primary underline"
-      >
+      <TextLink
+        href={`/owner/properties/${id}/bookings`}>
         ← Property bookings
-      </Link>
+      </TextLink>
       <p className="font-medium text-primary">{bookingStatus(b.status)}</p>
-      <h1 className="break-words text-3xl font-semibold">{b.propertyName}</h1>
+      <PageTitle>{b.propertyName}</PageTitle>
       <p className="break-all text-xs">Booking reference: {b.id}</p>
       <section className="space-y-3 rounded-xl border p-6">
-        <h2 className="text-xl font-semibold">{b.guestName}</h2>
+        <SectionTitle>{b.guestName}</SectionTitle>
         {b.guestEmail && <p className="break-all">{b.guestEmail}</p>}
         <p>
           {cambodiaTime(b.checkinAt)} → {cambodiaTime(b.checkoutAt)} · Cambodia
@@ -140,7 +140,7 @@ export default async function Page({
         )}
       </section>
       <section className="space-y-4 rounded-xl border p-6">
-        <h2 className="text-xl font-semibold">Submitted rooms and price</h2>
+        <SectionTitle>Submitted rooms and price</SectionTitle>
         {b.lines.map((l) => (
           <p key={l.id + l.night} className="text-sm">
             {l.roomName} · {l.night} · {l.quantity} units · {l.adults} adults ·{" "}
@@ -181,7 +181,7 @@ export default async function Page({
         attempt={paymentReview}
       />
       <section className="space-y-3">
-        <h2 className="text-xl font-semibold">Booking updates</h2>
+        <SectionTitle>Booking updates</SectionTitle>
         {b.events.map((e) => (
           <div key={e.kind} className="rounded-md bg-secondary p-4 text-sm">
             <p>
@@ -193,7 +193,7 @@ export default async function Page({
         ))}
         <a
           href={base + (responseId ? "?response=" + responseId : "")}
-          className="inline-block text-primary underline"
+          className={cn(textLinkClass, "inline-block")}
         >
           Refresh booking status
         </a>

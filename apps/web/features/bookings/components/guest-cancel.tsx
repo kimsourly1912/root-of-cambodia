@@ -1,9 +1,10 @@
 "use client";
 import { useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { requestError } from "./guest-request-form";
+import { TextLink } from "@/components/text-link";
+import { StatusMessage } from "@/components/status-message";
 export function GuestCancel({
   id,
   checkinAt,
@@ -79,17 +80,15 @@ export function GuestCancel({
   return (
     <div className="space-y-3">
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <StatusMessage tone="error">
           {error}
-        </p>
+        </StatusMessage>
       )}
       {auth && (
-        <Link
-          href={`/sign-in?next=${encodeURIComponent(`/bookings/${id}?cancelAttempt=${key.current}`)}`}
-          className="block text-primary underline"
-        >
+        <TextLink className="block"
+          href={`/sign-in?next=${encodeURIComponent(`/bookings/${id}?cancelAttempt=${key.current}`)}`}>
           Sign in and recover cancellation
-        </Link>
+        </TextLink>
       )}
       {confirm || uncertain ? (
         <>

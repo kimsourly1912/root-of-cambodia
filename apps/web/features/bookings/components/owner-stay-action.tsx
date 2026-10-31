@@ -1,11 +1,15 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { OwnerBooking } from "@root-of-cambodia/backend/bookings";
 import type { StayAction } from "@root-of-cambodia/backend/bookings";
 import { Button } from "@/components/ui/button";
 import { cambodiaTime } from "@/lib/booking-format";
+import { SectionTitle } from "@/components/typography";
+import { TextLink, textLinkClass } from "@/components/text-link";
+import { StatusMessage } from "@/components/status-message";
+import { CheckboxField } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 export function OwnerStayAction({
   booking: b,
   intent,
@@ -92,9 +96,9 @@ export function OwnerStayAction({
   }
   return (
     <section className="space-y-4 rounded-xl border p-6">
-      <h2 className="text-xl font-semibold">
+      <SectionTitle>
         {action === "check_in" ? "Record arrival" : "Complete the stay"}
-      </h2>
+      </SectionTitle>
       {action === "check_in" ? (
         <p className="text-sm">
           Record arrival from {cambodiaTime(b.checkinAt)} until{" "}
@@ -114,11 +118,10 @@ export function OwnerStayAction({
         </p>
       )}
       <form onSubmit={apply} className="space-y-4">
-        <label className="flex gap-3 text-sm">
-          <input
-            type="checkbox"
+        <CheckboxField
+           
             required
-            className="mt-1 size-4 shrink-0"
+           
             defaultChecked={!!intent}
             disabled={
               now === null ||
@@ -126,14 +129,11 @@ export function OwnerStayAction({
               uncertain ||
               blocked ||
               (action === "check_in" && !inWindow && !intent)
-            }
-          />
-          <span>
+            }>
             {action === "check_in"
               ? "The guest has arrived at the property."
               : "The guest has left and this stay is finished."}
-          </span>
-        </label>
+          </CheckboxField>
         {!blocked && (
           <Button
             type="submit"
@@ -152,20 +152,19 @@ export function OwnerStayAction({
         )}
       </form>
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <StatusMessage tone="error">
           {error}
-        </p>
+        </StatusMessage>
       )}
       {auth && (
-        <Link
-          className="block text-primary underline"
-          href={`/sign-in?next=${encodeURIComponent(base + `?stayAction=${action}&stayAttempt=${key.current}`)}`}
-        >
+        <TextLink className="block"
+         
+          href={`/sign-in?next=${encodeURIComponent(base + `?stayAction=${action}&stayAttempt=${key.current}`)}`}>
           Sign in and recover this update
-        </Link>
+        </TextLink>
       )}
       <a
-        className="inline-block text-primary underline"
+        className={cn(textLinkClass, "inline-block")}
         href={
           base +
           (key.current

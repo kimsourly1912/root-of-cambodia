@@ -1,10 +1,10 @@
-import Link from "next/link";
 import type {
   PublicationReadiness,
   ReadinessItem,
 } from "@root-of-cambodia/backend/publication";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
+import { TextLink } from "@/components/text-link";
 const items: {
   code: ReadinessItem;
   label: string;
@@ -69,7 +69,7 @@ export function PublicationChecklist({
   ownerPropertyId?: string;
 }) {
   return (
-    <Card className="shadow-none">
+    <Card>
       <CardHeader>
         <CardTitle>
           <h2>Publication checklist</h2>
@@ -94,12 +94,11 @@ export function PublicationChecklist({
                 </strong>
               </span>
               {!readiness.checks[item.code] && ownerPropertyId && (
-                <Link
-                  className="underline underline-offset-4"
-                  href={`/owner/properties/${ownerPropertyId}${item.tab}`}
-                >
+                <TextLink
+                 
+                  href={`/owner/properties/${ownerPropertyId}${item.tab}`}>
                   {item.action}
-                </Link>
+                </TextLink>
               )}
             </li>
           ))}

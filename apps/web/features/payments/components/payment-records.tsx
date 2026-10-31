@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { OwnerPayments } from "@root-of-cambodia/backend/payments";
 import type { PaymentAttempt } from "@root-of-cambodia/backend/payments";
@@ -8,6 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { usd, cambodiaTime } from "@/lib/booking-format";
+import { SectionTitle } from "@/components/typography";
+import { TextLink } from "@/components/text-link";
+import { StatusMessage } from "@/components/status-message";
+import { CheckboxField } from "@/components/ui/checkbox";
 export function PaymentRecords({
   bookingId,
   base,
@@ -125,7 +128,7 @@ export function PaymentRecords({
   }
   return (
     <section className="space-y-5 rounded-xl border p-6">
-      <h2 className="text-xl font-semibold">Payment at the property</h2>
+      <SectionTitle>Payment at the property</SectionTitle>
       <p className="font-medium">
         {state.status === "recorded"
           ? "Payment recorded"
@@ -146,7 +149,7 @@ export function PaymentRecords({
       </p>
       {attempt ? (
         <div className="space-y-4 rounded-lg bg-secondary p-4">
-          <h3 className="font-semibold">Review saved payment update</h3>
+          <SectionTitle as="h3" size="sm">Review saved payment update</SectionTitle>
           <p>
             {action === "record"
               ? `Record the full ${usd(state.totalCents)} received outside this platform.`
@@ -169,26 +172,22 @@ export function PaymentRecords({
             </Button>
           )}
           {!uncertain && (
-            <Link href={base} className="block text-primary underline">
+            <TextLink className="block" href={base}>
               Return to current payment record
-            </Link>
+            </TextLink>
           )}
         </div>
       ) : eligible ? (
         <form onSubmit={review} className="space-y-4">
-          <label className="flex items-start gap-3 text-sm">
-            <input
+          <CheckboxField
               required
-              type="checkbox"
-              className="mt-1 size-4 shrink-0"
-              disabled={!hydrated || pending || !!recovery}
-            />
-            <span>
+             
+             
+              disabled={!hydrated || pending || !!recovery}>
               {action === "record"
                 ? `The property received the full ${usd(state.totalCents)} outside this platform.`
                 : "I am correcting a mistaken record. This does not refund money or establish a new debt."}
-            </span>
-          </label>
+            </CheckboxField>
           {action === "void" && (
             <div className="space-y-2">
               <Label htmlFor="payment-correction-reason">
@@ -220,44 +219,38 @@ export function PaymentRecords({
         </p>
       ) : null}
       {error && (
-        <p role="alert" className="text-sm text-destructive">
+        <StatusMessage tone="error">
           {error}
-        </p>
+        </StatusMessage>
       )}
       {recovery && (
-        <Link
-          href={base + "?paymentAttempt=" + recovery}
-          className="block text-primary underline"
-        >
+        <TextLink className="block"
+          href={base + "?paymentAttempt=" + recovery}>
           Check saved payment review
-        </Link>
+        </TextLink>
       )}
       {auth && (
-        <Link
-          href={`/sign-in?next=${encodeURIComponent(base + (currentAttempt ? "?paymentAttempt=" + currentAttempt : ""))}`}
-          className="block text-primary underline"
-        >
+        <TextLink className="block"
+          href={`/sign-in?next=${encodeURIComponent(base + (currentAttempt ? "?paymentAttempt=" + currentAttempt : ""))}`}>
           Sign in and recover this payment update
-        </Link>
+        </TextLink>
       )}
       {!attempt && !!state.drafts.length && (
         <div className="space-y-2">
-          <h3 className="font-semibold">Saved payment reviews</h3>
+          <SectionTitle as="h3" size="sm">Saved payment reviews</SectionTitle>
           {state.drafts.map((d) => (
-            <Link
+            <TextLink className="block text-sm"
               key={d.id}
-              href={base + "?paymentAttempt=" + d.id}
-              className="block text-sm text-primary underline"
-            >
+              href={base + "?paymentAttempt=" + d.id}>
               Open saved {d.action === "record" ? "payment" : "correction"}{" "}
               review
-            </Link>
+            </TextLink>
           ))}
         </div>
       )}
       {!!state.events.length && (
         <div className="space-y-3 border-t pt-5">
-          <h3 className="font-semibold">Payment record history</h3>
+          <SectionTitle as="h3" size="sm">Payment record history</SectionTitle>
           {state.events.map((e) => (
             <div
               key={e.revision}
@@ -277,16 +270,15 @@ export function PaymentRecords({
             </div>
           ))}
           <div className="flex gap-5">
-            <Link className="text-primary underline" href={base}>
+            <TextLink href={base}>
               Latest payment history
-            </Link>
+            </TextLink>
             {state.nextCursor && (
-              <Link
-                className="text-primary underline"
-                href={base + "?paymentCursor=" + state.nextCursor}
-              >
+              <TextLink
+               
+                href={base + "?paymentCursor=" + state.nextCursor}>
                 Older payment history
-              </Link>
+              </TextLink>
             )}
           </div>
         </div>
@@ -306,7 +298,7 @@ export function GuestPaymentRecord({
 }) {
   return (
     <section className="space-y-3 rounded-xl border p-6">
-      <h2 className="text-xl font-semibold">Payment at the property</h2>
+      <SectionTitle>Payment at the property</SectionTitle>
       <p className="font-medium">
         {payment.status === "recorded"
           ? "Property marked full payment recorded"

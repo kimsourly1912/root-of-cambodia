@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { OwnerRoomType } from "@root-of-cambodia/backend/rooms";
 import { Button } from "@/components/ui/button";
@@ -13,6 +12,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SectionTitle } from "@/components/typography";
+import { TextLink } from "@/components/text-link";
+import { StatusMessage } from "@/components/status-message";
+import { Alert } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 type Attempt = {
   key: string;
   body: {
@@ -137,7 +141,7 @@ export function RoomTypeForm({
         disabled={!editable || pending || settling || uncertain || conflict}
         className="min-w-0"
       >
-        <Card className="shadow-none">
+        <Card>
           <CardHeader>
             <CardTitle>Room type details</CardTitle>
             <CardDescription>
@@ -162,7 +166,7 @@ export function RoomTypeForm({
             </div>
             <div className="space-y-4">
               <div>
-                <h2 className="font-semibold">Guest limits per unit</h2>
+                <SectionTitle size="sm">Guest limits per unit</SectionTitle>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Set the adult, child and total limits separately. The total
                   limit applies to adults and children together.
@@ -206,11 +210,11 @@ export function RoomTypeForm({
         </Card>
       </fieldset>
       <aside className="space-y-5 lg:sticky lg:top-8">
-        <Card className="shadow-none">
+        <Card>
           <CardHeader>
-            <span className="mb-2 w-fit rounded-full bg-secondary px-3 py-1 text-xs font-medium">
+            <Badge className="mb-2">
               Private setup
-            </span>
+            </Badge>
             <CardTitle>
               {editable ? "Save your room type" : "Room type details"}
             </CardTitle>
@@ -227,7 +231,7 @@ export function RoomTypeForm({
               </p>
             )}
             {error && (
-              <div role="alert" className="space-y-3 text-sm text-destructive">
+              <Alert variant="destructive" role="alert">
                 <p>{error}</p>
                 {conflict && (
                   <Button
@@ -239,16 +243,16 @@ export function RoomTypeForm({
                   </Button>
                 )}
                 {!uncertain && !conflict && (
-                  <Link href="/sign-in" className="text-primary underline">
+                  <TextLink href="/sign-in">
                     Sign in again
-                  </Link>
+                  </TextLink>
                 )}
-              </div>
+              </Alert>
             )}
             {saved && (
-              <p role="status" className="text-sm font-medium text-primary">
+              <StatusMessage tone="success">
                 Room type saved.
-              </p>
+              </StatusMessage>
             )}
             {editable && !conflict && (
               <Button
@@ -264,19 +268,15 @@ export function RoomTypeForm({
               </Button>
             )}
             {room && (
-              <Link
-                href={base + "/" + room.id + "/calendar"}
-                className="block text-center text-sm font-medium text-primary underline underline-offset-4"
-              >
+              <TextLink className="block text-center text-sm"
+                href={base + "/" + room.id + "/calendar"}>
                 Prices and availability →
-              </Link>
+              </TextLink>
             )}
-            <Link
-              href={base}
-              className="block text-center text-sm font-medium text-primary underline underline-offset-4"
-            >
+            <TextLink className="block text-center text-sm"
+              href={base}>
               Back to room types
-            </Link>
+            </TextLink>
             {uncertain && (
               <p className="text-xs text-muted-foreground">
                 Keep this page open until the save is confirmed.

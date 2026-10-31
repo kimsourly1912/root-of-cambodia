@@ -1,6 +1,5 @@
 "use client";
 import { useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { guestReturn } from "@/lib/return-path";
 import { Button } from "@/components/ui/button";
@@ -13,6 +12,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { TextLink } from "@/components/text-link";
+import { Alert } from "@/components/ui/alert";
+import { StatusMessage } from "@/components/status-message";
 export type AuthMode =
   | "sign-in"
   | "sign-up"
@@ -149,9 +151,9 @@ export function AuthForm({
       </CardHeader>
       <CardContent>
         {verified && mode === "sign-in" && (
-          <p role="status" className="mb-5 rounded-lg bg-secondary p-3 text-sm">
+          <Alert variant="info" className="mb-5" role="status">
             Your email is verified. You can sign in now.
-          </p>
+          </Alert>
         )}
         {done ? (
           <div role="status" className="space-y-5">
@@ -166,20 +168,17 @@ export function AuthForm({
               This preview captures email locally; it does not deliver to an
               inbox.
             </p>
-            <Link
-              className="font-medium text-primary underline underline-offset-4"
-              href={authHref("/sign-in")}
-            >
+            <TextLink
+             
+              href={authHref("/sign-in")}>
               Back to sign in
-            </Link>
+            </TextLink>
             {mode === "sign-up" && (
               <p>
-                <Link
-                  href={authHref("/verify-email")}
-                  className="text-sm text-primary underline"
-                >
+                <TextLink className="text-sm"
+                  href={authHref("/verify-email")}>
                   Request a new verification link
-                </Link>
+                </TextLink>
               </p>
             )}
           </div>
@@ -234,25 +233,20 @@ export function AuthForm({
               </div>
             )}
             {error && (
-              <p
-                id="auth-error"
-                role="alert"
-                className="text-sm text-destructive"
-              >
+              <StatusMessage tone="error"
+                id="auth-error">
                 {error}
-              </p>
+              </StatusMessage>
             )}
             {mode === "reset-password" && !token ? (
-              <p role="alert">
+              <StatusMessage tone="error">
                 Reset link missing.{" "}
-                <Link
-                  href={authHref("/forgot-password")}
-                  className="text-primary underline"
-                >
+                <TextLink
+                  href={authHref("/forgot-password")}>
                   Request a new link
-                </Link>
+                </TextLink>
                 .
-              </p>
+              </StatusMessage>
             ) : (
               <Button type="submit" disabled={pending} className="w-full">
                 {pending ? "Please wait…" : label}
@@ -266,37 +260,33 @@ export function AuthForm({
               <>
                 <p>
                   New here?{" "}
-                  <Link
-                    className="font-medium text-primary underline"
-                    href={authHref("/sign-up")}
-                  >
+                  <TextLink
+                   
+                    href={authHref("/sign-up")}>
                     Create an account
-                  </Link>
+                  </TextLink>
                 </p>
                 <p>
-                  <Link
-                    className="text-primary underline"
-                    href={authHref("/forgot-password")}
-                  >
+                  <TextLink
+                   
+                    href={authHref("/forgot-password")}>
                     Forgot password?
-                  </Link>
+                  </TextLink>
                 </p>
                 <p>
-                  <Link
-                    className="text-primary underline"
-                    href={authHref("/verify-email")}
-                  >
+                  <TextLink
+                   
+                    href={authHref("/verify-email")}>
                     Resend verification email
-                  </Link>
+                  </TextLink>
                 </p>
               </>
             ) : (
-              <Link
-                className="font-medium text-primary underline"
-                href={authHref("/sign-in")}
-              >
+              <TextLink
+               
+                href={authHref("/sign-in")}>
                 Back to sign in
-              </Link>
+              </TextLink>
             )}
           </div>
         )}

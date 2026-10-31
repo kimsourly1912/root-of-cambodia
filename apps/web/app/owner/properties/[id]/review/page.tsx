@@ -9,8 +9,10 @@ import { ReviewSnapshot } from "@/features/publication/components/review-snapsho
 import { PublicationAction } from "@/features/publication/components/publication-action";
 import { PublicationChecklist } from "@/features/publication/components/publication-checklist";
 import { PublicStayDetails } from "@/features/catalog/components/public-stay-details";
-import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { PageTitle } from "@/components/typography";
+import { TextLink } from "@/components/text-link";
+import { Disclosure } from "@/components/disclosure";
 export default async function Page({
   params,
 }: {
@@ -36,9 +38,9 @@ export default async function Page({
     data.publication === "review" && data.latest?.status === "pending";
   return (
     <>
-      <h1 className="text-3xl font-semibold tracking-tight">
+      <PageTitle>
         Publication review
-      </h1>
+      </PageTitle>
       <p className="mt-3 text-muted-foreground">
         Review your saved details before sending them to the pilot reviewer.
       </p>
@@ -53,10 +55,7 @@ export default async function Page({
             />
           )}
           {data.publicPreview && (
-            <details open className="rounded-xl border bg-card p-5">
-              <summary className="mb-5 cursor-pointer text-lg font-semibold">
-                Guest listing preview
-              </summary>
+            <Disclosure open summary="Guest listing preview">
               <PublicStayDetails
                 listing={data.publicPreview.listing}
                 heading="h3"
@@ -72,7 +71,7 @@ export default async function Page({
                         : undefined
                 }
               />
-            </details>
+            </Disclosure>
           )}
           {snapshot && (
             <ReviewSnapshot
@@ -88,7 +87,7 @@ export default async function Page({
           )}
         </div>
         <aside className="space-y-5 lg:sticky lg:top-8">
-          <Card className="shadow-none">
+          <Card>
             <CardHeader>
               <CardTitle>
                 <h2>
@@ -118,12 +117,10 @@ export default async function Page({
                       : "This earlier approval has no public-display confirmation and is not included in guest browsing."}
               </p>
               {data.publication === "published" && data.disclosure && (
-                <Link
-                  href={`/stays/${id}`}
-                  className="inline-block text-primary underline"
-                >
+                <TextLink className="inline-block"
+                  href={`/stays/${id}`}>
                   View guest listing
-                </Link>
+                </TextLink>
               )}
               {pending && !data.disclosure && (
                 <p>
@@ -189,7 +186,7 @@ export default async function Page({
             </CardContent>
           </Card>
           {!!data.events.length && (
-            <Card className="shadow-none">
+            <Card>
               <CardHeader>
                 <CardTitle>
                   <h2>Latest submission</h2>

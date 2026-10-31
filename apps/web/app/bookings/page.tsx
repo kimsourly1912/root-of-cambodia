@@ -1,9 +1,12 @@
-import Link from "next/link";
 import { guestSession } from "@/server/guest-session";
 import { ownerRead } from "@/server/owner-session";
 import { guestBookings } from "@root-of-cambodia/backend/bookings";
 import { DomainError } from "@root-of-cambodia/backend/shared";
 import { usd, bookingStatus } from "@/lib/booking-format";
+import { PageTitle, SectionTitle } from "@/components/typography";
+import { EmptyState } from "@/components/empty-state";
+import { TextLink } from "@/components/text-link";
+import { Badge } from "@/components/ui/badge";
 export default async function Page({
   searchParams,
 }: {
@@ -19,35 +22,34 @@ export default async function Page({
       return (
         <p>
           Invalid page.{" "}
-          <Link href="/bookings" className="underline">
+          <TextLink href="/bookings">
             Open My bookings
-          </Link>
+          </TextLink>
         </p>
       );
     throw error;
   }
   return (
     <div className="space-y-7">
-      <h1 className="text-3xl font-semibold">My bookings</h1>
+      <PageTitle>My bookings</PageTitle>
       <p className="text-muted-foreground">
         Track your requests and confirmed stays. Payment is made directly to the
         property.
       </p>
       {!!page.drafts.length && (
         <section className="space-y-3 rounded-lg border p-5">
-          <h2 className="font-semibold">Saved request reviews</h2>
+          <SectionTitle size="sm">Saved request reviews</SectionTitle>
           <p className="text-sm">
             These reviews have not produced a confirmed submission. Open one to
             send or recover the same request.
           </p>
           {page.drafts.map((d) => (
-            <Link
-              className="block text-primary underline"
+            <TextLink className="block"
+             
               key={d.id}
-              href={`/bookings/requests/${d.id}`}
-            >
+              href={`/bookings/requests/${d.id}`}>
               {d.propertyName} · Open saved review
-            </Link>
+            </TextLink>
           ))}
         </section>
       )}
@@ -58,46 +60,40 @@ export default async function Page({
               key={b.id}
               className="min-w-0 space-y-3 rounded-xl border bg-card p-5"
             >
-              <span className="inline-block rounded-full bg-secondary px-3 py-1 text-xs font-medium">
+              <Badge>
                 {bookingStatus(b.status)}
-              </span>
-              <h2 className="break-words text-lg font-semibold">
+              </Badge>
+              <SectionTitle size="sm">
                 {b.propertyName}
-              </h2>
+              </SectionTitle>
               <p>
                 {b.checkinDate} → {b.checkoutDate}
               </p>
               <p>{usd(b.totalCents)}</p>
-              <Link
-                className="inline-block text-primary underline"
-                href={`/bookings/${b.id}`}
-              >
+              <TextLink className="inline-block"
+               
+                href={`/bookings/${b.id}`}>
                 View booking
-              </Link>
+              </TextLink>
             </li>
           ))}
         </ul>
       ) : (
-        <section className="space-y-4 rounded-xl border p-8">
-          <h2 className="text-xl font-semibold">No bookings on this page</h2>
-          <Link href="/stays" className="text-primary underline">
-            Explore stays
-          </Link>
-        </section>
+        <EmptyState title="No bookings on this page">
+          <TextLink href="/stays">Explore stays</TextLink>
+        </EmptyState>
       )}
       <nav aria-label="Booking pages" className="flex gap-6">
         {cursor && (
-          <Link href="/bookings" className="text-primary underline">
+          <TextLink href="/bookings">
             Newest bookings
-          </Link>
+          </TextLink>
         )}
         {page.nextCursor && (
-          <Link
-            href={`/bookings?cursor=${encodeURIComponent(page.nextCursor)}`}
-            className="text-primary underline"
-          >
+          <TextLink
+            href={`/bookings?cursor=${encodeURIComponent(page.nextCursor)}`}>
             Older bookings
-          </Link>
+          </TextLink>
         )}
       </nav>
     </div>
