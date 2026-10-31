@@ -1,8 +1,8 @@
 import { requireStagingAccount } from "./staging-accounts";
-import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { guestReturn } from "@/lib/return-path";
 import { runtime } from "./runtime";
+import { renderSession } from "./session";
 import { verified } from "@root-of-cambodia/backend/shared";
 import { DomainError } from "@root-of-cambodia/backend/shared";
 import { diagnostics } from "@root-of-cambodia/backend/shared";
@@ -12,8 +12,8 @@ export async function ownerSession(next = "/owner") {
   const context = diagnostics("http");
   let result;
   try {
-    const { env, auth, readOnly, fixtureTest } = await runtime();
-    const session = readOnly ? null : await auth.api.getSession({ headers: await headers() });
+    const { env, fixtureTest } = await runtime();
+    const session = await renderSession();
     if (!session) result = null;
     else {
       requireStagingAccount(session.user.id, fixtureTest);

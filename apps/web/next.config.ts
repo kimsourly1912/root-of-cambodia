@@ -17,7 +17,13 @@ const config: NextConfig = {
   poweredByHeader: false,
   // Agent guidance lives in the root AGENTS.md; do not generate a nested copy.
   agentRules: false,
-  experimental: { cpus: 2 },
+  experimental: {
+    cpus: 2,
+    // Keep visited and prefetched pages in the client cache for 30s so going
+    // back and forth is instant. Every save calls router.refresh(), which
+    // clears it; the server still rechecks state on every write.
+    staleTimes: { dynamic: 30, static: 30 },
+  },
   // Publication review moved into the admin console (ADR 0010, slice 4).
   async redirects() {
     return [

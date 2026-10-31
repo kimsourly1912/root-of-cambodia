@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { IntentLink } from "@/components/intent-link";
 import { usePathname } from "next/navigation";
 import { Building, Building2, ClipboardCheck, House, LayoutDashboard, Luggage, Plus, Search, UserCheck } from "lucide-react";
 
@@ -54,14 +54,14 @@ function WorkspaceShell({
     <SidebarProvider defaultOpen={defaultOpen}>
       <Sidebar>
         <SidebarHeader>
-          <Link
+          <IntentLink
             href="/"
             aria-label="Root of Cambodia home"
             className="inline-flex min-h-11 items-center gap-2 rounded-md px-2 font-semibold tracking-tight"
           >
             <House aria-hidden="true" className="size-5 text-primary" />
             Root of Cambodia
-          </Link>
+          </IntentLink>
         </SidebarHeader>
         <SidebarContent>
           <nav aria-label="Workspace">
@@ -98,7 +98,7 @@ function WorkspaceMenu({
     <SidebarMenuItem key={href}>
       <SidebarMenuButton
         isActive={active}
-        render={<Link href={href} aria-current={active ? "page" : undefined} onClick={close} />}
+        render={<IntentLink href={href} aria-current={active ? "page" : undefined} onClick={close} />}
       >
         {icon}
         <span>{label}</span>
@@ -122,7 +122,7 @@ function WorkspaceMenu({
                     <SidebarMenuSubButton
                       isActive={property.id === propertyId}
                       render={
-                        <Link
+                        <IntentLink
                           href={`/owner/properties/${property.id}`}
                           aria-current={property.id === propertyId ? "page" : undefined}
                           onClick={close}
@@ -135,7 +135,7 @@ function WorkspaceMenu({
                 ))}
                 {navigation.moreProperties && (
                   <SidebarMenuSubItem>
-                    <SidebarMenuSubButton render={<Link href="/owner" onClick={close} />}>
+                    <SidebarMenuSubButton render={<IntentLink href="/owner" onClick={close} />}>
                       <span>All properties…</span>
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>

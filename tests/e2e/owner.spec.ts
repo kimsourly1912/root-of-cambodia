@@ -114,10 +114,10 @@ test("verified owner creates, retries, edits, resolves a stale tab and reopens a
   await page.getByLabel(/Province/).fill(fields.province);
   await page
     .getByLabel("Check-in time", { exact: true })
-    .fill(fields.checkinTime);
+    .selectOption(fields.checkinTime);
   await page
     .getByLabel("Check-out time", { exact: true })
-    .fill(fields.checkoutTime);
+    .selectOption(fields.checkoutTime);
   await page.getByLabel("Property house rules").fill(fields.policyText);
   // Commit the first request but lose its response. Retry must preserve the key/body.
   let firstKey = "";

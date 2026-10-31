@@ -1,5 +1,5 @@
 import * as React from "react";
-import Link from "next/link";
+import { IntentLink } from "@/components/intent-link";
 
 import { cn } from "@/lib/utils";
 
@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
 const textLinkClass =
   "font-medium text-primary underline underline-offset-4 hover:text-primary/80";
 
-function TextLink({ className, ...props }: React.ComponentProps<typeof Link>) {
-  return <Link className={cn(textLinkClass, className)} {...props} />;
+function TextLink({ className, ...props }: React.ComponentProps<typeof IntentLink>) {
+  return <IntentLink className={cn(textLinkClass, className)} {...props} />;
 }
 
 // For a native <a> that must force a full page load (for example recovery

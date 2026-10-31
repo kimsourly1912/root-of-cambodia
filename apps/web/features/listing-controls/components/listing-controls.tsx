@@ -1,5 +1,6 @@
 "use client";
 import { useEffect,useRef,useState } from "react";
+import { useRouter } from "next/navigation";
 import type { ListingControls as Controls } from "@root-of-cambodia/backend/listing-controls";
 import { Button } from "@/components/ui/button";
 import { cambodiaTime } from "@/lib/booking-format";
@@ -12,7 +13,7 @@ import { Disclosure } from "@/components/disclosure";
 export function ListingControls({propertyId,state}:{propertyId:string;state:Controls}) {
   const [hydrated,setHydrated]=useState(false),[confirmed,setConfirmed]=useState(false),[pending,setPending]=useState(false),
     [uncertain,setUncertain]=useState(false),[blocked,setBlocked]=useState(false),[done,setDone]=useState(""),[error,setError]=useState(""),[auth,setAuth]=useState(false);
-  const busy=useRef(false),attempt=useRef<{key:string;body:string;action:string}|null>(null);
+  const router=useRouter(),busy=useRef(false),attempt=useRef<{key:string;body:string;action:string}|null>(null);
   const path="/owner/properties/"+propertyId+"/review";
   useEffect(()=>setHydrated(true),[]);
   async function act(action:string) {
@@ -30,7 +31,7 @@ export function ListingControls({propertyId,state}:{propertyId:string;state:Cont
         setError("The listing, its approval or your access changed. Check the latest status before a new action.");return;
       }
       const receipt=await r.json() as {status:string};
-      setDone(receipt.status);setUncertain(false);
+      setDone(receipt.status);setUncertain(false);router.refresh();
     }catch{setUncertain(true);setError("Connection interrupted. Keep this tab open and retry the same action.");}
     finally{busy.current=false;setPending(false);}
   }
