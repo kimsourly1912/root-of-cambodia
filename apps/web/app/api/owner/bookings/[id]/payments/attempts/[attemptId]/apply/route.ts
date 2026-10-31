@@ -1,4 +1,4 @@
-import { endpoint } from "@/src/http";
+import { endpoint } from "@/server/http";
 import { applyPayment } from "@root-of-cambodia/backend/payments";
 export const dynamic = "force-dynamic";
 export async function POST(

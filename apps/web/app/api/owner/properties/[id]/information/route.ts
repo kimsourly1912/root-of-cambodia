@@ -1,5 +1,5 @@
-import { endpoint } from "../../../../../../src/http";
-import { ownerPropertyInformation } from "@root-of-cambodia/backend/property-information-queries";
+import { endpoint } from "@/server/http";
+import { ownerPropertyInformation } from "@root-of-cambodia/backend/property-information";
 import { savePropertyInformation } from "@root-of-cambodia/backend/property-information";
 export const dynamic = "force-dynamic";
 type Context = { params: Promise<{ id: string }> };

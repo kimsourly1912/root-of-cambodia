@@ -1,6 +1,6 @@
-import { publicEndpoint } from "@/src/public-http";
-import { browseStays } from "@root-of-cambodia/backend/catalog-queries";
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { publicEndpoint } from "@/server/public-http";
+import { browseStays } from "@root-of-cambodia/backend/catalog";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   return publicEndpoint(({ DB }) => {

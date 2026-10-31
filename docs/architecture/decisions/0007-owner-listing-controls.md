@@ -1,6 +1,6 @@
 # ADR 0007: Owner listing visibility and reviewed offline corrections
 
-**Status:** accepted, 30 October 2026; implementation staged in separate PRs.
+**Status:** accepted, 30 October 2026; stage A merged in PR #33 and stage B in PR #34 (main 40f7ffa).
 **Responsible role:** project owner (publication policy); maintainer (implementation).
 **Last source verification:** main 42e8c294cacc3a1658d2447cfb8825d9305a911a.
 **Sources:** [accepted recommendation/alternatives/approval](../../product/published-listing-controls-proposal.md), [public boundary](0005-public-listing-boundary.md), [atomic operations](0002-atomic-booking-operations.md), [private booking copies](0006-booking-journey.md).

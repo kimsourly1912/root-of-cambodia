@@ -1,6 +1,6 @@
-import { endpoint } from "../../../../src/http";
-import { createPropertyDraft } from "@root-of-cambodia/backend/property-drafts";
-import { ownerProperties } from "@root-of-cambodia/backend/property-queries";
+import { endpoint } from "@/server/http";
+import { createPropertyDraft } from "@root-of-cambodia/backend/properties";
+import { ownerProperties } from "@root-of-cambodia/backend/properties";
 export const dynamic = "force-dynamic";
 export function GET(request: Request) {
   return endpoint(request, false, ({ db, actor }) =>

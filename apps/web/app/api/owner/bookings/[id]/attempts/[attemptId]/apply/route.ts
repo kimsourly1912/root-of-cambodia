@@ -1,5 +1,5 @@
-import { endpoint } from "@/src/http";
-import { applyOwnerAttempt } from "@root-of-cambodia/backend/owner-bookings";
+import { endpoint } from "@/server/http";
+import { applyOwnerAttempt } from "@root-of-cambodia/backend/bookings";
 export const dynamic = "force-dynamic";
 export async function POST(
   request: Request,

@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
-import { ownerSession, ownerRead } from "@/src/owner-session";
-import { ownerProperty } from "@root-of-cambodia/backend/property-queries";
-import { ownerRoomType } from "@root-of-cambodia/backend/room-queries";
-import { DomainError } from "@root-of-cambodia/backend/errors";
-import { PropertyNavigation } from "@/components/property-navigation";
-import { RoomTypeForm } from "@/components/room-type-form";
+import { ownerSession, ownerRead } from "@/server/owner-session";
+import { ownerProperty } from "@root-of-cambodia/backend/properties";
+import { ownerRoomType } from "@root-of-cambodia/backend/rooms";
+import { DomainError } from "@root-of-cambodia/backend/shared";
+import { PropertyNavigation } from "@/features/properties/components/property-navigation";
+import { RoomTypeForm } from "@/features/rooms/components/room-type-form";
+import { PageTitle } from "@/components/typography";
 export default async function Page({
   params,
 }: {
@@ -30,9 +31,9 @@ export default async function Page({
       <p lang="km" className="mb-2 break-words text-sm text-primary">
         {data.property.nameKm}
       </p>
-      <h1 className="text-3xl font-semibold tracking-tight">
+      <PageTitle>
         Room type details
-      </h1>
+      </PageTitle>
       <p className="mt-3 text-muted-foreground">
         Review the name and guest limits for this room type.
       </p>

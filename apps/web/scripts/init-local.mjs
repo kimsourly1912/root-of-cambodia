@@ -41,10 +41,11 @@ const result = spawnSync(
   { stdio: "inherit", windowsHide: true },
 );
 if (result.status !== 0) throw new Error("Local migration failed");
+// wrangler d1/dev append v3 to --persist-to; getPlatformProxy uses the path as given.
 const proxy = await getPlatformProxy({
   configPath: "wrangler.jsonc",
   remoteBindings: false,
-  persist: { path: state },
+  persist: { path: path.join(state, "v3") },
 });
 try {
   await proxy.env.DB.prepare(

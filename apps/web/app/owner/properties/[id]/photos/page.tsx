@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
-import { ownerSession, ownerRead } from "@/src/owner-session";
-import { ownerMediaGallery } from "@root-of-cambodia/backend/media-queries";
-import { DomainError } from "@root-of-cambodia/backend/errors";
-import { PropertyNavigation } from "@/components/property-navigation";
-import { PropertyPhotos } from "@/components/property-photos";
+import { ownerSession, ownerRead } from "@/server/owner-session";
+import { ownerMediaGallery } from "@root-of-cambodia/backend/media";
+import { DomainError } from "@root-of-cambodia/backend/shared";
+import { PropertyNavigation } from "@/features/properties/components/property-navigation";
+import { PropertyPhotos } from "@/features/media/components/property-photos";
+import { PageTitle } from "@/components/typography";
 export default async function Page({
   params,
 }: {
@@ -24,7 +25,7 @@ export default async function Page({
   return (
     <>
       <p className="mb-2 text-sm text-primary">Private property draft</p>
-      <h1 className="text-3xl font-semibold tracking-tight">Property photos</h1>
+      <PageTitle>Property photos</PageTitle>
       <p className="mt-3 text-muted-foreground">
         Add and arrange photos while preparing your property.
       </p>

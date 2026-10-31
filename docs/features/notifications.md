@@ -6,7 +6,7 @@
 
 **Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
 
-**Sources:** [packages/backend/migrations/0002_booking_operations.sql](../../packages/backend/migrations/0002_booking_operations.sql), [packages/backend/src/outbox.ts](../../packages/backend/src/outbox.ts), [packages/backend/src/jobs.ts](../../packages/backend/src/jobs.ts), [apps/jobs/src/index.ts](../../apps/jobs/src/index.ts), [apps/jobs/src/runtime.ts](../../apps/jobs/src/runtime.ts), [packages/backend/src/diagnostics.ts](../../packages/backend/src/diagnostics.ts), [apps/web/src/runtime.ts](../../apps/web/src/runtime.ts).
+**Sources:** [packages/backend/migrations/0002_booking_operations.sql](../../packages/backend/migrations/0002_booking_operations.sql), [packages/backend/src/shared/outbox.ts](../../packages/backend/src/shared/outbox.ts), [packages/backend/src/features/jobs/jobs.ts](../../packages/backend/src/features/jobs/jobs.ts), [apps/jobs/src/index.ts](../../apps/jobs/src/index.ts), [apps/jobs/src/runtime.ts](../../apps/jobs/src/runtime.ts), [packages/backend/src/shared/diagnostics.ts](../../packages/backend/src/shared/diagnostics.ts), [apps/web/server/runtime.ts](../../apps/web/server/runtime.ts).
 
 ## Event authority, recipients and non-goals
 

@@ -1,8 +1,9 @@
-import Link from "next/link";
-import { ownerSession } from "@/src/owner-session";
-import { reviewerRead } from "@/src/reviewer-read";
-import { reviewQueue } from "@root-of-cambodia/backend/publication-queries";
+import { ownerSession } from "@/server/owner-session";
+import { reviewerRead } from "@/features/publication/server";
+import { reviewQueue } from "@root-of-cambodia/backend/publication";
 import { Card, CardContent } from "@/components/ui/card";
+import { PageTitle, SectionTitle } from "@/components/typography";
+import { TextLink } from "@/components/text-link";
 export default async function Page({
   searchParams,
 }: {
@@ -17,26 +18,24 @@ export default async function Page({
   );
   return (
     <>
-      <h1 className="text-3xl font-semibold tracking-tight">
+      <PageTitle>
         Publication reviews
-      </h1>
+      </PageTitle>
       <p className="mb-8 mt-3 text-muted-foreground">
         Pending property submissions, oldest first.
       </p>
       <div className="grid gap-4 sm:grid-cols-2">
         {result.items.map((r) => (
-          <Card key={r.id} className="shadow-none">
+          <Card key={r.id}>
             <CardContent className="space-y-3 p-6">
-              <h2 lang="km" className="break-words text-xl font-semibold">
+              <SectionTitle lang="km">
                 {r.nameKm}
-              </h2>
+              </SectionTitle>
               <p className="text-sm">{r.province}</p>
-              <Link
-                href={`/review/${r.id}`}
-                className="text-sm font-semibold text-primary underline"
-              >
+              <TextLink className="text-sm"
+                href={`/review/${r.id}`}>
                 Review submission
-              </Link>
+              </TextLink>
             </CardContent>
           </Card>
         ))}
@@ -44,17 +43,15 @@ export default async function Page({
       {!result.items.length && <p>No pending submissions on this page.</p>}
       <div className="mt-6 flex gap-6 text-sm text-primary">
         {cursor && (
-          <Link href="/review" className="underline">
+          <TextLink href="/review">
             First page
-          </Link>
+          </TextLink>
         )}
         {result.nextCursor && (
-          <Link
-            href={`/review?cursor=${result.nextCursor}`}
-            className="underline"
-          >
+          <TextLink
+            href={`/review?cursor=${result.nextCursor}`}>
             Next page →
-          </Link>
+          </TextLink>
         )}
       </div>
     </>

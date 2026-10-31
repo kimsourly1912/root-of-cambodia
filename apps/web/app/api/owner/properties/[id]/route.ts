@@ -1,6 +1,6 @@
-import { endpoint } from "../../../../../src/http";
-import { updatePropertyDraft } from "@root-of-cambodia/backend/property-drafts";
-import { ownerProperty } from "@root-of-cambodia/backend/property-queries";
+import { endpoint } from "@/server/http";
+import { updatePropertyDraft } from "@root-of-cambodia/backend/properties";
+import { ownerProperty } from "@root-of-cambodia/backend/properties";
 export const dynamic = "force-dynamic";
 type Context = { params: Promise<{ id: string }> };
 export async function GET(request: Request, context: Context) {

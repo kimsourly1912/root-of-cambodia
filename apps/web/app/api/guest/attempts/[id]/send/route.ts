@@ -1,5 +1,5 @@
-import { endpoint } from "@/src/http";
-import { sendGuestAttempt } from "@root-of-cambodia/backend/guest-bookings";
+import { endpoint } from "@/server/http";
+import { sendGuestAttempt } from "@root-of-cambodia/backend/bookings";
 export const dynamic = "force-dynamic";
 export async function POST(
   request: Request,

@@ -1,7 +1,7 @@
-import { endpoint } from "../../../../../../../../src/http";
-import { ownerRoomCalendar } from "@root-of-cambodia/backend/calendar-queries";
+import { endpoint } from "@/server/http";
+import { ownerRoomCalendar } from "@root-of-cambodia/backend/calendar";
 import { saveRoomCalendar } from "@root-of-cambodia/backend/calendar";
-import { cambodiaToday } from "@root-of-cambodia/backend/calendar-dates";
+import { cambodiaToday } from "@root-of-cambodia/backend/calendar";
 export const dynamic = "force-dynamic";
 type Context = { params: Promise<{ id: string; roomId: string }> };
 export async function GET(request: Request, context: Context) {

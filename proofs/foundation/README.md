@@ -46,7 +46,7 @@ The active application now uses the pinned root pnpm workspace; see [setup](../.
 
 ## Important boundaries
 
-The schema only covers a narrow reservation prototype. The follow-up schema review adds immutable sealed quote rows, canonical dates and complete per-room-type stay coverage, integer quantities/prices, total validation, transition guards, and attributable owner cancellation reasons. Its 18 D1 tests include these safeguards. See [the review](../../docs/Root-of-Cambodia-Schema-Review.md) for results and remaining gaps.
+The schema only covers a narrow reservation prototype. The follow-up schema review adds immutable sealed quote rows, canonical dates and complete per-room-type stay coverage, integer quantities/prices, total validation, transition guards, and attributable owner cancellation reasons. Its 18 D1 tests include these safeguards. See [the review](../../docs/archive/2026-10/Root-of-Cambodia-Schema-Review.md) for results and remaining gaps.
 
 Fixture construction writes a pending booking and nightly rows, then seals the snapshot in one D1 batch. Acceptance requires a sealed snapshot. `expected_nights` means the number of quoted room-type/night rows in this fixture; it is not the number of nights in a multi-room-type stay. Production should use explicit booking-line identities and derive stay duration from local dates.
 

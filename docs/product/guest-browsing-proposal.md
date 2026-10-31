@@ -6,7 +6,7 @@
 
 **Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
-**Sources:** [accepted scope](scope.md), [D05/D17](open-decisions.md), [current delivery](../status.md), [architecture](../architecture/overview.md), [private media ADR](../architecture/decisions/0004-private-media-lifecycle.md), [review snapshot](../../packages/backend/src/publication-queries.ts), [private photo reads](../../packages/backend/src/media-queries.ts), [booking contract](../features/bookings.md), [current runtime guard](../../apps/web/src/runtime.ts).
+**Sources:** [accepted scope](scope.md), [D05/D17](open-decisions.md), [current delivery](../status.md), [architecture](../architecture/overview.md), [private media ADR](../architecture/decisions/0004-private-media-lifecycle.md), [review snapshot](../../packages/backend/src/features/publication/publication-queries.ts), [private photo reads](../../packages/backend/src/features/media/media-queries.ts), [booking contract](../features/bookings.md), [current runtime guard](../../apps/web/server/runtime.ts).
 
 ## Decision context
 

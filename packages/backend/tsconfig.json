@@ -3,5 +3,7 @@
   "compilerOptions": {
     "types": []
   },
-  "include": ["src/**/*.ts", "worker-configuration.d.ts"]
+  "include": ["src/**/*.ts", "worker-configuration.d.ts"],
+  // Tests and fixtures are typechecked by tests/tsconfig.json with Vitest types.
+  "exclude": ["src/**/tests/**", "src/testing/**"]
 }

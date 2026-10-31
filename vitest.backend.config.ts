@@ -50,12 +50,10 @@ export default defineConfig({
   ],
   test: {
     name: "backend",
-    include: ["tests/**/*.test.ts"],
-    exclude: [
-      "tests/worker-http.test.ts",
-      "tests/jobs-runtime.test.ts",
-      "tests/staging-runtime.test.ts",
-      "tests/workspace.test.ts",
+    // Feature tests sit beside their feature; cross-feature backend tests in packages/backend/tests.
+    include: [
+      "packages/backend/src/**/*.test.ts",
+      "packages/backend/tests/**/*.test.ts",
     ],
     testTimeout: 15_000,
     hookTimeout: 15_000,

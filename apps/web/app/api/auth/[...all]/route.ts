@@ -1,6 +1,6 @@
-import { runtime } from "../../../../src/runtime";
-import { stagingAuthRead } from "../../../../src/runtime-policy";
-import { stagingAuthAction, STAGING_ACCOUNTS } from "../../../../src/staging-accounts";
+import { runtime } from "@/server/runtime";
+import { stagingAuthRead } from "@/server/runtime-policy";
+import { stagingAuthAction, STAGING_ACCOUNTS } from "@/server/staging-accounts";
 export const dynamic = "force-dynamic";
 async function handler(request: Request) {
   const { auth, readOnly, fixtureTest } = await runtime();

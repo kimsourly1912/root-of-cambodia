@@ -6,7 +6,7 @@
 
 **Last source verification:** 29 October 2026, implementation based on merged main [99e8350](https://github.com/kimsourly1912/root-of-cambodia/commit/99e8350afd1b0aeca035e8707d428d6865fdb8dc).
 
-**Sources:** [accepted scope](scope.md), [D05/D15/D17](open-decisions.md), [publication contract](../features/publication-review.md), [snapshot reader](../../packages/backend/src/publication-queries.ts), [current checklist](../../apps/web/components/publication-checklist.tsx).
+**Sources:** [accepted scope](scope.md), [D05/D15/D17](open-decisions.md), [publication contract](../features/publication-review.md), [snapshot reader](../../packages/backend/src/features/publication/publication-queries.ts), [current checklist](../../apps/web/features/publication/components/publication-checklist.tsx).
 
 ## Accepted decision and rationale
 

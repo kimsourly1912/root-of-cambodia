@@ -1,21 +1,22 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { SignOut } from "@/components/sign-out";
+import { TextLink } from "@/components/text-link";
+import { PageContainer } from "@/components/page-container";
 export const dynamic = "force-dynamic";
 export const metadata = { robots: { index: false, follow: false } };
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <main id="main" className="mx-auto max-w-6xl px-5 py-8 sm:px-8">
+    <PageContainer>
       <nav
         aria-label="Owner navigation"
         className="mb-8 flex items-center justify-between border-b pb-5"
       >
-        <Link href="/owner" className="font-medium text-primary">
+        <TextLink href="/owner">
           Your properties
-        </Link>
+        </TextLink>
         <SignOut />
       </nav>
       {children}
-    </main>
+    </PageContainer>
   );
 }

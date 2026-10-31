@@ -6,7 +6,7 @@
 
 **Last source verification:** 30 October 2026; feat/property-payment-records stacked on stay PR #27.
 
-**Sources:** [selected rules and authority](../product/stay-operations.md), [bookings](bookings.md), [database invariants](../architecture/database.md), [service](../../packages/backend/src/payments.ts), [named persistence](../../packages/backend/src/payment-persistence.ts), [private queries](../../packages/backend/src/payment-queries.ts), [0016](../../packages/backend/migrations/0016_property_payment_records.sql).
+**Sources:** [selected rules and authority](../product/stay-operations.md), [bookings](bookings.md), [database invariants](../architecture/database.md), [service](../../packages/backend/src/features/payments/payments.ts), [named persistence](../../packages/backend/src/features/payments/payment-persistence.ts), [private queries](../../packages/backend/src/features/payments/payment-queries.ts), [0016](../../packages/backend/migrations/0016_property_payment_records.sql).
 
 ## Meaning and permissions
 

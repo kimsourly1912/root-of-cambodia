@@ -1,11 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/typography";
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
     <section className="space-y-5">
-      <h1 className="text-2xl font-semibold">
+      <PageTitle>
         Bookings temporarily unavailable
-      </h1>
+      </PageTitle>
       <p>
         We couldn’t load this page. Reload to check the current result before
         starting another request.

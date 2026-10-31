@@ -1,4 +1,4 @@
-import { endpoint } from "@/src/http";
+import { endpoint } from "@/server/http";
 import { applyExternalReview } from "@root-of-cambodia/backend/external-bookings";
 export const dynamic = "force-dynamic";
 export async function POST(request: Request, context: {params: Promise<{id: string; attemptId: string}>}) {

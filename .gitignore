@@ -16,3 +16,7 @@ apps/jobs/dist/
 test-results/
 playwright-report/
 .pnpm-local-store/
+
+# Personal agent files (shared rules live in AGENTS.md)
+CLAUDE.local.md
+.claude/settings.local.json

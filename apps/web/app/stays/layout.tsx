@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { PageContainer } from "@/components/page-container";
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Explore stays",
@@ -6,8 +7,8 @@ export const metadata = {
 };
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <main id="main" className="mx-auto max-w-6xl px-5 py-10 sm:px-8">
+    <PageContainer>
       {children}
-    </main>
+    </PageContainer>
   );
 }

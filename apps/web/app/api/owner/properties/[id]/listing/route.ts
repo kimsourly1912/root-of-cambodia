@@ -1,5 +1,5 @@
-import { endpoint } from "@/src/http";
-import { listingControls } from "@root-of-cambodia/backend/listing-control-queries";
+import { endpoint } from "@/server/http";
+import { listingControls } from "@root-of-cambodia/backend/listing-controls";
 import { changeListing } from "@root-of-cambodia/backend/listing-controls";
 export const dynamic="force-dynamic";
 type Context={params:Promise<{id:string}>};

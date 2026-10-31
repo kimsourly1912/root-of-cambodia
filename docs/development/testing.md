@@ -6,7 +6,7 @@
 
 **Last source verification:** 29 October 2026; guest-browsing implementation based on [ef971f1](https://github.com/kimsourly1912/root-of-cambodia/commit/ef971f1a863c6211a9a55fb1223982327fc5fdf7).
 
-**Sources:** [vitest.config.ts](../../vitest.config.ts), [vitest.backend.config.ts](../../vitest.backend.config.ts), [vitest.worker.config.ts](../../vitest.worker.config.ts), [vitest.tooling.config.ts](../../vitest.tooling.config.ts), [playwright.config.ts](../../playwright.config.ts), [tests/browser/server.ts](../../tests/browser/server.ts), [.github/workflows/verify.yml](../../.github/workflows/verify.yml).
+**Sources:** [vitest.config.ts](../../vitest.config.ts), [vitest.backend.config.ts](../../vitest.backend.config.ts), [vitest.worker.config.ts](../../vitest.worker.config.ts), [vitest.tooling.config.ts](../../vitest.tooling.config.ts), [playwright.config.ts](../../playwright.config.ts), [tests/e2e/server.ts](../../tests/e2e/server.ts), [.github/workflows/verify.yml](../../.github/workflows/verify.yml).
 
 Use the [setup sequence](setup.md) for prerequisites and both builds. [Status](../status.md) is the only current historical result summary; record fresh task results in its PR with SHA, environment and run link. Do not repeat stale counts as current results across READMEs.
 
@@ -15,7 +15,7 @@ Use the [setup sequence](setup.md) for prerequisites and both builds. [Status](.
 | Layer | Runtime / scope | Root command and prerequisites |
 | --- | --- | --- |
 | Backend | Native workerd/D1 via Cloudflare Vitest plugin; local R2/Images; configured migration discovery/tracking | `pnpm test:backend` after frozen install; no built Next.js entrypoint imported |
-| Focused backend file | Same native backend project; choose the changed behavior | `pnpm exec vitest run --project backend tests/calendar.test.ts` (example) |
+| Focused backend file | Same native backend project; choose the changed behavior | `pnpm exec vitest run --project backend packages/backend/src/features/calendar/tests/calendar.test.ts` (example) |
 | Jobs services | Backend project jobs cases | `pnpm test:jobs`; not a substitute for the built-jobs journey |
 | Tooling | Node workspace/import/state-handoff checks | `pnpm exec vitest run --project tooling` |
 | Built Workers | Node-orchestrated Wrangler actual web Worker and prebuilt jobs bundle | `pnpm test:worker` after **both** `build:worker` and `build:jobs` |
@@ -43,7 +43,18 @@ For changed semantics, verify the relevant source/migration contracts and add fo
 | Notifications | Duplicate/missed publish, expired/replaced lease, late worker success/failure, provider success with lost acknowledgement, unavailable recipient recovery |
 | UI | Empty/loading/validation, uncertain retry, stale tab, save/reopen, private route access and desktop/phone layout |
 
-Tests live alongside the established [test files](../../tests/); no new framework or automated boundary enforcement is implied by this documentation phase.
+Where tests live ([feature structure](../architecture/feature-structure.md#rules)):
+
+| Kind | Location | Vitest project |
+| --- | --- | --- |
+| One backend feature | `packages/backend/src/features/<feature>/tests/` (shared kernel: `src/shared/tests/`) | backend |
+| Cross-feature backend (migrations, safeguards, boundaries, booking core) | `packages/backend/tests/` | backend |
+| Shared backend fixtures | `packages/backend/src/testing/` (never exported) | — |
+| Built web/jobs Worker and staging runtime | `tests/integration/` | worker-http |
+| Workspace, state handoff and feature-boundary rules | `tests/tooling/` | tooling |
+| Browser journeys and the test server | `tests/e2e/` | Playwright |
+
+Each test file must match exactly one project; `pnpm exec vitest list --filesOnly` shows the assignment.
 
 ## Browser and environment evidence limits
 

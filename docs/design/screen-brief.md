@@ -12,7 +12,7 @@ Use [product scope](../product/scope.md) for policy, [feature contracts](../READ
 
 ## Existing UI and visual direction
 
-Existing owner/auth screens use local shadcn/Radix primitives (Button, Card, Input, Label, Textarea), Tailwind tokens and bundled Noto Sans Khmer. Reuse these and existing layouts/forms before introducing another component system/dependency. Owner routes include draft basics, rooms, weekly prices/stock, information, private photos and Location & contact (optional coordinates, informational contact methods and arrival notes). Current working copy is mostly English; full Khmer-first delivery is a goal.
+How to build screens (components, tokens, states and wording) is defined by the [UI standard](ui-standard.md) and its [component catalog](components.md); this brief covers visual direction and what each screen may promise. Owner routes include draft basics, rooms, weekly prices/stock, information, private photos and Location & contact (optional coordinates, informational contact methods and arrival notes). Current working copy is mostly English; full Khmer-first delivery is a goal.
 
 Design defaults, not new product rules: light warm-neutral surfaces, white cards, charcoal text and restrained deep green; hospitality photography, useful spacing and clear price/date hierarchy. Avoid decorative temple/flag overload. Guest flows are mobile-first; owner/admin should be efficient on desktop and usable on phones.
 

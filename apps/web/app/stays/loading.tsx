@@ -1,7 +1,4 @@
+import { LoadingState } from "@/components/status-message";
 export default function Loading() {
-  return (
-    <p role="status" className="py-16 text-center text-muted-foreground">
-      Loading stays…
-    </p>
-  );
+  return <LoadingState>Loading stays…</LoadingState>;
 }

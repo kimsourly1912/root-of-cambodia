@@ -2,8 +2,8 @@ import { maintenance, consume } from "@root-of-cambodia/backend/jobs";
 import {
   diagnostics,
   notificationReference,
-} from "@root-of-cambodia/backend/diagnostics";
-import { JobsConfigurationError } from "@root-of-cambodia/backend/errors";
+} from "@root-of-cambodia/backend/shared";
+import { JobsConfigurationError } from "@root-of-cambodia/backend/shared";
 import { localProvider, requireLocal } from "./runtime";
 import { cleanupRemovedPhotos } from "@root-of-cambodia/backend/media";
 

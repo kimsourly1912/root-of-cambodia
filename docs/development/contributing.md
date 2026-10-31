@@ -4,11 +4,13 @@
 
 **Responsible role:** maintainer (responsibility, not an assigned person).
 
-**Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
+**Last source verification:** 31 October 2026, main [40f7ffa](https://github.com/kimsourly1912/root-of-cambodia/commit/40f7ffa553a14005f622aa5c846f0f9dc5e70f42).
 
 **Sources:** [AGENTS.md](../../AGENTS.md), [.github/pull_request_template.md](../../.github/pull_request_template.md), [docs/archive/README.md](../archive/README.md).
 
-Humans, ChatGPT Work, Codex and other agents use the same root [AGENTS](../../AGENTS.md) and canonical docs. Do not add competing tool-specific architecture or policy instructions.
+Humans, ChatGPT/Codex, Claude Code and other agents use the same root [AGENTS](../../AGENTS.md) and canonical docs. [CLAUDE.md](../../CLAUDE.md) only imports AGENTS.md. Do not add competing tool-specific architecture or policy instructions; personal agent notes stay in git-ignored local files such as CLAUDE.local.md.
+
+Step-by-step procedures for recurring task types are in the [playbooks](../playbooks/README.md). This page stays the standard they apply.
 
 ## Workflow and conflict handling
 
@@ -29,8 +31,6 @@ Current task instructions and existing explicit approvals govern actions. Do not
 
 Local initialization writes state and applies local migrations. It is permitted only when within task scope; do not run it for a read-only/docs-only task that excludes it. A normal code task may authorize appropriate local checks without a new approval for each command.
 
-The 29 October documentation phase is specifically documentation/instructions only. It excludes code/dependency/schema/config/settings changes, installs, local initialization/migrations, deployment and merging while permitting commit/push/PR creation.
-
 ## Definition of done
 
 | Area | Required evidence when applicable |
@@ -44,7 +44,7 @@ The 29 October documentation phase is specifically documentation/instructions on
 | Environment | Exact local/staging/live scope and release gates; no implication that a build authorizes deployment |
 | Review | Focused final diff, actual validation and outstanding decisions visible; required CI state reported |
 
-For documentation-only work, validate links/anchors, executable-source accuracy, archive preservation and an allowlist of changed docs/instruction files. Do not invent application test results or run unnecessary behavioral tests.
+For documentation-only work, run `node scripts/check-doc-links.ts` and validate executable-source accuracy, archive preservation and an allowlist of changed docs/instruction files. Do not invent application test results or run unnecessary behavioral tests.
 
 ## Handoff template
 

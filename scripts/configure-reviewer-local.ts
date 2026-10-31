@@ -41,8 +41,9 @@ const proxy = await getPlatformProxy<{
 }>({
   configPath: path.join(root, "apps/web/wrangler.jsonc"),
   remoteBindings: false,
+  // Same database as wrangler dev/d1 --persist-to .wrangler/state, which append v3.
   persist: {
-    path: path.join(root, ".wrangler/state"),
+    path: path.join(root, ".wrangler/state/v3"),
   },
 });
 try {

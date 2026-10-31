@@ -1,14 +1,15 @@
-import Link from "next/link";
+import { PageTitle } from "@/components/typography";
+import { TextLink } from "@/components/text-link";
 export default function NotFound() {
   return (
     <div className="py-16">
-      <h1 className="text-3xl font-semibold">Stay unavailable</h1>
+      <PageTitle>Stay unavailable</PageTitle>
       <p className="my-5 text-muted-foreground">
         This listing is not available to browse.
       </p>
-      <Link href="/stays" className="text-primary underline">
+      <TextLink href="/stays">
         Explore other stays
-      </Link>
+      </TextLink>
     </div>
   );
 }

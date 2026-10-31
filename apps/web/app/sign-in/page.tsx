@@ -1,4 +1,6 @@
-import { AccountForm } from "@/components/account-form";
+import { AccountForm } from "@/features/accounts/components/account-form";
+import { StatusMessage } from "@/components/status-message";
+import { PageContainer } from "@/components/page-container";
 export default async function Page({
   searchParams,
 }: {
@@ -6,20 +8,17 @@ export default async function Page({
 }) {
   const params = await searchParams;
   return (
-    <main id="main" className="px-5 py-12 sm:py-16">
+    <PageContainer variant="focused">
       {params.error && (
-        <p
-          role="alert"
-          className="mx-auto mb-5 max-w-md text-sm text-destructive"
-        >
+        <StatusMessage tone="error" className="mx-auto mb-5 max-w-md">
           Verification link invalid or expired. Request a fresh link.
-        </p>
+        </StatusMessage>
       )}
       <AccountForm
         mode="sign-in"
         next={params.next}
         verified={params.verified === "1" && !params.error}
       />
-    </main>
+    </PageContainer>
   );
 }

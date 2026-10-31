@@ -1,10 +1,12 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { guestSession } from "@/src/guest-session";
-import { ownerRead } from "@/src/owner-session";
-import { guestAttempt } from "@root-of-cambodia/backend/guest-bookings";
-import { DomainError } from "@root-of-cambodia/backend/errors";
-import { BookingReview } from "@/components/booking-review";
+import { guestSession } from "@/server/guest-session";
+import { ownerRead } from "@/server/owner-session";
+import { guestAttempt } from "@root-of-cambodia/backend/bookings";
+import { DomainError } from "@root-of-cambodia/backend/shared";
+import { BookingReview } from "@/features/bookings/components/booking-review";
+import { PageTitle } from "@/components/typography";
+import { TextLink, textLinkClass } from "@/components/text-link";
+import { cn } from "@/lib/utils";
 export default async function Page({
   params,
 }: {
@@ -19,7 +21,7 @@ export default async function Page({
     if (error instanceof DomainError && error.code === "not_found")
       return (
         <section className="space-y-5">
-          <h1 className="text-3xl font-semibold">Saved review unavailable</h1>
+          <PageTitle>Saved review unavailable</PageTitle>
           <p>
             This review is not available to your account. If saving was
             interrupted, reload to check again. Preparing a review never sends a
@@ -27,13 +29,13 @@ export default async function Page({
           </p>
           <a
             href={`/bookings/requests/${id}`}
-            className="block text-primary underline"
+            className={cn(textLinkClass, "block")}
           >
             Check again
           </a>
-          <Link href="/bookings" className="block text-primary underline">
+          <TextLink className="block" href="/bookings">
             My bookings
-          </Link>
+          </TextLink>
         </section>
       );
     throw error;
@@ -41,7 +43,7 @@ export default async function Page({
   if (attempt.receipt) redirect(`/bookings/${attempt.receipt.id}`);
   return (
     <div className="space-y-7">
-      <h1 className="text-3xl font-semibold">Review your stay</h1>
+      <PageTitle>Review your stay</PageTitle>
       <BookingReview id={id} preview={attempt.preview} />
     </div>
   );

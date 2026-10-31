@@ -9,6 +9,9 @@
   },
   "include": [
     "**/*.ts",
+    "../packages/backend/src/**/tests/**/*.ts",
+    "../packages/backend/src/testing/**/*.ts",
+    "../packages/backend/tests/**/*.ts",
     "../apps/web/worker-configuration.d.ts",
     "../apps/jobs/worker-configuration.d.ts",
     "../packages/backend/worker-configuration.d.ts",
@@ -17,6 +20,7 @@
     "../scripts/configure-reviewer-local.ts",
     "../scripts/configure-booking-terms-local.ts",
     "../scripts/staging-fixtures.ts",
-    "../scripts/seed-staging.ts"
+    "../scripts/seed-staging.ts",
+    "../scripts/seed-local.ts"
   ]
 }

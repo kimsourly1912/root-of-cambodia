@@ -6,9 +6,9 @@
 
 **Last source verification:** 29 October 2026, [607a705](https://github.com/kimsourly1912/root-of-cambodia/commit/607a7057b908a005f9f3529141b0978f52d24ce0).
 
-**Sources:** [apps/web/package.json](package.json), [apps/web/src/http.ts](src/http.ts), [apps/web/src/runtime.ts](src/runtime.ts).
+**Sources:** [apps/web/package.json](package.json), [server/http.ts](server/http.ts), [server/runtime.ts](server/runtime.ts), [feature structure](../../docs/architecture/feature-structure.md).
 
-Next.js/React UI and thin OpenNext/Workers HTTP/runtime adapters. Pages use authorized reads; browser mutations call shared backend services. Keep booking rules and atomic SQL out of adapters.
+Next.js/React UI and thin OpenNext/Workers HTTP/runtime adapters, organized by feature: `app/` holds thin routes, `features/<feature>/` holds each feature's components (and `server.ts` adapters), and `components/`, `lib/` and `server/` hold code shared by two or more features. Pages use authorized reads; browser mutations call backend services. Keep booking rules and atomic SQL out of adapters.
 
 Read [owner supply](../../docs/features/owner-supply.md), [bookings](../../docs/features/bookings.md), [architecture](../../docs/architecture/overview.md) and [status](../../docs/status.md). Local auth mail is captured, not sent; runtime deliberately rejects nonlocal mode.
 

@@ -1,5 +1,5 @@
-import { JobsConfigurationError } from "@root-of-cambodia/backend/errors";
-import type { Provider } from "@root-of-cambodia/backend/outbox";
+import { JobsConfigurationError } from "@root-of-cambodia/backend/shared";
+import type { Provider } from "@root-of-cambodia/backend/shared";
 
 export function requireLocal(env: JobsEnv) {
   if (env.APP_MODE !== "local") throw new JobsConfigurationError();

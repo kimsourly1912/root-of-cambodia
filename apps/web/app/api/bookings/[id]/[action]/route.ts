@@ -1,6 +1,6 @@
-import { endpoint } from "../../../../../src/http";
+import { endpoint } from "@/server/http";
 import { transition, type Action } from "@root-of-cambodia/backend/bookings";
-import { DomainError } from "@root-of-cambodia/backend/errors";
+import { DomainError } from "@root-of-cambodia/backend/shared";
 export const dynamic = "force-dynamic";
 const actions: Action[] = [
   "accept",

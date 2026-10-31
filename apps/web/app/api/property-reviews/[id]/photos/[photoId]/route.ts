@@ -1,8 +1,8 @@
-import { requireStagingAccount } from "@/src/staging-accounts";
-import { runtime } from "@/src/runtime";
+import { requireStagingAccount } from "@/server/staging-accounts";
+import { runtime } from "@/server/runtime";
 import { readReviewPreview } from "@root-of-cambodia/backend/publication";
-import { DomainError } from "@root-of-cambodia/backend/errors";
-import { diagnostics } from "@root-of-cambodia/backend/diagnostics";
+import { DomainError } from "@root-of-cambodia/backend/shared";
+import { diagnostics } from "@root-of-cambodia/backend/shared";
 export const dynamic = "force-dynamic";
 export async function GET(
   request: Request,

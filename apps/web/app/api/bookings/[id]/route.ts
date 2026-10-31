@@ -1,5 +1,5 @@
-import { endpoint } from "../../../../src/http";
-import { readBooking } from "@root-of-cambodia/backend/access";
+import { endpoint } from "@/server/http";
+import { readBooking } from "@root-of-cambodia/backend/shared";
 export const dynamic = "force-dynamic";
 export async function GET(
   request: Request,
