@@ -1,4 +1,4 @@
-> **Historical snapshot — not current instructions.** Archived 31 October 2026 from [docs/status.md at 40f7ffa](https://github.com/kimsourly1912/root-of-cambodia/blob/40f7ffa553a14005f622aa5c846f0f9dc5e70f42/docs/status.md). It is the chronological delivery log for PRs #16–#34; dates, PR states, counts and pending notes below are historical.
+> **Historical snapshot — not current instructions.** Archived 31 October 2026 from [docs/status.md at 40f7ffa](https://github.com/kimsourly1912/root-of-cambodia/blob/40f7ffa553a14005f622aa5c846f0f9dc5e70f42/docs/status.md), plus the two PR #35 staging handoff sections appended at the end from [main 77b992a](https://github.com/kimsourly1912/root-of-cambodia/blob/77b992a71ab4ceac8d9ba08abfa6c0133cc84c8a/docs/status.md). It is the chronological delivery log for PRs #16–#35; dates, PR states, counts and pending notes below are historical.
 > **Current authority:** [docs/status.md](../../status.md).
 > Historical text is preserved; relative link destinations are adjusted only for relocation.
 
@@ -295,3 +295,124 @@ Six native correction scenarios and extended actual Worker/desktop/phone journey
 Stage B initial [CI 41016429773](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41016429773) passed setup through 0020, strict types, both builds and all six new native correction cases; 216/217 tests passed. The actual Worker completed the new correction/review/old-logistics/privacy assertions, then its later existing payment-replay comparison attempted to read an already-used response body. The fixture now consumes the original payment receipt once before issuing the replay and explicitly checks each response's unused body/status before reading, retaining exact receipt equality. No application behavior, prior assertion, retry or timeout is relaxed. Revised full CI remains required.
 
 Stage B revised [CI 41016961088](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41016961088) passed all 217 Vitest tests, actual Worker correction/payment journeys and 25/26 browser cases, including the complete new correction journey on both devices. The existing mobile stay journey failed at Completion and navigated to the booking URL with a bare query marker, exposing a pre-hydration native form submission. OwnerStayAction already waits for its client clock for check-in, but its completion controls lacked that gate. Both checkbox/button and the submit handler now require the same initialized client state. The existing completion browser scenario deliberately defers scripts and requires disabled server-HTML controls before proceeding with its original completion/payment assertions. No lifecycle rule, original assertion, timeout or retry is changed. New exact-head full CI is required.
+
+<!-- addendum: the two sections below were added to docs/status.md by PR #35 (main 77b992a) and archived here when status became a snapshot. Text preserved; only relative links relocated. -->
+
+## Current handoff — interactive staging feature testing
+
+The owner requested implemented guest/owner/reviewer features on staging after
+approving Cloudflare-only setup and deferring email. The explicit staging-test
+mode admits private fictional fixture accounts through normal Better Auth and
+unchanged backend verification/ownership rules. Registration, account changes,
+verification and recovery remain disabled; no remote capture or email delivery.
+The [testing guide](https://staging.rootsofcambodia.com/testing) supplies role
+journeys; passwords are delivered separately outside git.
+
+Fixtures cover two published stays with original illustrations and 35-night
+calendars, one pending publication review, one empty draft and Pending/Confirmed
+guest requests. Normal services/APIs create the data, review acknowledgements and
+bookings; no clock, stock or transition rule is bypassed. Private adapters/SSR
+also require fixed fixture IDs. Images uses its free transformation allowance.
+Jobs, queue consumption, recurring expiry/cleanup and email remain undeployed.
+The [staging contract](../../operations/staging.md) records safeguards and limitations.
+
+Strict types and both Worker builds passed locally. The full suite passed
+**221 tests across 29 files**, including four focused staging built-Worker tests: real fictional-account sessions, publication/media/booking
+services, wrong-owner refusal, disabled mail endpoints, sign-out, idempotent seed
+preservation and absence of remote capture/delivery. [CI 41054931388](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41054931388),
+job 124059956588, passed frozen install, setup/bindings/types, both builds, all 221
+Vitest cases and all **26 matching-Chromium desktop/phone checks** for source
+5d1fa9290cb95acb4f61ee32949877eec6436260, tree
+4ca155f6050b17b3e8a1718e5e2e0f09316f216b. Local matching Chromium remains
+unavailable after the earlier truncated download; browser automation evidence
+comes from that CI run, not a claimed local browser pass.
+
+That runtime is deployed at [staging](https://staging.rootsofcambodia.com/testing),
+version f1b9c633-0d01-4ebc-b6f9-9fd8d3d650ff, deployment
+634f6df2-a628-4dfb-8c39-392872f52092 at 100%. The build upload message references
+local commit 98a2bcb; its tree was verified identical to published source 5d1fa92.
+The isolated fixture bootstrap and normal live HTTPS population completed: four
+properties, three ready photos in private R2, two published stays, one review
+submission, one draft, and Pending/Confirmed guest bookings. Initial room calendar
+range is 2 November through 6 December 2026 (checkout by 7 December).
+
+**58 real HTTPS smoke checks passed** after population: guide/catalog/stay pages,
+normal three-account login/session/Secure-HttpOnly cookies, private owner/reviewer/
+guest reads and cross-role refusal, public processed JPEGs, safe public projection,
+noindex/no-store, disabled registration/recovery/verification/account edits, wrong
+Origin refusal and sign-out/session invalidation. Population additionally exercised
+actual property/information/logistics/room/calendar/photo/disclosure/review/quote/
+request/accept APIs. Remote integrity/FK checks passed; no capture tables or
+email delivery attempts exist. Public desktop visual inspection confirmed the
+populated catalog, images, stay detail and guide. This does not claim manual
+signed-in browser testing, phone hardware, load/restore or email delivery.
+
+Passwords were supplied in a separate private file, never git or public HTML.
+No paid upgrade or account-wide Access resource was created. Final source edits
+only record this evidence; deployed runtime remains the green source above.
+
+An optional Access organization creation was rejected by automatic review because
+it would change account-wide identity settings. No retry or Access resource was
+created; existing app authentication provides the narrower testing path.
+
+PR #35 holds these changes and remains unmerged. Production/apex are unchanged.
+
+## Historical handoff — initial read-only Cloudflare staging
+
+PR #33 (owner pause/resume) and #34 (offline corrections/fresh review) are merged.
+Main 40f7ffa553a14005f622aa5c846f0f9dc5e70f42 has tree
+2d3029c627cbc1035ebeba853a4edcbd23d140de, identical to tested #34 head
+e763dcc6f6987258cc313a889c238db8eeb7ca22. Inspected
+[CI 41017754998](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41017754998)
+and all job steps succeeded; its PR reports 217 Vitest and 26 desktop/phone
+browser checks. These are inspected historical CI results, not new staging or
+local execution. No open PR remained at the start of this setup task.
+
+The owner authorized Cloudflare-only staging, then confirmed R2 activation and
+explicitly deferred Email Sending until a later upgrade. Created the private
+roc-media-staging bucket; verified its public managed domain is disabled.
+The existing isolated D1/queue remain. The [staging contract](../../operations/staging.md)
+records IDs, source boundaries and the exact continuation sequence.
+
+The web now has an explicit origin-validated read-only staging mode: public
+allowlisted browsing is admitted; auth activity, private sessions, account
+forms, business mutations and photo uploads are unavailable. No staging capture
+provider/table, fake verified user, Email/Images binding, notification consumer
+or Cron is introduced. Existing local account/booking behavior is preserved.
+The current draft PR contains this work; it is not merged by this task.
+
+The owner explicitly approved applying existing 0001–0020 to the empty staging
+D1 and Wrangler's deployment permissions, resolving the earlier automatic review
+blocks. All 20 files and standard tracking were applied; remote foreign-key and
+quick checks passed, with zero business records and no capture tables. Pinned
+Wrangler confirmed no unapplied migrations and deployed the tested web artifact.
+
+**Live preview:** [staging.rootsofcambodia.com](https://staging.rootsofcambodia.com/).
+Runtime source 87052d21f01eec2c5550d7c839bac7c2c01106ed has matching successful
+[CI 41048026281](https://github.com/kimsourly1912/root-of-cambodia/actions/runs/41048026281),
+including frozen install, setup/types, both builds, full tests and matching
+Chromium desktop/phone checks. Local types/builds/dry runs and **219 tests across
+29 files** passed. Local matching-browser download failed with a truncated archive;
+CI supplies its own browser evidence. Initial staging-test harness placement and
+streamed-redirect expectations were corrected without weakening prior checks.
+
+The deployed app's secret was generated separately without printing/committing
+its value. Active deployment de27e66e-8a31-4e8b-86aa-d6c1cbde9b3f serves version
+9d04d48c-284a-4684-b217-19dd9a258eec at 100% after secret configuration. Only the
+staging custom domain was attached; workers.dev/preview URLs, Email/Images,
+queue consumer and Cron stay disabled. The [staging inventory](../../operations/staging.md)
+records full identifiers, migration/deployment method and future release steps.
+
+**18 real HTTPS smoke checks passed**, covering pages/styles, empty D1 catalog,
+noindex/no-store, unavailable account forms, null session, auth/write refusal and
+private read boundaries. Live desktop browser navigation and visual inspection
+confirmed the empty catalog. Post-smoke counts remain zero for users, sessions,
+verification/rate-limit rows, properties, bookings, operations/outbox/delivery
+attempts; no capture tables exist. No paid upgrade, real email, real business seed,
+production mutation or full authenticated/pilot-readiness result is claimed.
+
+The final handoff changes only source custom-domain config and docs to match
+live state; deployed runtime code remains the exact green source above. PR #35
+holds the implementation/handoff; it is not merged by this task. Next product
+work is evaluating this limited preview. Wait for the owner's Cloudflare upgrade
+before real Email Sending/auth/booking-provider work and the remaining pilot gates.

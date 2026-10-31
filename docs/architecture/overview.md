@@ -77,3 +77,16 @@ Local, staging and production need distinct resources/secrets/data. Current runt
 - [0006: Booking journey and private disclosure](decisions/0006-booking-journey.md): accepted D17 and staged guest/owner screens; server-saved request recovery, immutable configured terms and atomic acceptance-time logistics copies.
 
 The [database contract](database.md), [features](../README.md#feature-contracts), [contributing standard](../development/contributing.md) and [open decisions](../product/open-decisions.md) provide detail.
+
+## Temporary staging without email — 30 October 2026
+
+The owner deferred Cloudflare Email Sending and requested testing of implemented
+features. The [staging contract](../operations/staging.md) admits the exact origin
+with APP_MODE=staging-test and three fictional fixture identities. They use normal
+Better Auth password sessions, private supplied passwords and unchanged backend
+verification/ownership rules. Synthetic fixture verification makes no claim about
+an actual inbox. Public registration, verification, reset and account changes are
+refused before Better Auth. Shared private adapters and SSR recheck fixture IDs.
+Local capture remains loopback-only; staging mail throws and jobs is unscheduled.
+The retained staging-read-only mode refuses all auth/business mutations. Neither
+mode admits production or any other origin. No Access organization was created.

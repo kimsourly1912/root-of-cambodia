@@ -10,7 +10,7 @@
 
 All **28 original Markdown documents** have a disposition below: 22 docs extracted and archived, five README originals preserved while their active counterparts were updated, and the UI license retained verbatim in place. No historical proof/source or local-state bridge was deleted.
 
-The 22 old docs-root redirect entrypoints were removed on 31 October 2026 so agents and search do not land on superseded pages; the table below keeps each original path. Commit-pinned GitHub URLs to those paths still resolve. The chronological [status log through PR #34](2026-10/status-log-2026-10-30.md) was archived the same day when [status](../status.md) became a current snapshot.
+The 22 old docs-root redirect entrypoints were removed on 31 October 2026 so agents and search do not land on superseded pages; the table below keeps each original path. Commit-pinned GitHub URLs to those paths still resolve. The chronological [status log through PR #35](2026-10/status-log-2026-10-30.md) was archived the same day when [status](../status.md) became a current snapshot.
 
 Every archived body preserves the original text, dates, approval statements, commit/run URLs, counts and limitations. Only relative Markdown link destinations are relocated; each snapshot has a separate successor banner. Old statements such as “unmerged,” “hardening pending,” npm/application-era setup and the old parallel mockup prompt describe their historical state. They never override [status](../status.md), [accepted scope](../product/scope.md) or current task authorization.
 

@@ -73,8 +73,9 @@ Report material disagreement. Do not silently rewrite approved policy to match a
 - [Testing](development/testing.md): runtime layers, focused/full checks and fidelity
 - [Contributing/handoff/definition of done](development/contributing.md)
 - [Release and recovery](operations/release-and-recovery.md): local-only configuration, unverified live gates and recovery gaps
+- [Cloudflare staging setup](operations/staging.md): isolated resources, email-deferred read-only and fixture-test modes, and deployment prerequisites
 - [Current status and next scope](status.md)
-- [Historical archive and all-original disposition map](archive/README.md), including the [status log through PR #34](archive/2026-10/status-log-2026-10-30.md)
+- [Historical archive and all-original disposition map](archive/README.md), including the [status log through PR #35](archive/2026-10/status-log-2026-10-30.md)
 
 Package entrypoints remain short: [web](../apps/web/README.md), [jobs](../apps/jobs/README.md), [backend](../packages/backend/README.md). The [historical proof](../proofs/foundation/README.md) is independent; the [UI license](../apps/web/components/ui/LICENSE.md) stays verbatim in place.
 

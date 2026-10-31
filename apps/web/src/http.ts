@@ -1,3 +1,4 @@
+import { requireStagingAccount } from "./staging-accounts";
 import { runtime } from "./runtime";
 import { verified, type Actor } from "@root-of-cambodia/backend/operations";
 import { DomainError } from "@root-of-cambodia/backend/errors";
@@ -20,7 +21,9 @@ export async function endpoint(
     "X-Request-Id": context.correlationId,
   };
   try {
-    const { env, auth } = await runtime();
+    const { env, auth, readOnly, fixtureTest } = await runtime();
+    if (readOnly && mutates) throw new DomainError("staging_read_only", 503);
+    if (readOnly) throw new DomainError("unauthorized", 401);
     if (
       mutates &&
       (request.headers.get("origin") !== env.AUTH_URL ||
@@ -30,6 +33,7 @@ export async function endpoint(
       throw new DomainError("forbidden", 403);
     const session = await auth.api.getSession({ headers: request.headers });
     if (!session) throw new DomainError("unauthorized", 401);
+    requireStagingAccount(session.user.id, fixtureTest);
     const actor = { id: session.user.id };
     await verified(env.DB, actor);
     let body: Record<string, unknown> = {};

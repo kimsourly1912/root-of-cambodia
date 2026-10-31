@@ -6,7 +6,7 @@
 
 **Last source verification:** 31 October 2026, main [40f7ffa](https://github.com/kimsourly1912/root-of-cambodia/commit/40f7ffa553a14005f622aa5c846f0f9dc5e70f42).
 
-**Sources:** [AGENTS.md](../../AGENTS.md), [contributing](../development/contributing.md), [testing](../development/testing.md), [status log through PR #34](../archive/2026-10/status-log-2026-10-30.md).
+**Sources:** [AGENTS.md](../../AGENTS.md), [contributing](../development/contributing.md), [testing](../development/testing.md), [status log through PR #35](../archive/2026-10/status-log-2026-10-30.md).
 
 A playbook is a step-by-step procedure for one recurring kind of task. The rules themselves stay in [AGENTS.md](../../AGENTS.md), [scope](../product/scope.md), the architecture docs and feature contracts. Playbooks link to those rules instead of restating them. If a playbook and a canonical doc disagree, the canonical doc wins; report the conflict.
 

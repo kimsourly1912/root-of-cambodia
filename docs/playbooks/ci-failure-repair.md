@@ -6,7 +6,7 @@
 
 **Last source verification:** 31 October 2026, main [40f7ffa](https://github.com/kimsourly1912/root-of-cambodia/commit/40f7ffa553a14005f622aa5c846f0f9dc5e70f42).
 
-**Sources:** [verify.yml](../../.github/workflows/verify.yml), [testing](../development/testing.md), [status log through PR #34](../archive/2026-10/status-log-2026-10-30.md).
+**Sources:** [verify.yml](../../.github/workflows/verify.yml), [testing](../development/testing.md), [status log through PR #35](../archive/2026-10/status-log-2026-10-30.md).
 
 ## Use when
 
@@ -27,7 +27,7 @@ A "Verify application" run failed on a PR. CI runs, in order: frozen install, `i
 
 - Add retries, longer timeouts, `test.skip`, `.only`, or delete or loosen an assertion to get green.
 - Bypass a type error with `any`, `@ts-ignore` or a cast that hides a real mismatch.
-- Bypass a local-only runtime guard, or change dependency pins, to get past an environment problem.
+- Bypass a runtime mode/origin guard (local or staging), or change dependency pins, to get past an environment problem.
 - Claim a pass from a run on a different head.
 
 ## Pitfalls seen in this repository

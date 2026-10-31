@@ -10,12 +10,14 @@ A Cambodia accommodation platform. Guests browse stays and send booking requests
 owners accept or decline within 12 hours; the guest pays the property directly.
 The platform never collects money.
 
-Current state: a **local-only** foundation. Owner supply, publication review,
+Current state: a pre-pilot foundation. Owner supply, publication review,
 guest browsing, guest and owner booking screens, ordinary arrival/completion,
-pay-at-property payment records and owner listing pause/corrections exist and
-run in local emulators and CI. Exceptional stays (no-show, overrides), broad
-admin/support, real email and any staging or production deployment do not exist.
-[Status](docs/status.md) is the current source of truth.
+pay-at-property payment records and owner listing pause/corrections exist. They
+run locally, in CI and on a Cloudflare **staging** site limited to fictional test
+accounts ([staging contract](docs/operations/staging.md)). Exceptional stays
+(no-show, overrides), broad admin/support, real email, deployed jobs and any
+production deployment do not exist. [Status](docs/status.md) is the current
+source of truth.
 
 ## Read before changing anything
 
@@ -85,8 +87,15 @@ The import-direction test covers only part of this; see the
 - Follow the [database contract](docs/architecture/database.md).
 
 Schema: add a new ordered migration; never rewrite an applied one. Test fresh
-install and populated upgrade. Do not bypass the local-only runtime/provider
-guards to make a deployment or test pass.
+install and populated upgrade.
+
+Runtime modes and guards: keep the explicit runtime mode and exact-origin checks.
+- `staging-read-only` refuses accounts and writes.
+- `staging-test` admits only the three fictional fixture accounts (private
+  passwords, kept outside git) while email is deferred. Public registration and
+  recovery stay disabled; jobs stays local-only.
+- Never run local email/notification capture remotely, and never bypass a guard
+  or weaken verification to make a deployment or test pass.
 
 ## Verification and reporting
 

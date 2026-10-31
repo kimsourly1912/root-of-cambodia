@@ -1,18 +1,17 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { makeAuth } from "@root-of-cambodia/backend/auth";
+import { runtimePolicy } from "./runtime-policy";
 export async function runtime() {
   const { env } = await getCloudflareContext({ async: true });
-  // Deliberately fail closed until a sending domain/provider has been selected.
-  if (
-    env.APP_MODE !== "local" ||
-    !["http://127.0.0.1:8787", "http://localhost:8787"].includes(env.AUTH_URL)
-  )
-    throw new Error("Email provider is not configured");
+  const policy = runtimePolicy(env.APP_MODE, env.AUTH_URL);
   const auth = makeAuth(env.DB, {
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.AUTH_URL,
     mailer: {
       send: async (message) => {
+        // Defense in depth: staged auth routes refuse activity before the
+        // handler, and no live URL/token is ever stored as captured email.
+        if (!policy.localCapture) throw new Error("Email delivery is unavailable");
         await env.DB.prepare(
           "INSERT INTO local_email(id,recipient,kind,url) VALUES (?,?,?,?)",
         )
@@ -26,5 +25,5 @@ export async function runtime() {
       },
     },
   });
-  return { env, auth };
+  return { env, auth, ...policy };
 }
