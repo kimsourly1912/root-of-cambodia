@@ -6,7 +6,7 @@
 
 **Last source verification:** 31 October 2026, main [4d2bffb](https://github.com/kimsourly1912/root-of-cambodia/commit/4d2bffb).
 
-**Sources:** [accepted scope](scope.md), [open decisions](open-decisions.md) (D06, D11, D15), [actor type](../../packages/backend/src/shared/operations.ts), [owner session](../../apps/web/server/owner-session.ts), [property creation route](../../apps/web/app/api/owner/properties/route.ts), [reviewer check](../../packages/backend/src/features/publication/publication-queries.ts), [reviewer command](../../scripts/configure-reviewer-local.ts), [site header](../../apps/web/components/site-header.tsx), [owner layout](../../apps/web/app/%28workspace%29/owner/layout.tsx), [review layout](../../apps/web/app/%28workspace%29/review/layout.tsx), [staging accounts](../../apps/web/server/staging-accounts.ts).
+**Sources:** [accepted scope](scope.md), [open decisions](open-decisions.md) (D06, D11, D15), [actor type](../../packages/backend/src/shared/operations.ts), [owner session](../../apps/web/server/owner-session.ts), [property creation route](../../apps/web/app/api/owner/properties/route.ts), [reviewer check](../../packages/backend/src/features/publication/publication-queries.ts), [reviewer command](../../scripts/configure-reviewer-local.ts), [site header](../../apps/web/components/site-header.tsx), [owner layout](../../apps/web/app/%28workspace%29/owner/layout.tsx), [admin layout](../../apps/web/app/%28workspace%29/admin/layout.tsx), [staging accounts](../../apps/web/server/staging-accounts.ts).
 
 ## Problem
 

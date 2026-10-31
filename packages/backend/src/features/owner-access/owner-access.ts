@@ -1,6 +1,5 @@
-import { DomainError, verified, type Actor } from "../../shared/index";
+import { DomainError, requireAdmin, verified, type Actor } from "../../shared/index";
 import { commitOwnerAccess } from "./owner-access-persistence";
-import { requireAdmin } from "./owner-access-queries";
 
 function text(value: unknown, min: number, max: number) {
   if (typeof value !== "string") throw new DomainError("invalid_owner_application", 422);

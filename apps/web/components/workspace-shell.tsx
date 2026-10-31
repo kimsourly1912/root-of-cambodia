@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, ClipboardCheck, House, Luggage, Plus, Search, UserCheck } from "lucide-react";
+import { Building, Building2, ClipboardCheck, House, LayoutDashboard, Luggage, Plus, Search, UserCheck } from "lucide-react";
 
 import {
   Sidebar,
@@ -49,11 +49,7 @@ function WorkspaceShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  const area = pathname.startsWith("/admin")
-    ? "Admin"
-    : pathname.startsWith("/review")
-      ? "Publication review"
-      : "Owner workspace";
+  const area = pathname.startsWith("/admin") ? "Admin" : "Owner workspace";
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <Sidebar>
@@ -158,8 +154,10 @@ function WorkspaceMenu({
           <SidebarGroupLabel>Admin</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {item("/review", "Review queue", <ClipboardCheck aria-hidden="true" />, pathname.startsWith("/review"))}
+              {item("/admin", "Overview", <LayoutDashboard aria-hidden="true" />, pathname === "/admin")}
+              {item("/admin/reviews", "Review queue", <ClipboardCheck aria-hidden="true" />, pathname.startsWith("/admin/reviews"))}
               {item("/admin/owners", "Owner applications", <UserCheck aria-hidden="true" />, pathname.startsWith("/admin/owners"))}
+              {item("/admin/properties", "All properties", <Building aria-hidden="true" />, pathname.startsWith("/admin/properties"))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

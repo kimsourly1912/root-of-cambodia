@@ -18,5 +18,12 @@ const config: NextConfig = {
   // Agent guidance lives in the root AGENTS.md; do not generate a nested copy.
   agentRules: false,
   experimental: { cpus: 2 },
+  // Publication review moved into the admin console (ADR 0010, slice 4).
+  async redirects() {
+    return [
+      { source: "/review", destination: "/admin/reviews", permanent: false },
+      { source: "/review/:id", destination: "/admin/reviews/:id", permanent: false },
+    ];
+  },
 };
 export default config;

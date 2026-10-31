@@ -40,7 +40,7 @@ export default async function Page({
         </div>
         <div className="flex flex-wrap gap-4">
           {reviewer && (
-            <Link href="/review" className={buttonVariants({ variant: "outline" })}>
+            <Link href="/admin/reviews" className={buttonVariants({ variant: "outline" })}>
               Publication reviews
             </Link>
           )}

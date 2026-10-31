@@ -1,4 +1,4 @@
-import { adminSQL, DomainError, verified, type Actor } from "../../shared/index";
+import { DomainError, requireAdmin, verified, type Actor } from "../../shared/index";
 
 export type OwnerAccessStatus = {
   status: "none" | "pending" | "approved" | "declined";
@@ -55,12 +55,6 @@ export async function ownerAccessStatus(db: D1Database, actor: Actor): Promise<O
     declineReason: row.status === "declined" ? row.declineReason : null,
     decidedAt: row.decidedAt,
   };
-}
-
-export async function requireAdmin(db: D1Database, actor: Actor) {
-  await verified(db, actor);
-  if (!(await db.prepare("SELECT 1 ok WHERE " + adminSQL).bind(actor.id).first()))
-    throw new DomainError("not_found", 404);
 }
 
 export type OwnerApplicationItem = {
